@@ -1,11 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+	
+	<PropertyGroup>
+		<RootNamespace>SageKing.Studio</RootNamespace>
+	</PropertyGroup>
 
-  <PropertyGroup>
-  </PropertyGroup>
+	<PropertyGroup>
+		<Description>
+			提供SageKingUI客户端
+		</Description>
+		<PackageTags>SageKing module</PackageTags>
+	</PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SageKing.Client\SageKing.Client.csproj" />
-    <ProjectReference Include="..\SageKing.Server\SageKing.Server.csproj" />
     <ProjectReference Include="..\SageKing.Services\SageKing.Management.csproj" />
   </ItemGroup>
 

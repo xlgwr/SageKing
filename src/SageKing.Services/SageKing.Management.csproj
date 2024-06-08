@@ -1,7 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-  </PropertyGroup>
+	<PropertyGroup>
+		<RootNamespace>SageKing.Management</RootNamespace>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<Description>
+			提供SageKing管理核心功能
+		</Description>
+		<PackageTags>SageKing module</PackageTags>
+	</PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\SageKing.Core\SageKing.Core.csproj" />
