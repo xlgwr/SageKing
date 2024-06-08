@@ -37,9 +37,9 @@
 	* fix: 修复bug
 	* add: 新功能
 	* update: 更新
-	* docs : 文档改变
-	* test : 增加测试
-	* style : 代码格式改变
+	* docs: 文档改变
+	* test: 增加测试
+	* style: 代码格式改变
 	* revert: 撤销上一次的commit
 	* build: 构建工具或构建过程等的变动，如：gulp 换成了 webpack，webpack 升级等
 	* scope（可选） :用于说明 commit 影响的范围，比如数据层、控制层、视图层等等，视项目不同而不同。
