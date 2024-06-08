@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+	</PropertyGroup>
+	<ItemGroup>
+		<!--IceRpc-->
+		<PackageReference Include="IceRpc" />
+		<PackageReference Include="IceRpc.Slice" />
+		<PackageReference Include="IceRpc.Slice.Tools" PrivateAssets="All"/>
+		<PackageReference Include="IceRpc.Retry" />
+		<PackageReference Include="IceRpc.Logger" />
+		<PackageReference Include="IceRpc.Locator" />
+		<PackageReference Include="IceRpc.Metrics" />
+		<PackageReference Include="IceRpc.Deadline" />
+		<PackageReference Include="IceRpc.Compressor" />
+		<PackageReference Include="IceRpc.RequestContext" />
+		<PackageReference Include="IceRpc.Transports.Quic" />
+		<PackageReference Include="IceRpc.Transports.Coloc" />
+		<PackageReference Include="IceRpc.Extensions.DependencyInjection" /> 
+		
+		<PackageReference Include="Microsoft.Extensions.Logging" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Console" />
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\SageKing.Core\SageKing.Core.csproj" />
+	</ItemGroup>
+</Project>

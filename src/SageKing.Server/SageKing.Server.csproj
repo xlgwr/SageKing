@@ -1,12 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
+  <PropertyGroup> 
   </PropertyGroup>
 
   <ItemGroup>
     <Folder Include="Contracts\" />
     <Folder Include="Extensions\" />
     <Folder Include="Options\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SageKing.IceRPC\SageKing.IceRPC.csproj" />
   </ItemGroup>
 
 </Project>

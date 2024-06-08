@@ -1,14 +1,12 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SageKing.Core\SageKing.Core.csproj" />
-    <ProjectReference Include="..\SageKing.Services\SageKing.Services.csproj" />
+    <ProjectReference Include="..\SageKing.Client\SageKing.Client.csproj" />
+    <ProjectReference Include="..\SageKing.Server\SageKing.Server.csproj" />
+    <ProjectReference Include="..\SageKing.Services\SageKing.Management.csproj" />
   </ItemGroup>
 
 </Project>

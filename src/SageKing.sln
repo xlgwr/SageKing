@@ -5,7 +5,7 @@ VisualStudioVersion = 17.10.34916.146
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SageKing.Core", "SageKing.Core\SageKing.Core.csproj", "{D45E6274-856B-4708-9F95-4E8934DD9F07}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SageKing.Services", "SageKing.Services\SageKing.Services.csproj", "{6FBB0B4D-D65E-434A-8E14-580119328D69}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SageKing.Management", "SageKing.Services\SageKing.Management.csproj", "{6FBB0B4D-D65E-434A-8E14-580119328D69}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SageKing.Studio", "SageKing.Studio\SageKing.Studio.csproj", "{AC425CC3-83C8-41E6-939C-1AFFE561B37F}"
 EndProject
@@ -17,6 +17,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{35BBBD
 		global.json = global.json
 		nuget.config = nuget.config
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SageKing.Server", "SageKing.Server\SageKing.Server.csproj", "{4BD14406-C8ED-42D8-B5AE-38AAF4A97706}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SageKing.Client", "SageKing.Client\SageKing.Client.csproj", "{F994B99E-1A8A-4E14-ABA1-0361E7005D9A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SageKing", "SageKing", "{774DF78A-4363-44EB-9518-565BE31486E2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IceRPC", "IceRPC", "{71CCC3F4-E509-45A3-B512-C5F5F6D23700}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SageKing.IceRPC", "SageKing.IceRPC\SageKing.IceRPC.csproj", "{69F692E9-E103-4622-9170-F7A0F14E6ED1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,9 +46,29 @@ Global
 		{AC425CC3-83C8-41E6-939C-1AFFE561B37F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AC425CC3-83C8-41E6-939C-1AFFE561B37F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AC425CC3-83C8-41E6-939C-1AFFE561B37F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4BD14406-C8ED-42D8-B5AE-38AAF4A97706}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4BD14406-C8ED-42D8-B5AE-38AAF4A97706}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4BD14406-C8ED-42D8-B5AE-38AAF4A97706}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4BD14406-C8ED-42D8-B5AE-38AAF4A97706}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F994B99E-1A8A-4E14-ABA1-0361E7005D9A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F994B99E-1A8A-4E14-ABA1-0361E7005D9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F994B99E-1A8A-4E14-ABA1-0361E7005D9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F994B99E-1A8A-4E14-ABA1-0361E7005D9A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69F692E9-E103-4622-9170-F7A0F14E6ED1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69F692E9-E103-4622-9170-F7A0F14E6ED1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69F692E9-E103-4622-9170-F7A0F14E6ED1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69F692E9-E103-4622-9170-F7A0F14E6ED1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D45E6274-856B-4708-9F95-4E8934DD9F07} = {774DF78A-4363-44EB-9518-565BE31486E2}
+		{6FBB0B4D-D65E-434A-8E14-580119328D69} = {774DF78A-4363-44EB-9518-565BE31486E2}
+		{4BD14406-C8ED-42D8-B5AE-38AAF4A97706} = {71CCC3F4-E509-45A3-B512-C5F5F6D23700}
+		{F994B99E-1A8A-4E14-ABA1-0361E7005D9A} = {71CCC3F4-E509-45A3-B512-C5F5F6D23700}
+		{71CCC3F4-E509-45A3-B512-C5F5F6D23700} = {774DF78A-4363-44EB-9518-565BE31486E2}
+		{69F692E9-E103-4622-9170-F7A0F14E6ED1} = {71CCC3F4-E509-45A3-B512-C5F5F6D23700}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2F631A7F-D4DD-4C8D-A8B9-47797DD7B86A}
