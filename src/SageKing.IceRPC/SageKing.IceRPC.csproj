@@ -28,6 +28,15 @@
 		<PackageReference Include="IceRpc.Transports.Coloc" />
 		<PackageReference Include="IceRpc.Extensions.DependencyInjection" />
 
+
+		<!-- The 1.2 beta version is required for supporting the latest language features.
+         See: https://github.com/DotNetAnalyzers/StyleCopAnalyzers/pull/3187 -->
+		<PackageReference Include="StyleCop.Analyzers">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<GlobalAnalyzerConfigFiles Include="$(MSBuildThisFileDirectory)CodeAnalysis.globalconfig" />
+
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\SageKing.Core\SageKing.Core.csproj" />

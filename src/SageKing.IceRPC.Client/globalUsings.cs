@@ -1,8 +1,6 @@
 ﻿global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Hosting;
 
-
-global using JetBrains.Annotations;
 global using SageKing.Extensions;
 global using SageKing.Features.Attributes;
 global using SageKing.Features.Contracts;

@@ -123,6 +123,7 @@
 		<PackageVersion Include="IceRpc.Transports.Coloc" Version="$(IceRpcVersion)" />
 		<PackageVersion Include="IceRpc.Transports.Quic" Version="$(IceRpcVersion)" />
 		<PackageVersion Include="IceRpc.Extensions.DependencyInjection" Version="$(IceRpcVersion)" />
+		<PackageVersion Include="StyleCop.Analyzers" Version="1.2.0-beta.556" />
 		
 		<PackageVersion Include="Fody" Version="6.8.1" />
 		<PackageVersion Include="NewId" Version="4.0.1" />

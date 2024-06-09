@@ -3,7 +3,7 @@ using JetBrains.Annotations;
 namespace SageKing.Features.Models;
 
 /// <summary>
-/// Represents a feature descriptor.
+/// 表示功能描述符
 /// </summary>
 [PublicAPI]
 public class FeatureDescriptor

@@ -1,7 +1,7 @@
 namespace SageKing.Features.Contracts;
 
 /// <summary>
-/// Represents a registry of installed features.
+/// 表示已安装功能的注册
 /// </summary>
 public interface IInstalledFeatureRegistry
 {
