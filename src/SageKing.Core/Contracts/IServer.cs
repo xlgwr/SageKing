@@ -9,7 +9,7 @@ namespace SageKing.Core.Contracts
     /// <summary>
     /// 服务端接口
     /// </summary>
-    public interface IServer<T>
+    public interface IServer<T> : IDisposable
     {
         public T Listen();
 

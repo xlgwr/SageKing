@@ -63,4 +63,9 @@ public class IceRPCServer : IServer<ServerAddress>
     {
         return _server!.ShutdownAsync(cancellationToken);
     }
+
+    public void Dispose()
+    {
+        _server.DisposeAsync();
+    }
 }

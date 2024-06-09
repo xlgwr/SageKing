@@ -31,7 +31,7 @@ public class IceRPCServerHostedService : IHostedService, IDisposable
 
     public void Dispose()
     {
-
+        _server?.Dispose();
     }
 
     public Task StartAsync(CancellationToken cancellationToken)
