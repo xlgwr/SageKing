@@ -9,6 +9,8 @@ namespace SageKing.Core.Contracts
     /// <summary>
     /// 服务端接口
     /// </summary>
+    /// <typeparam name="A">ServerAddress</typeparam>
+    /// <typeparam name="T">StreamPackage</typeparam>
     public interface IServer<A, T> : IDisposable
     {
         public A Listen();
