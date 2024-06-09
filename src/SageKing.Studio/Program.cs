@@ -4,6 +4,12 @@ using SageKing.Studio.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//add SageKing
+builder.Services.AddSageKing(sageking =>
+{
+    sageking.UseIceRPCServer();
+});
+
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();

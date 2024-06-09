@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace SageKing.IceRPC.Server.Services
 {
     public class IceRPCServerProvider(IceRPCServer iceRPCServer) : IServerProvider<ServerAddress>
-    {  
+    {
         public IServer<ServerAddress> GetServer()
         {
             return iceRPCServer;
