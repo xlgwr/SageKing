@@ -11,6 +11,7 @@ using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using MyClient;
 using Microsoft.Extensions.Options;
+using SageKing.IceRPC.Client.Extensions;
 
 namespace SageKing.IceRPC.Client.Services
 {
@@ -54,15 +55,7 @@ namespace SageKing.IceRPC.Client.Services
             // Create Client authentication options with custom certificate validation.
             var clientAuthenticationOptions = new SslClientAuthenticationOptions
             {
-                RemoteCertificateValidationCallback = (sender, certificate, chain, errors) =>
-                {
-                    using var customChain = new X509Chain();
-                    customChain.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
-                    customChain.ChainPolicy.DisableCertificateDownloads = true;
-                    customChain.ChainPolicy.TrustMode = X509ChainTrustMode.CustomRootTrust;
-                    customChain.ChainPolicy.CustomTrustStore.Add(rootCA);
-                    return customChain.Build((X509Certificate2)certificate!);
-                }
+                RemoteCertificateValidationCallback = rootCA.CreateCustomRootRemoteValidator()
             };
 
             // Create a client connection that logs messages to a logger with category IceRpc.ClientConnection.
