@@ -17,7 +17,7 @@ public class IceRPCServerFeature : FeatureBase
     /// <summary>
     /// A factory that instantiates an <see cref="IServerProvider"/>.
     /// </summary>
-    public Func<IServiceProvider, IServerProvider<ServerAddress>> InstanceServerProvider { get; set; } = sp =>
+    public Func<IServiceProvider, IServerProvider<ServerAddress, StreamPackage>> InstanceServerProvider { get; set; } = sp =>
     {
         return ActivatorUtilities.CreateInstance<IceRPCServerProvider>(sp);
     };

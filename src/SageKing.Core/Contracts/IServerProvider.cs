@@ -9,7 +9,7 @@ namespace SageKing.Core.Contracts;
 /// <summary>
 /// 服务提供器
 /// </summary>
-public interface IServerProvider<T>
+public interface IServerProvider<A, T>
 {
-    public IServer<T> GetServer();
+    public IServer<A, T> GetServer();
 }

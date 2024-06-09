@@ -14,7 +14,7 @@ using Microsoft.Extensions.Options;
 
 namespace SageKing.IceRPC.Server.Services;
 
-public class IceRPCServer : IServer<ServerAddress>
+public class IceRPCServer : IServer<ServerAddress, StreamPackage>
 {
     private IceRpc.Server _server;
     private readonly IceRPCServerOption _ServerOption;
@@ -72,12 +72,12 @@ public class IceRPCServer : IServer<ServerAddress>
         _server?.DisposeAsync();
     }
 
-    public Task<T> PushStreamPackageListAsync<T>(List<T> param, string msg, string connectionId, CancellationToken cancellationToken = default)
+    public Task<StreamPackage> PushStreamPackageListAsync(IEnumerable<StreamPackage> param, string msg, string connectionId, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
-    public Task<T> PushStreamPackageListAsync<T>(List<T> param, string msg, CancellationToken cancellationToken = default)
+    public Task<StreamPackage> PushStreamPackageListAsync(IEnumerable<StreamPackage> param, string msg, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
