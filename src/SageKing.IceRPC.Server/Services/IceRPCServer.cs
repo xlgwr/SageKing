@@ -61,11 +61,15 @@ public class IceRPCServer : IServer<ServerAddress>
 
     public Task ShutdownAsync(CancellationToken cancellationToken = default)
     {
-        return _server!.ShutdownAsync(cancellationToken);
+        if (_server != null)
+        {
+            return _server.ShutdownAsync(cancellationToken);
+        }
+        return Task.CompletedTask;
     }
 
     public void Dispose()
     {
-        _server.DisposeAsync();
+        _server?.DisposeAsync();
     }
 }

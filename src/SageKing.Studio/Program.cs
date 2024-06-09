@@ -1,13 +1,25 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using SageKing.IceRPC.Client.Options;
+using SageKing.IceRPC.Server.Options;
 using SageKing.Studio.Data;
 
 var builder = WebApplication.CreateBuilder(args);
+var configuration = builder.Configuration;
 
 //add SageKing
 builder.Services.AddSageKing(sageking =>
 {
-    sageking.UseIceRPCServer();
+    sageking.UseIceRPCServer(o => o.IceRPCServerOptions += options =>
+    {
+        configuration.GetSection(IceRPCServerOption.SectionName).Bind(options);
+    });
+
+    sageking.UseIceRPCClient(o => o.IceRPCClientOptions += options =>
+    {
+        configuration.GetSection(IceRPCClientOption.SectionName).Bind(options);
+    });
+
 });
 
 // Add services to the container.

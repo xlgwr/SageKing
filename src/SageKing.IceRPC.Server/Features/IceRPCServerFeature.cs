@@ -30,7 +30,7 @@ public class IceRPCServerFeature : FeatureBase
     /// <inheritdoc />
     public override void ConfigureHostedServices()
     {
-        Module.ConfigureHostedService<IceRPCServerHostedService>();
+        Module.ConfigureHostedService<IceRPCServerHostedService>((int)HostedServicePriorityMenu.IceRPCServer);
     }
 
     /// <inheritdoc />

@@ -22,9 +22,8 @@ public class IceRPCServerHostedService : IHostedService, IDisposable
     {
         _serviceProvider = serviceProvider;
         _logger = loggerFactory.CreateLogger<IceRPCServerHostedService>();
-
-
-        using var scope = _serviceProvider.CreateScope();
+         
+        var scope = _serviceProvider.CreateScope();
         var instanceServerProvider = scope.ServiceProvider.GetRequiredService<IServerProvider<ServerAddress>>();
         _server = instanceServerProvider.GetServer();
     }

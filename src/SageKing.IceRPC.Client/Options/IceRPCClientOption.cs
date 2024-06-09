@@ -1,16 +1,18 @@
-﻿using System;
+﻿using SageKing.Core.Options;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SageKing.IceRPC.Server.Options;
+namespace SageKing.IceRPC.Client.Options;
 
-public class IceRPCServerOption
+public class IceRPCClientOption : ISectionOptions
 {
-    public const string SectionName = "IceRPCServer";
+    public const string SectionName = "IceRPCClients";
+
     /// <summary>
-    /// 名称
+    /// 名称(唯一性）
     /// </summary>
     public string Name { get; set; } = string.Empty;
     /// <summary>
@@ -20,7 +22,7 @@ public class IceRPCServerOption
     /// 例子：icerpc://127.0.0.1:4062
     /// https://docs.icerpc.dev/icerpc/connection/server-address
     /// </summary>
-    public string ServerAddress { get; set; }= "icerpc://[::0]:4062";
+    public string ServerAddress { get; set; } = "icerpc://localhost";
 
 
     /// <summary>
@@ -35,9 +37,16 @@ public class IceRPCServerOption
     public bool IsTcpTLS { get; set; } = true;
 
     /// <summary>
-    /// 服务证书文件路径
+    /// 客户端证书文件路径
+    /// root CA certificate
     /// 开启TLS,或Quic，必需配置当前值
     /// sslServerAuthenticationOptions
     /// </summary>
-    public string ServerCertificateFileName { get; set; } = "certs/server.p12";
+    public string ServerCertificateFileName { get; set; } = "certs/cacert.der";
+
+    /// <summary>
+    /// 超时时间
+    /// UseDeadline Timeout
+    /// </summary>
+    public TimeSpan Timeout { get; set; } = TimeSpan.FromSeconds(33);
 }
