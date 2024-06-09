@@ -18,7 +18,7 @@ public class IceRPCClientHostedService : IHostedService, IDisposable
 {
 
     private readonly IServiceProvider _serviceProvider;
-    private readonly Dictionary<string, IClientConnection> _client;
+    private readonly Dictionary<string, IClientConnection<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage>> _client;
     private readonly ILogger _logger;
 
     public IceRPCClientHostedService(IServiceProvider serviceProvider, ILoggerFactory loggerFactory, IOptions<List<IceRPCClientOption>> options)
@@ -27,12 +27,12 @@ public class IceRPCClientHostedService : IHostedService, IDisposable
         _logger = loggerFactory.CreateLogger<IceRPCClientHostedService>();
 
         using var scope = _serviceProvider.CreateScope();
-        var instanceClientProvider = scope.ServiceProvider.GetRequiredService<IClientConnectionProvider>();
+        var instanceClientProvider = scope.ServiceProvider.GetRequiredService<IClientConnectionProvider<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage>>();
 
-        _client = new Dictionary<string, IClientConnection>();
+        _client = new Dictionary<string, IClientConnection<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage>>();
         foreach (var item in options.Value)
         {
-            _client[item.Name] = instanceClientProvider.GetClientConnection(item.Name);
+            _client[item.ServerName] = instanceClientProvider.GetClientConnection(item.ServerName);
         }
     }
 
@@ -56,7 +56,7 @@ public class IceRPCClientHostedService : IHostedService, IDisposable
                     var client = item.Value.Connection as ClientConnection;
                     var greeter = new ServerReceiverProxy(client!);
 
-                    var greeting = await greeter.SendStreamPackageListAsync(Environment.UserName.GetDataStreamBody(), "send");
+                    var greeting = await greeter.SendStreamPackageListAsync($"Hello:Server,My Name->{Environment.UserName}".GetDataStreamBody(), "send");
 
                     _logger.LogInformation($"### StartAsync ConnectAsync：{item.Key},greeting:{greeting.GetString()}");
                 }

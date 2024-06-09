@@ -14,5 +14,9 @@ namespace SageKing.Core.Contracts
         public T Listen();
 
         public Task ShutdownAsync(CancellationToken cancellationToken = default(CancellationToken));
+
+        public Task<T> PushStreamPackageListAsync<T>(List<T> param, string msg, string connectionId, CancellationToken cancellationToken = default(CancellationToken));
+
+        public Task<T> PushStreamPackageListAsync<T>(List<T> param, string msg, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

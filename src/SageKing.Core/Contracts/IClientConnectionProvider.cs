@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace SageKing.Core.Contracts;
 
-public interface IClientConnectionProvider  
+public interface IClientConnectionProvider<C, P, T>
 {
-    public IClientConnection GetClientConnection(string name);
+    public IClientConnection<C, P, T> GetClientConnection(string servername);
 
 }

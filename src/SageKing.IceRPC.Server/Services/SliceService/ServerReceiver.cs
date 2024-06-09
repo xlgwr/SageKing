@@ -19,7 +19,7 @@ public partial class ServerReceiver(IMediator mediator, ILoggerFactory loggerFac
 
     public async ValueTask<StreamPackage> SendStreamPackageListAsync(StreamPackage[] requestFields, string msgType, IFeatureCollection features, CancellationToken cancellationToken)
     {
-        Console.WriteLine($"SendStreamPackageListAsync:msgName:{msgType}:{requestFields.toJsonNoByteStr()}");
+        logger.LogInformation($"SendStreamPackageListAsync:msgName:{msgType}:{requestFields.toJsonNoByteStr()}");
 
         //获取相应的服务
         if (mediator != null)

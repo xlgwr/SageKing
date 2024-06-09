@@ -12,9 +12,9 @@ public class IceRPCClientOption : ISectionOptions
     public const string SectionName = "IceRPCClients";
 
     /// <summary>
-    /// 名称(唯一性）
+    /// 服务器名称(唯一性）
     /// </summary>
-    public string Name { get; set; } = string.Empty;
+    public string ServerName { get; set; } = string.Empty;
     /// <summary>
     /// Server address
     /// protocol://host[:port][?name=value][&name=value...]

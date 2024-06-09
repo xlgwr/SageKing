@@ -15,7 +15,7 @@ public class IceRPCClientFeature : FeatureBase
     /// <summary>
     /// A factory that instantiates an <see cref="IClientConnectionProvider"/>.
     /// </summary>
-    public Func<IServiceProvider, IClientConnectionProvider> InstanceClientProvider { get; set; } = sp =>
+    public Func<IServiceProvider, IClientConnectionProvider<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage>> InstanceClientProvider { get; set; } = sp =>
     {
         return ActivatorUtilities.CreateInstance<IceRPCClientProvider>(sp);
     };

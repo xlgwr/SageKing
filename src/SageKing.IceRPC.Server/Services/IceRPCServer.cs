@@ -71,4 +71,14 @@ public class IceRPCServer : IServer<ServerAddress>
     {
         _server?.DisposeAsync();
     }
+
+    public Task<T> PushStreamPackageListAsync<T>(List<T> param, string msg, string connectionId, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<T> PushStreamPackageListAsync<T>(List<T> param, string msg, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
 }

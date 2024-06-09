@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 
 namespace SageKing.IceRPC.Client.Services
 {
-    internal class IceRPCClientProvider : IClientConnectionProvider
+    internal class IceRPCClientProvider : IClientConnectionProvider<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage>
     {
-        private IDictionary<string, IClientConnection> _dics;
+        private IDictionary<string, IClientConnection<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage>> _dics;
 
         public IceRPCClientProvider(IServiceProvider serviceProvider, IOptions<List<IceRPCClientOption>> options)
         {
-            _dics = new Dictionary<string, IClientConnection>();
+            _dics = new Dictionary<string, IClientConnection<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage>>();
             if (options == null || options.Value.Count <= 0)
             {
                 return;
@@ -23,25 +23,25 @@ namespace SageKing.IceRPC.Client.Services
             var scope = serviceProvider.CreateScope();
             foreach (var option in options.Value)
             {
-                if (string.IsNullOrEmpty(option.Name))
+                if (string.IsNullOrEmpty(option.ServerName))
                 {
-                    throw new ArgumentException(nameof(option), "Name");
+                    throw new ArgumentException(nameof(option), "ServerName");
                 }
                 var getScopeClient = scope.ServiceProvider.GetRequiredService<IceRPCClient>();
                 if (getScopeClient != null)
                 {
                     getScopeClient.InitClient(option);
-                    _dics[option.Name] = getScopeClient;
+                    _dics[option.ServerName] = getScopeClient;
                 }
             }
         }
-        public IClientConnection GetClientConnection(string name)
+        public IClientConnection<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage> GetClientConnection(string servername)
         {
-            if (_dics.TryGetValue(name, out var client))
+            if (_dics.TryGetValue(servername, out var client))
             {
                 return client;
             }
-            throw new InvalidOperationException($"{name} 不存在");
+            throw new InvalidOperationException($"{servername} 不存在");
         }
     }
 }

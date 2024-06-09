@@ -14,12 +14,12 @@ using SageKing.IceRPC.Client.Extensions;
 
 namespace SageKing.IceRPC.Client.Services
 {
-    public class IceRPCClient : IClientConnection
+    public class IceRPCClient(ILoggerFactory loggerFactory) : IClientConnection<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage>
     {
         private IceRpc.ClientConnection _client;
         private IceRPCClientOption _clientOption;
 
-        public object Connection { get => _client; }
+        public IceRpc.ClientConnection Connection { get => _client; }
 
         public Task ConnectAsync(CancellationToken cancellationToken = default)
         {
@@ -31,22 +31,19 @@ namespace SageKing.IceRPC.Client.Services
             _client?.DisposeAsync();
         }
 
-        public void InitClient(object options)
+        public void InitClient(IceRPCClientOption options)
         {
-            if (options is IceRPCClientOption op && op != null)
-            {
-                _clientOption = op;
-            }
-            else
+            if (options == null)
             {
                 throw new ArgumentException(nameof(options));
             }
+            _clientOption = options;
 
             // Create a simple console logger factory and configure the log level for category IceRpc.
-            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
-                builder
-                    .AddSimpleConsole()
-                    .AddFilter("IceRpc", LogLevel.Information));
+            //using ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
+            //    builder
+            //        .AddSimpleConsole()
+            //        .AddFilter("IceRpc", LogLevel.Information));
 
             // Path to the root CA certificate.
             using var rootCA = new X509Certificate2(_clientOption.ServerCertificateFileName);
@@ -69,6 +66,12 @@ namespace SageKing.IceRPC.Client.Services
                 .UseLogger(loggerFactory)
                 .UseDeadline(_clientOption.Timeout)
                 .Into(_client);
+        }
+
+        public async Task<StreamPackage> SendStreamPackageListAsync(IEnumerable<StreamPackage> param, string msg, CancellationToken cancellationToken = default)
+        {
+            var serverReceiver = new ServerReceiverProxy(_client!);
+            return await serverReceiver.SendStreamPackageListAsync(param, msg, cancellationToken: cancellationToken);
         }
 
         public Task ShutdownAsync(CancellationToken cancellationToken = default)
