@@ -15,6 +15,11 @@ public static class ModuleExtensions
         {
             configure?.Invoke(feature);
         });
+
+        module.UseIceMediatR(o => o.MediatRServiceConfiguration += a =>
+        {
+            a.RegisterServicesFromAssembly(typeof(IceRPCClientFeature).Assembly);
+        });
         return module;
     }
 }

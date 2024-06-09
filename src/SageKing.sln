@@ -33,7 +33,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SageKing.Features", "SageKi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SageKing.Management", "SageKing.Management\SageKing.Management.csproj", "{A3777A94-4FFB-46C4-997D-F5913C7C338B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SageKing", "SageKing\SageKing.csproj", "{B3612DA0-A60A-4D0F-9C79-C1FAFD16B814}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SageKing", "SageKing\SageKing.csproj", "{B3612DA0-A60A-4D0F-9C79-C1FAFD16B814}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SageKing.MediatR", "SageKing.Common\SageKing.MediatR\SageKing.MediatR.csproj", "{06A7E516-E44E-4CA6-AA94-34344BC4DAD2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -73,6 +75,10 @@ Global
 		{B3612DA0-A60A-4D0F-9C79-C1FAFD16B814}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B3612DA0-A60A-4D0F-9C79-C1FAFD16B814}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B3612DA0-A60A-4D0F-9C79-C1FAFD16B814}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06A7E516-E44E-4CA6-AA94-34344BC4DAD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06A7E516-E44E-4CA6-AA94-34344BC4DAD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06A7E516-E44E-4CA6-AA94-34344BC4DAD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06A7E516-E44E-4CA6-AA94-34344BC4DAD2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -87,6 +93,7 @@ Global
 		{79324C0D-D2B8-4948-B1B4-A25868319E4F} = {7318F886-7E45-4156-B221-F68837DC28BA}
 		{A3777A94-4FFB-46C4-997D-F5913C7C338B} = {774DF78A-4363-44EB-9518-565BE31486E2}
 		{B3612DA0-A60A-4D0F-9C79-C1FAFD16B814} = {774DF78A-4363-44EB-9518-565BE31486E2}
+		{06A7E516-E44E-4CA6-AA94-34344BC4DAD2} = {7318F886-7E45-4156-B221-F68837DC28BA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2F631A7F-D4DD-4C8D-A8B9-47797DD7B86A}

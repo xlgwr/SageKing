@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
 using SageKing.IceRPC.Server.HostedServices;
+using SageKing.MediatR.Features;
 
 namespace SageKing.IceRPC.Server.Features;
 
@@ -30,7 +30,7 @@ public class IceRPCServerFeature : FeatureBase
     /// <inheritdoc />
     public override void ConfigureHostedServices()
     {
-        Module.ConfigureHostedService<IceRPCServerHostedService>((int)HostedServicePriorityMenu.IceRPCServer);
+        Module.ConfigureHostedService<IceRPCServerHostedService>((int)HostedServicePriorityEnum.IceRPCServer);
     }
 
     /// <inheritdoc />
@@ -38,6 +38,8 @@ public class IceRPCServerFeature : FeatureBase
     {
         Services.Configure(IceRPCServerOptions)
             .AddSingleton(InstanceServerProvider)
+            .AddSingleton<ServerReceiver>()
             .AddSingleton<IceRPCServer>();
+
     }
 }

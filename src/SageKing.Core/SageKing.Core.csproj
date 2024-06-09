@@ -12,6 +12,7 @@
 	</PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="EventMessage\" />
     <Folder Include="Extensions\" />
   </ItemGroup>
 
@@ -29,6 +30,7 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\SageKing.Common\SageKing.Features\SageKing.Features.csproj" />
+	  <ProjectReference Include="..\SageKing.Common\SageKing.MediatR\SageKing.MediatR.csproj" />
 	</ItemGroup>
 
 </Project>

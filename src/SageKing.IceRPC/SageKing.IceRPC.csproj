@@ -16,7 +16,7 @@
 		<!--IceRpc-->
 		<PackageReference Include="IceRpc" />
 		<PackageReference Include="IceRpc.Slice" />
-		<PackageReference Include="IceRpc.Slice.Tools" PrivateAssets="All"/>
+		<PackageReference Include="IceRpc.Slice.Tools" PrivateAssets="All" />
 		<PackageReference Include="IceRpc.Retry" />
 		<PackageReference Include="IceRpc.Logger" />
 		<PackageReference Include="IceRpc.Locator" />

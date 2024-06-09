@@ -9,7 +9,7 @@ namespace SageKing.Core.Contracts;
 /// <summary>
 /// 启动优先级
 /// </summary>
-public enum HostedServicePriorityMenu
+public enum HostedServicePriorityEnum
 {
     None = 0,
     IceRPCServer = 1,

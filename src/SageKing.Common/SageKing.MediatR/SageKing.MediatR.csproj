@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<Description>
+			Provides a mediator service inspired by MediatR.
+		</Description>
+		<PackageTags>SageKing module common mediator</PackageTags>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="MediatR" />
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <ProjectReference Include="..\SageKing.Features\SageKing.Features.csproj" />
+	</ItemGroup>
+
+</Project>

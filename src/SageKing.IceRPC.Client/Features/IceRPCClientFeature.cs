@@ -28,7 +28,7 @@ public class IceRPCClientFeature : FeatureBase
     /// <inheritdoc />
     public override void ConfigureHostedServices()
     {
-        Module.ConfigureHostedService<IceRPCClientHostedService>((int)HostedServicePriorityMenu.IceRPCClient);
+        Module.ConfigureHostedService<IceRPCClientHostedService>((int)HostedServicePriorityEnum.IceRPCClient);
     }
 
     /// <inheritdoc />

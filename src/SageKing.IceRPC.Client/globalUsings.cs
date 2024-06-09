@@ -14,8 +14,11 @@ global using SageKing.Features.Abstractions;
 global using SageKing.Core.Contracts;
 
 global using SageKing.IceRPC.Client.Options;
-
+ 
+global using MediatR;
 global using IceRpc;
+global using SageKing.IceRPC.Extensions;
+global using SageKingIceRpc;
 
 global using SageKing.IceRPC.Client.Services; 
 global using SageKing.IceRPC.Client.HostedServices;

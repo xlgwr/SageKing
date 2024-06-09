@@ -2,7 +2,6 @@
 using IceRpc;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualBasic.FileIO;
-using MyClient;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -55,11 +54,11 @@ public class IceRPCClientHostedService : IHostedService, IDisposable
                     await item.Value!.ConnectAsync();
                     // Create a greeter proxy with this invocation pipeline.
                     var client = item.Value.Connection as ClientConnection;
-                    var greeter = new GreeterProxy(client!);
+                    var greeter = new ServerReceiverProxy(client!);
 
-                    string greeting = await greeter.GreetAsync(Environment.UserName);
+                    var greeting = await greeter.SendStreamPackageListAsync(Environment.UserName.GetDataStreamBody(), "send");
 
-                    _logger.LogInformation($"### StartAsync ConnectAsync：{item.Key},greeting:{greeting}");
+                    _logger.LogInformation($"### StartAsync ConnectAsync：{item.Key},greeting:{greeting.GetString()}");
                 }
             });
 

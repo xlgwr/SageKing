@@ -1,0 +1,91 @@
+module SageKingIceRPC
+
+///
+/// 通用通讯结构设计
+/// 发包，收包统一结构，无需多次更改，约定解码，快如闪电
+/// by xlgwr
+/// 
+
+/// uint8->byte 数组类型
+typealias  ByteRow = Sequence<uint8>
+typealias  ByteGroup = Sequence<ByteRow>
+
+/// 字典
+typealias  DataDic = Dictionary<string, string> 
+
+/// 实体结构
+/// 通用包 byte二进制数据 用于ice对象传输及转换
+compact struct StreamPackage
+{ 
+    /// 服务号
+    ServiceNo:int32 ,
+    /// 客户端id
+    ClientId:string , 
+    /// ice 对应uuid
+    UUID:string , 
+    /// 消息标记guid
+    MsgId:string ,
+    /// 通用错误码 主要用于返回确认
+    ErrorNo:int32,  
+    /// 通用错误码信息 主要用于返回确认	
+    ErrorInfo:string ,	
+    /// <key,value> string,string 字典 用于其它参数设置
+    HeadDic:DataDic ,
+    /// ByteGroup 每行对应的类型 DataStreamtTypeEnum，从0开始对应，通用解码映射
+    DataStreamRowType: ByteRow, 
+    /// byte[][]
+    DataStreamBody: ByteGroup,     
+}
+
+/// 数组类型 StreamPackage
+typealias  StreamPackageList = Sequence<StreamPackage>
+
+/// 实体结构
+/// 身份 基础信息
+compact struct Identity {
+    name: string
+    category: string
+}
+
+/// 接口方法 
+/// 客户端 接收 数据包
+/// 客户端 实现 服务，接收服务端推送过来的数据
+interface ClientReceiver
+{	
+	///
+	/// 客户端 接收数据包
+    /// 服务端 推送数据包
+	/// @param responseFields: 推送数据
+	/// @param msgType: 消息类型
+	/// @returns: StreamPackage
+	PushStreamPackageList(responseFields:StreamPackageList,msgType:string)-> StreamPackage
+
+	///
+    /// 注册回调对象
+	/// @param ident: 身份信息
+	/// @param type: 客户端类型
+	/// @returns: int 返回结果
+    RegClient(ident:Identity,  type:int32)->int32
+}
+
+/// 接口方法
+/// 服务端 接收 数据包
+/// 服务端 实现 服务，接收客户端发送过来的数据
+interface ServerReceiver 
+{
+	
+    ///
+    /// 客户端 发送数据包
+    /// 服务端 接收数据包
+	/// @param requestFields: 推送数据
+	/// @param msgType: 消息类型
+	/// @returns: StreamPackage
+    SendStreamPackageList(requestFields:StreamPackageList, msgType:string)->StreamPackage
+ 
+    ///
+    /// 注册回调对象
+	/// @param ident: 身份信息
+	/// @param type: 客户端类型
+	/// @returns: int 返回结果
+    RegClient(ident:Identity,  type:int32)->int32
+}

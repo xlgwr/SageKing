@@ -9,7 +9,6 @@ using IceRpc.Transports.Quic;
 using Microsoft.Extensions.Logging;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
-using MyClient;
 using Microsoft.Extensions.Options;
 using SageKing.IceRPC.Client.Extensions;
 

@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Hosting;
 using SageKing.IceRPC.Client.Options;
 using SageKing.IceRPC.Server.Options;
 using SageKing.Studio.Data;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -10,13 +12,20 @@ var configuration = builder.Configuration;
 //add SageKing
 builder.Services.AddSageKing(sageking =>
 {
+    sageking.UseIceMediatR(o => o.MediatRServiceConfiguration += a =>
+    {
+        a.RegisterServicesFromAssemblies(typeof(Program).Assembly);
+    });
+
     sageking.UseIceRPCServer(o => o.IceRPCServerOptions += options =>
     {
+
         configuration.GetSection(IceRPCServerOption.SectionName).Bind(options);
     });
 
     sageking.UseIceRPCClient(o => o.IceRPCClientOptions += options =>
     {
+
         configuration.GetSection(IceRPCClientOption.SectionName).Bind(options);
     });
 
@@ -25,6 +34,8 @@ builder.Services.AddSageKing(sageking =>
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+
+builder.Services.AddSingleton<PackagesDataService>();
 builder.Services.AddSingleton<WeatherForecastService>();
 
 var app = builder.Build();

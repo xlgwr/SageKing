@@ -9,7 +9,6 @@ using IceRpc.Transports.Quic;
 using Microsoft.Extensions.Logging;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
-using MyClient;
 using Microsoft.Extensions.Options;
 
 
@@ -21,7 +20,7 @@ public class IceRPCServer : IServer<ServerAddress>
     private readonly IceRPCServerOption _ServerOption;
     private readonly ILogger _logger;
 
-    public IceRPCServer(IOptions<IceRPCServerOption> iceRPCServerOption, ILoggerFactory loggerFactory)
+    public IceRPCServer(IOptions<IceRPCServerOption> iceRPCServerOption, ServerReceiver serverReceiver, ILoggerFactory loggerFactory)
     {
         this._ServerOption = iceRPCServerOption.Value;
 
@@ -36,7 +35,7 @@ public class IceRPCServer : IServer<ServerAddress>
         Router router = new Router()
             .UseLogger(loggerFactory)
             .UseDeadline()
-            .Map<IGreeterService>(new Chatbot());
+            .Map<IServerReceiverService>(serverReceiver);
 
         // Create a server that logs message to a logger with category `IceRpc.Server`.
         var sslServerAuthenticationOptions = new SslServerAuthenticationOptions
