@@ -8,14 +8,15 @@ namespace SageKing.Studio.Data
 {
     public class PackagesDataService
     {
-        private readonly IClientConnectionProvider<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage> _clientConnectionProvider;
+        private readonly IClientConnectionProvider<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage, Pipeline> _clientConnectionProvider;
 
         public ConcurrentDictionary<string, List<StreamPackage[]>> dataDic;
         public ConcurrentDictionary<string, ClientConnectionInfo<IConnectionContext>> dataClientDic;
 
-        public PackagesDataService(IClientConnectionProvider<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage> clientConnectionProvider)
+        public PackagesDataService(IClientConnectionProvider<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage, Pipeline> clientConnectionProvider)
         {
             dataDic = new ConcurrentDictionary<string, List<StreamPackage[]>>();
+            dataClientDic = new ConcurrentDictionary<string, ClientConnectionInfo<IConnectionContext>>();
             _clientConnectionProvider = clientConnectionProvider;
         }
 
@@ -38,7 +39,7 @@ namespace SageKing.Studio.Data
                 return await Task.FromResult(0);
             }
             var connection = dataClientDic.FirstOrDefault().Value.GetClientReceiverProxy();
-            var result = await connection.PushStreamPackageListAsync(msg.GetDataStreamBody(), "Test:Send");
+            var result = await connection.PushStreamPackageListAsync(msg.GetDataStreamBody(), "Test:Push");
             return await Task.FromResult(1);
 
         }

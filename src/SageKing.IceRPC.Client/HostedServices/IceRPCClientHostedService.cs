@@ -19,16 +19,16 @@ public class IceRPCClientHostedService : IHostedService, IDisposable
 
     private readonly ILogger _logger;
     private readonly IServiceProvider _serviceProvider;
-    private readonly Dictionary<string, IClientConnection<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage>> _clientDic;
+    private readonly Dictionary<string, IClientConnection<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage, Pipeline>> _clientDic;
 
     public IceRPCClientHostedService(IServiceProvider serviceProvider, ILoggerFactory loggerFactory, IOptions<List<IceRPCClientOption>> options)
     {
         _serviceProvider = serviceProvider;
         _logger = loggerFactory.CreateLogger<IceRPCClientHostedService>();
-        _clientDic = new Dictionary<string, IClientConnection<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage>>();
+        _clientDic = new Dictionary<string, IClientConnection<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage, Pipeline>>();
 
         var scope = _serviceProvider.CreateScope();
-        var instanceClientProvider = scope.ServiceProvider.GetRequiredService<IClientConnectionProvider<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage>>();
+        var instanceClientProvider = scope.ServiceProvider.GetRequiredService<IClientConnectionProvider<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage, Pipeline>>();
 
         foreach (var item in options.Value)
         {
@@ -55,8 +55,7 @@ public class IceRPCClientHostedService : IHostedService, IDisposable
                     // 
                     await item.Value!.ConnectAsync();
 
-                    var client = item.Value.Connection as ClientConnection;
-                    var proxy = new ServerReceiverProxy(client!);
+                    var proxy = new ServerReceiverProxy(item.Value.Pipeline);
 
                     var ident = new Identity() { Category = item.Value.Options.ClientId, Name = Guid.NewGuid().ToString("N") };
 

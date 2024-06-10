@@ -1,4 +1,6 @@
-﻿using System;
+﻿using IceRpc.Extensions.DependencyInjection;
+using SageKing.IceRPC.Client.Services.SliceService;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,7 +17,7 @@ public class IceRPCClientFeature : FeatureBase
     /// <summary>
     /// A factory that instantiates an <see cref="IClientConnectionProvider"/>.
     /// </summary>
-    public Func<IServiceProvider, IClientConnectionProvider<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage>> InstanceClientProvider { get; set; } = sp =>
+    public Func<IServiceProvider, IClientConnectionProvider<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage, Pipeline>> InstanceClientProvider { get; set; } = sp =>
     {
         return ActivatorUtilities.CreateInstance<IceRPCClientProvider>(sp);
     };
@@ -36,6 +38,7 @@ public class IceRPCClientFeature : FeatureBase
     {
         Services.Configure(IceRPCClientOptions)
             .AddSingleton(InstanceClientProvider)
+            .AddScoped<ClientReceiver>()
             .AddScoped<IceRPCClient>();
     }
 }

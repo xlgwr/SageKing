@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 
 namespace SageKing.IceRPC.Client.Services
 {
-    internal class IceRPCClientProvider : IClientConnectionProvider<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage>
+    internal class IceRPCClientProvider : IClientConnectionProvider<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage, Pipeline>
     {
-        private IDictionary<string, IClientConnection<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage>> _dics;
+        private IDictionary<string, IClientConnection<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage,Pipeline>> _dics;
 
         public IceRPCClientProvider(IServiceProvider serviceProvider, IOptions<List<IceRPCClientOption>> options)
         {
-            _dics = new Dictionary<string, IClientConnection<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage>>();
+            _dics = new Dictionary<string, IClientConnection<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage, Pipeline>>();
             if (options == null || options.Value.Count <= 0)
             {
                 return;
@@ -35,7 +35,7 @@ namespace SageKing.IceRPC.Client.Services
                 }
             }
         }
-        public IClientConnection<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage> GetClientConnection(string servername)
+        public IClientConnection<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage, Pipeline> GetClientConnection(string servername)
         {
             if (_dics.TryGetValue(servername, out var client))
             {

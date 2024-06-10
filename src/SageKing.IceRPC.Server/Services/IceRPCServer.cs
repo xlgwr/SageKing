@@ -43,6 +43,9 @@ public class IceRPCServer : IServer<ServerAddress, StreamPackage>
         Router router = new Router()
             .UseLogger(loggerFactory)
             .UseDeadline()
+            .UseDispatchInformation()
+            .UseMetrics()
+            .UseRequestContext()
             .Map<IServerReceiverService>(serverReceiver);
 
         // Create a server that logs message to a logger with category `IceRpc.Server`.

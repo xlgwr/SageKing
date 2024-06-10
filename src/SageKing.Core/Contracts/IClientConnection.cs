@@ -12,9 +12,10 @@ namespace SageKing.Core.Contracts;
 /// <typeparam name="C">ClientConnection</typeparam>
 /// <typeparam name="P">IceRPCClientOption</typeparam>
 /// <typeparam name="T">StreamPackage</typeparam>
-public interface IClientConnection<C, P, T> : IDisposable
+public interface IClientConnection<C, P, T, L> : IDisposable
 {
     public C Connection { get; }
+    public L Pipeline { get; }
     public P Options { get; }
     public void InitClient(P options);
     public Task ConnectAsync(CancellationToken cancellationToken = default(CancellationToken));

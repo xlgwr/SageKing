@@ -12,8 +12,9 @@ namespace SageKing.Core.Contracts;
 /// <typeparam name="C">ClientConnection</typeparam>
 /// <typeparam name="P">IceRPCClientOption</typeparam>
 /// <typeparam name="T">StreamPackage</typeparam>
-public interface IClientConnectionProvider<C, P, T>
+/// <typeparam name="L">Pipeline</typeparam>
+public interface IClientConnectionProvider<C, P, T, L>
 {
-    public IClientConnection<C, P, T> GetClientConnection(string servername);
+    public IClientConnection<C, P, T, L> GetClientConnection(string servername);
 
 }
