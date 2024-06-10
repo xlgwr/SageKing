@@ -1,6 +1,7 @@
 ﻿using IceRpc.Features;
 using IceRpc.Slice;
 using Microsoft.Extensions.Logging;
+using SageKing.Features.Contracts;
 using SageKing.IceRPC.EventMessage;
 using SageKing.IceRPC.Extensions;
 using System;

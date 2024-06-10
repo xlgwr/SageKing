@@ -12,6 +12,8 @@ using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.Options;
 using SageKing.IceRPC.Client.Extensions;
 using SageKing.IceRPC.Client.Services.SliceService;
+using SageKing.Core.Options;
+using SageKing.IceRPC.IceFeatures;
 
 namespace SageKing.IceRPC.Client.Services
 {
@@ -19,11 +21,11 @@ namespace SageKing.IceRPC.Client.Services
     {
         private IceRpc.ClientConnection _client;
         private Pipeline _pipeline;
-        private IceRPCClientOption _clientOption;
+        private IceRPCClientOption _option;
 
         public IceRpc.ClientConnection Connection { get => _client; }
 
-        public IceRPCClientOption Options { get => _clientOption; }
+        public IceRPCClientOption Options { get => _option; }
 
         public Pipeline Pipeline { get => _pipeline; }
 
@@ -37,50 +39,86 @@ namespace SageKing.IceRPC.Client.Services
             _client?.DisposeAsync();
         }
 
-        public void InitClient(IceRPCClientOption options)
+        public void InitClient(IceRPCClientOption option)
         {
-            if (options == null)
+            if (option == null)
             {
-                throw new ArgumentException(nameof(options));
+                throw new ArgumentException(nameof(option));
             }
-            _clientOption = options;
+            _option = option;
 
             //router
-            Router router = new Router()
+            var router = new Router()
                 .UseLogger(loggerFactory)
-                .UseRequestContext()
-                .UseDispatchInformation()
-                .UseMetrics()
-                .Map<IClientReceiverService>(clientReceiver);
+                .UseDispatchInformation();
 
-            // Path to the root CA certificate.
-            using var rootCA = new X509Certificate2(_clientOption.ServerCertificateFileName);
-
-            // Create Client authentication options with custom certificate validation.
-            var clientAuthenticationOptions = new SslClientAuthenticationOptions
+            #region use set
+            if (_option.UseCompressor)
             {
-                RemoteCertificateValidationCallback = rootCA.CreateCustomRootRemoteValidator()
-            };
+                router = router.UseCompressor(CompressionFormat.Brotli);
+            }
+            if (_option.UseMetrics)
+            {
+                router = router.UseMetrics();
+            }
+            if (_option.UseRequestContext)
+            {
+                router = router.UseRequestContext();
+            }
+            #endregion
+
+            router = router.Map<IClientReceiverService>(clientReceiver);
 
             //option
             var clientOption = new ClientConnectionOptions
             {
-                ServerAddress = new ServerAddress(new Uri(_clientOption.ServerAddress)),
-                Dispatcher = router,
-                ClientAuthenticationOptions = clientAuthenticationOptions
+                ServerAddress = new ServerAddress(new Uri(_option.ServerAddress)),
+                Dispatcher = router
             };
 
+            if (_option.IsQuic || _option.IsTcpTLS)
+            {
+                // Path to the root CA certificate.
+                var rootCA = new X509Certificate2(_option.CertificateFileName);
+
+                // Create Client authentication options with custom certificate validation.
+                var clientAuthenticationOptions = new SslClientAuthenticationOptions
+                {
+                    RemoteCertificateValidationCallback = rootCA.CreateCustomRootRemoteValidator()
+                };
+
+                clientOption.ClientAuthenticationOptions = clientAuthenticationOptions;
+            }
+
             // Create a client connection that logs messages to a logger with category IceRpc.ClientConnection.
-            _client = new ClientConnection(
-                clientOption,
-                multiplexedClientTransport: new QuicClientTransport(),
-                logger: loggerFactory.CreateLogger<ClientConnection>());
+            if (_option.IsQuic)
+            {
+                _client = new ClientConnection(
+                                            clientOption,
+                                            multiplexedClientTransport: new QuicClientTransport(),
+                                            logger: loggerFactory.CreateLogger<ClientConnection>()
+                );
+            }
+            else if (_option.IsTcpTLS)
+            {
+                _client = new ClientConnection(
+                                            clientOption,
+                                            logger: loggerFactory.CreateLogger<ClientConnection>()
+                );
+            }
+            else
+            {
+                _client = new ClientConnection(
+                                           clientOption,
+                                           logger: loggerFactory.CreateLogger<ClientConnection>()
+               );
+            }
 
             // Create an invocation pipeline with two interceptors.
             _pipeline = new Pipeline()
                 .UseLogger(loggerFactory)
-                .UseDeadline(_clientOption.Timeout)
-                .Into(_client);
+                .UseDeadline(TimeSpan.FromSeconds(_option.Timeout))
+                .Into(_client); 
         }
 
         public async Task<StreamPackage> SendStreamPackageListAsync(IEnumerable<StreamPackage> param, string msg, CancellationToken cancellationToken = default)

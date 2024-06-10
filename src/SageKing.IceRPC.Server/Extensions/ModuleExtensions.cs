@@ -28,7 +28,7 @@ public static class ModuleExtensions
         {
             o.ServerAddress = serverAddress;
             o.IsQuic = isQuic;
-            o.ServerCertificateFileName = sslFileName;
+            o.CertificateFileName = sslFileName;
         });
         return module;
     }

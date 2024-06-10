@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SageKing.Core.Options;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -22,8 +23,14 @@ public record class ClientConnectionInfo<T>
     public string LoginDateTime { get; set; }
     public bool IsLogin { get; set; }
     public string Ver { get; set; }
+    //public IceBaseOptions Option { get; set; }
     public ClientType ClientType { get; set; }
     public string UserType { get; set; }
+    /// <summary>
+    /// 主用于对比是否同一连接
+    /// guid
+    /// </summary>
+    public string IceProxyId { get; set; }
 
     private Dictionary<string, string> _userDic = new Dictionary<string, string>();
     public Dictionary<string, string> UserDic
@@ -41,11 +48,6 @@ public record class ClientConnectionInfo<T>
             return $"{RemoteAddress}";
         }
     }
-    /// <summary>
-    /// 主用于对比是否同一连接
-    /// guid
-    /// </summary>
-    public string IceProxyId { get; set; }
 
     public override string ToString()
     {

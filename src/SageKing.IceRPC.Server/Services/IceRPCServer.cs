@@ -18,7 +18,7 @@ public class IceRPCServer : IServer<ServerAddress, StreamPackage>
 {
     private IceRpc.Server _server;
     private readonly ILogger _logger;
-    private readonly IceRPCServerOption _ServerOption;
+    private readonly IceRPCServerOption _option;
     private readonly ClientConnectionInfoManagement _connectionInfoManagement;
 
     public IceRPCServer(
@@ -28,7 +28,7 @@ public class IceRPCServer : IServer<ServerAddress, StreamPackage>
         ILoggerFactory loggerFactory)
     {
 
-        _ServerOption = iceRPCServerOption.Value;
+        _option = iceRPCServerOption.Value;
         _logger = loggerFactory.CreateLogger<IceRpc.Server>();
         _connectionInfoManagement = connectionInfoManagement;
 
@@ -43,23 +43,61 @@ public class IceRPCServer : IServer<ServerAddress, StreamPackage>
         Router router = new Router()
             .UseLogger(loggerFactory)
             .UseDeadline()
-            .UseDispatchInformation()
-            .UseMetrics()
-            .UseRequestContext()
-            .Map<IServerReceiverService>(serverReceiver);
+            .UseDispatchInformation();
+
+        #region use set
+
+        if (_option.UseCompressor)
+        {
+            router = router.UseCompressor(CompressionFormat.Brotli);
+        }
+        if (_option.UseMetrics)
+        {
+            router = router.UseMetrics();
+        }
+        if (_option.UseRequestContext)
+        {
+            router = router.UseRequestContext();
+        }
+        #endregion
+
+        router = router.Map<IServerReceiverService>(serverReceiver);
 
         // Create a server that logs message to a logger with category `IceRpc.Server`.
-        var sslServerAuthenticationOptions = new SslServerAuthenticationOptions
+        if (_option.IsQuic || _option.IsTcpTLS)
         {
-            ServerCertificate = new X509Certificate2(_ServerOption.ServerCertificateFileName)
-        };
+            var sslServerAuthenticationOptions = new SslServerAuthenticationOptions
+            {
+                ServerCertificate = new X509Certificate2(_option.CertificateFileName)
+            };
 
-        _server = new IceRpc.Server(
-           router,
-           new Uri(_ServerOption.ServerAddress),
-           sslServerAuthenticationOptions,
-           multiplexedServerTransport: new QuicServerTransport(),
-           logger: _logger);
+            if (_option.IsQuic)
+            {
+                _server = new IceRpc.Server(
+                                  router,
+                                  new Uri(_option.ServerAddress),
+                                  sslServerAuthenticationOptions,
+                                  multiplexedServerTransport: new QuicServerTransport(),
+                                  logger: _logger);
+            }
+            else
+            {
+                _server = new IceRpc.Server(
+                                  router,
+                                  new Uri(_option.ServerAddress),
+                                  sslServerAuthenticationOptions,
+                                  logger: _logger);
+            }
+
+        }
+        else
+        {
+            _server = new IceRpc.Server(
+                               router,
+                               new Uri(_option.ServerAddress),
+                               logger: _logger);
+        }
+
     }
 
     public ServerAddress Listen()
