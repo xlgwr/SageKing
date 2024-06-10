@@ -12,6 +12,7 @@ global using SageKing.Features.Implementations;
 global using SageKing.Features.Abstractions;
 
 global using SageKing.Core.Contracts;
+global using SageKing.Core.EventMessage;
 
 global using SageKing.IceRPC.Server.Options;
 

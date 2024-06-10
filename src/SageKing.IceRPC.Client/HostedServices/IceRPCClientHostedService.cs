@@ -17,28 +17,28 @@ namespace SageKing.IceRPC.Client.HostedServices;
 public class IceRPCClientHostedService : IHostedService, IDisposable
 {
 
-    private readonly IServiceProvider _serviceProvider;
-    private readonly Dictionary<string, IClientConnection<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage>> _client;
     private readonly ILogger _logger;
+    private readonly IServiceProvider _serviceProvider;
+    private readonly Dictionary<string, IClientConnection<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage>> _clientDic;
 
     public IceRPCClientHostedService(IServiceProvider serviceProvider, ILoggerFactory loggerFactory, IOptions<List<IceRPCClientOption>> options)
     {
         _serviceProvider = serviceProvider;
         _logger = loggerFactory.CreateLogger<IceRPCClientHostedService>();
+        _clientDic = new Dictionary<string, IClientConnection<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage>>();
 
-        using var scope = _serviceProvider.CreateScope();
+        var scope = _serviceProvider.CreateScope();
         var instanceClientProvider = scope.ServiceProvider.GetRequiredService<IClientConnectionProvider<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage>>();
 
-        _client = new Dictionary<string, IClientConnection<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage>>();
         foreach (var item in options.Value)
         {
-            _client[item.ServerName] = instanceClientProvider.GetClientConnection(item.ServerName);
+            _clientDic[item.ServerName] = instanceClientProvider.GetClientConnection(item.ServerName);
         }
     }
 
     public void Dispose()
     {
-        foreach (var item in _client)
+        foreach (var item in _clientDic)
         {
             item.Value?.Dispose();
         }
@@ -46,19 +46,27 @@ public class IceRPCClientHostedService : IHostedService, IDisposable
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        _logger.LogInformation($"### StartAsync ConnectAsync->Clients:{_client.Count}");
+        _logger.LogInformation($"### StartAsync ConnectAsync->Clients:{_clientDic.Count}");
+
         return Task.Run(async () =>
             {
-                foreach (var item in _client)
+                foreach (var item in _clientDic)
                 {
+                    // 
                     await item.Value!.ConnectAsync();
-                    // Create a greeter proxy with this invocation pipeline.
+
                     var client = item.Value.Connection as ClientConnection;
-                    var greeter = new ServerReceiverProxy(client!);
+                    var proxy = new ServerReceiverProxy(client!);
 
-                    var greeting = await greeter.SendStreamPackageListAsync($"Hello:Server,My Name->{Environment.UserName}".GetDataStreamBody(), "send");
+                    var ident = new Identity() { Category = item.Value.Options.ClientId, Name = Guid.NewGuid().ToString("N") };
 
-                    _logger.LogInformation($"### StartAsync ConnectAsync：{item.Key},greeting:{greeting.GetString()}");
+                    //注册客户端
+                    var reg = await proxy.RegClientAsync(ident, item.Value.Options.ClientType);
+
+                    //发送hello
+                    var result = await proxy.SendStreamPackageListAsync($"Hello:Server,My Name->{Environment.UserName}".GetDataStreamBody(), "send");
+
+                    _logger.LogInformation($"### StartAsync ConnectAsync：{item.Key},greeting:{result.GetString()}");
                 }
             });
 
@@ -66,12 +74,15 @@ public class IceRPCClientHostedService : IHostedService, IDisposable
 
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        _logger.Log(LogLevel.Information, $"StopAsync->ShutdownAsync->Clients:{_client.Count}");
-        foreach (var item in _client)
+        _logger.Log(LogLevel.Information, $"StopAsync->ShutdownAsync->Clients:{_clientDic.Count}");
+
+        foreach (var item in _clientDic)
         {
             item.Value!.ShutdownAsync();
+
             _logger.LogInformation($"### StopAsync->ShutdownAsync：{item.Key}");
         }
+
         return Task.CompletedTask;
     }
 }

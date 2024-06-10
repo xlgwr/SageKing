@@ -17,12 +17,20 @@ namespace SageKing.IceRPC.Server.Services;
 public class IceRPCServer : IServer<ServerAddress, StreamPackage>
 {
     private IceRpc.Server _server;
-    private readonly IceRPCServerOption _ServerOption;
     private readonly ILogger _logger;
+    private readonly IceRPCServerOption _ServerOption;
+    private readonly ClientConnectionInfoManagement _connectionInfoManagement;
 
-    public IceRPCServer(IOptions<IceRPCServerOption> iceRPCServerOption, ServerReceiver serverReceiver, ILoggerFactory loggerFactory)
+    public IceRPCServer(
+        IOptions<IceRPCServerOption> iceRPCServerOption,
+        ClientConnectionInfoManagement connectionInfoManagement,
+        ServerReceiver serverReceiver,
+        ILoggerFactory loggerFactory)
     {
-        this._ServerOption = iceRPCServerOption.Value;
+
+        _ServerOption = iceRPCServerOption.Value;
+        _logger = loggerFactory.CreateLogger<IceRpc.Server>();
+        _connectionInfoManagement = connectionInfoManagement;
 
         // Create a simple console logger factory and configure the log level for category IceRpc.
         //using ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
@@ -43,14 +51,12 @@ public class IceRPCServer : IServer<ServerAddress, StreamPackage>
             ServerCertificate = new X509Certificate2(_ServerOption.ServerCertificateFileName)
         };
 
-        _logger = loggerFactory.CreateLogger<IceRpc.Server>();
-
-        this._server = new IceRpc.Server(
-         router,
-         new Uri(_ServerOption.ServerAddress),
-         sslServerAuthenticationOptions,
-         multiplexedServerTransport: new QuicServerTransport(),
-         logger: _logger);
+        _server = new IceRpc.Server(
+           router,
+           new Uri(_ServerOption.ServerAddress),
+           sslServerAuthenticationOptions,
+           multiplexedServerTransport: new QuicServerTransport(),
+           logger: _logger);
     }
 
     public ServerAddress Listen()
@@ -72,13 +78,8 @@ public class IceRPCServer : IServer<ServerAddress, StreamPackage>
         _server?.DisposeAsync();
     }
 
-    public Task<StreamPackage> PushStreamPackageListAsync(IEnumerable<StreamPackage> param, string msg, string connectionId, CancellationToken cancellationToken = default)
+    public bool PushStreamPackageListAsync(IEnumerable<StreamPackage> param, string msg, string connectionId, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
-    }
-
-    public Task<StreamPackage> PushStreamPackageListAsync(IEnumerable<StreamPackage> param, string msg, CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException();
+        return _connectionInfoManagement.PushStreamPackageListAsync(param, msg, connectionId, cancellationToken);
     }
 }

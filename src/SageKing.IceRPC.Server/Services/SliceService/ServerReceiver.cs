@@ -5,6 +5,7 @@ using SageKing.IceRPC.EventMessage;
 using SageKing.IceRPC.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,7 +13,10 @@ using System.Threading.Tasks;
 namespace SageKing.IceRPC.Server.Services.SliceService;
 
 [SliceService]
-public partial class ServerReceiver(IMediator mediator, ILoggerFactory loggerFactory) : IServerReceiverService
+public partial class ServerReceiver(
+    ClientConnectionInfoManagement connectionInfoManagement,
+    IMediator mediator,
+    ILoggerFactory loggerFactory) : IServerReceiverService
 {
 
     ILogger logger = loggerFactory.CreateLogger<ServerReceiver>();
@@ -37,8 +41,20 @@ public partial class ServerReceiver(IMediator mediator, ILoggerFactory loggerFac
         var rsp = serverNo.GetStreamPackage(-1, "SendStreamPackageListAsync 没有关联注册服务ServerReceiverIRequest处理方法!");
         return rsp;
     }
+
     public ValueTask<int> RegClientAsync(Identity ident, int type, IFeatureCollection features, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        logger.LogInformation($"RegClientAsync:{ident},{type}");
+
+        IDispatchInformationFeature dispatch = features.Get<IDispatchInformationFeature>();
+
+        Debug.Assert(dispatch != null);
+
+        var remoteAddress = dispatch.ConnectionContext.TransportConnectionInformation.RemoteNetworkAddress;
+
+        string iceproxyid = Guid.NewGuid().ToString();
+
+        return new ValueTask<int>(connectionInfoManagement.AddClientConnectionInfo(ident.Category, ident.Name, remoteAddress, type, dispatch.ConnectionContext, iceproxyid));
+
     }
 }

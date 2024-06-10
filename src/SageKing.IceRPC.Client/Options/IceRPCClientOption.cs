@@ -15,6 +15,14 @@ public class IceRPCClientOption : ISectionOptions
     /// 服务器名称(唯一性）
     /// </summary>
     public string ServerName { get; set; } = string.Empty;
+
+    public string ClientId { get; set; } = string.Empty;
+
+    /// <summary>
+    /// see <ref>ClientType</ref>
+    /// </summary>
+    public int ClientType { get; set; }
+
     /// <summary>
     /// Server address
     /// protocol://host[:port][?name=value][&name=value...]

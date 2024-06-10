@@ -21,6 +21,8 @@ namespace SageKing.IceRPC.Client.Services
 
         public IceRpc.ClientConnection Connection { get => _client; }
 
+        public IceRPCClientOption Options { get => _clientOption; }
+
         public Task ConnectAsync(CancellationToken cancellationToken = default)
         {
             return _client.ConnectAsync(cancellationToken);

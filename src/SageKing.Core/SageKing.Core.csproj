@@ -11,11 +11,6 @@
 		<PackageTags>SageKing module Core</PackageTags>
 	</PropertyGroup>
 
-  <ItemGroup>
-    <Folder Include="EventMessage\" />
-    <Folder Include="Extensions\" />
-  </ItemGroup>
-
 	<ItemGroup>
 		<PackageReference Include="NewId" />
 		<PackageReference Include="ShortGuid" />

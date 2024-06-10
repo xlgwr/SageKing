@@ -39,6 +39,7 @@ public class IceRPCServerFeature : FeatureBase
         Services.Configure(IceRPCServerOptions)
             .AddSingleton(InstanceServerProvider)
             .AddSingleton<ServerReceiver>()
+            .AddSingleton<ClientConnectionInfoManagement>()
             .AddSingleton<IceRPCServer>();
 
     }

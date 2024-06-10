@@ -11,14 +11,10 @@ namespace SageKing.Core.Contracts
     /// </summary>
     /// <typeparam name="A">ServerAddress</typeparam>
     /// <typeparam name="T">StreamPackage</typeparam>
-    public interface IServer<A, T> : IDisposable
+    public interface IServer<A, T> : IPushPackage<T>, IDisposable
     {
         public A Listen();
 
         public Task ShutdownAsync(CancellationToken cancellationToken = default(CancellationToken));
-
-        public Task<T> PushStreamPackageListAsync(IEnumerable<T> param, string msg, string connectionId, CancellationToken cancellationToken = default(CancellationToken));
-
-        public Task<T> PushStreamPackageListAsync(IEnumerable<T> param, string msg, CancellationToken cancellationToken = default(CancellationToken));
     }
 }
