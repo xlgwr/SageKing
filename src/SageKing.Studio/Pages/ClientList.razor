@@ -1,0 +1,59 @@
+﻿@page "/ClientList"
+
+<PageTitle>ClientList</PageTitle>
+
+@using SageKing.Studio.Data
+@using System.Collections.Concurrent
+
+@inject PackagesDataService dataService
+
+<h1>ClientList</h1>
+
+<p>ClientList</p>
+<div>
+    <label>推送信息</label>
+    <input type="text" @bind="Message" width="200" />
+    <button @onclick="Send">推送</button>
+</div>
+@if (dic == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ConnectionId</th>
+                <th>Message</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in dic)
+            {
+                <tr>
+                    <td>@item.Key</td>
+                    <td>@item.Value.ToString()</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private ConcurrentDictionary<string, ClientConnectionInfo<IConnectionContext>>? dic;
+
+    private string Message = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        dic = dataService.dataClientDic;
+        await base.OnInitializedAsync();
+    }
+    private async void Send()
+    {
+        var result = await dataService.PushMsg(Message);
+
+        StateHasChanged();
+    }
+}

@@ -35,7 +35,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SageKing.Management", "Sage
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SageKing", "SageKing\SageKing.csproj", "{B3612DA0-A60A-4D0F-9C79-C1FAFD16B814}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SageKing.MediatR", "SageKing.Common\SageKing.MediatR\SageKing.MediatR.csproj", "{06A7E516-E44E-4CA6-AA94-34344BC4DAD2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SageKing.MediatR", "SageKing.Common\SageKing.MediatR\SageKing.MediatR.csproj", "{06A7E516-E44E-4CA6-AA94-34344BC4DAD2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
