@@ -38,7 +38,7 @@ public class IceRPCClientFeature : FeatureBase
     {
         Services.Configure(IceRPCClientOptions)
             .AddSingleton(InstanceClientProvider)
-            .AddScoped<ClientReceiver>()
-            .AddScoped<IceRPCClient>();
+            .AddTransient<ClientReceiver>()
+            .AddTransient<IceRPCClient>();
     }
 }

@@ -59,11 +59,12 @@ public class IceRPCClientHostedService : IHostedService, IDisposable
 
                     var ident = new Identity() { Category = item.Value.Options.ClientId, Name = Guid.NewGuid().ToString("N") };
 
+
                     //注册客户端
                     var reg = await proxy.RegClientAsync(ident, item.Value.Options.ClientType);
 
                     //发送hello
-                    var result = await proxy.SendStreamPackageListAsync($"Hello:Server,My Name->{Environment.UserName}".GetDataStreamBody(), "send");
+                    var result = await proxy.SendStreamPackageListAsync($"Hello:Server,{item.Key},My Name->{ident.Category}:{Environment.UserName}".GetDataStreamBody(), "send");
 
                     _logger.LogInformation($"### StartAsync ConnectAsync：{item.Key},greeting:{result.GetString()}");
                 }
