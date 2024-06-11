@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,24 +11,25 @@ namespace SageKing.Core.Contracts;
 /// <summary>
 /// 
 /// </summary>
-/// <typeparam name="T">IConnectionContext</typeparam>
-public interface IClientConnectionInfoManagement<T, B> : IPushPackage<B>, IDisposable
+/// <typeparam name="TconnContext">IConnectionContext</typeparam>
+/// <typeparam name="Tpackage">StreamPackage</typeparam>
+public interface IClientConnectionInfoManagement<TconnContext, Tpackage, Tidentity> : IPushPackage<Tpackage>, IDisposable
 {
 
-    public List<ClientConnectionInfo<T>> GetClientConnectionList(ClientType type);
+    public List<ClientConnectionInfo<TconnContext>> GetClientConnectionList(ClientType type);
 
-    public Dictionary<string, ClientConnectionInfo<T>> GetClientConnectionDic();
+    public Dictionary<string, ClientConnectionInfo<TconnContext>> GetClientConnectionDic();
 
-    public ClientConnectionInfo<T> GetClientConnectionByConnectId(string connectId);
+    public ClientConnectionInfo<TconnContext> GetClientConnectionByConnectId(string connectId);
 
     /// <summary>
     /// $"{info.ClientId}:{info.ClientType}"
     /// </summary>
     /// <param name="idAndType"></param>
     /// <returns></returns>
-    public ClientConnectionInfo<T> GetClientConnectionByConnectIdAndType(string idAndType);
+    public ClientConnectionInfo<TconnContext> GetClientConnectionByConnectIdAndType(string idAndType);
 
-    public int AddClientConnectionInfo(string clientId, string connectionId, EndPoint remteAddress, int type, T conn, string iceProxyId);
+    public int AddClientConnectionInfo(Tidentity identity, EndPoint remteAddress, TconnContext conn, string iceProxyId);
 
     public void RemoveClientConnectionInfo(string connectionId, string iceProxyId = "");
 

@@ -16,7 +16,7 @@ namespace SageKing.IceRPC.Server.Services
     /// <summary>
     /// 客户端连接管理
     /// </summary>
-    public class ClientConnectionInfoManagement : IClientConnectionInfoManagement<IConnectionContext, StreamPackage>
+    public class ClientConnectionInfoManagement : IClientConnectionInfoManagement<IConnectionContext, StreamPackage, Identity>
     {
         private readonly ILogger logger;
         private readonly IMediator _mediator;
@@ -32,10 +32,14 @@ namespace SageKing.IceRPC.Server.Services
             _clientsDic = new ConcurrentDictionary<string, ClientConnectionInfo<IConnectionContext>>();
         }
 
-        public int AddClientConnectionInfo(string clientId, string connectionId, EndPoint remteAddress, int type, IConnectionContext conn, string iceProxyId)
+        public int AddClientConnectionInfo(Identity identity, EndPoint remteAddress, IConnectionContext conn, string iceProxyId)
         {
             lock (_lock)
             {
+                string connectionId = identity.Guid;
+                string clientId = identity.Name;
+                int type = identity.Type;
+
                 if (_clientsDic.TryGetValue(connectionId, out var oldInfo))
                 {
                     //清理旧对象

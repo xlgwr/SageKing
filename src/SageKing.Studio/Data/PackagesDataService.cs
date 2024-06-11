@@ -8,12 +8,12 @@ namespace SageKing.Studio.Data
 {
     public class PackagesDataService
     {
-        private readonly IClientConnectionProvider<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage, Pipeline> _clientConnectionProvider;
+        private readonly IClientConnectionProvider<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage, Pipeline, Identity> _clientConnectionProvider;
 
         public ConcurrentDictionary<string, List<StreamPackage[]>> dataDic;
         public ConcurrentDictionary<string, ClientConnectionInfo<IConnectionContext>> dataClientDic;
 
-        public PackagesDataService(IClientConnectionProvider<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage, Pipeline> clientConnectionProvider)
+        public PackagesDataService(IClientConnectionProvider<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage, Pipeline, Identity> clientConnectionProvider)
         {
             dataDic = new ConcurrentDictionary<string, List<StreamPackage[]>>();
             dataClientDic = new ConcurrentDictionary<string, ClientConnectionInfo<IConnectionContext>>();
@@ -32,14 +32,17 @@ namespace SageKing.Studio.Data
 
         }
 
-        public async Task<int> PushMsg(string msg, string serverName = "server1")
+        public async Task<int> PushMsg(string msg, string connectionid)
         {
             if (string.IsNullOrEmpty(msg))
             {
                 return await Task.FromResult(0);
             }
-            var connection = dataClientDic.FirstOrDefault().Value.GetClientReceiverProxy();
-            var result = await connection.PushStreamPackageListAsync(msg.GetDataStreamBody(), "Test:Push");
+            if (dataClientDic.TryGetValue(connectionid, out var client))
+            {
+                var connection = client.GetClientReceiverProxy();
+                var result = await connection.PushStreamPackageListAsync(msg.GetDataStreamBody(), $"Test:Push->{client.ClientId}");
+            }
             return await Task.FromResult(1);
 
         }

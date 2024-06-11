@@ -17,17 +17,20 @@ using SageKing.IceRPC.IceFeatures;
 
 namespace SageKing.IceRPC.Client.Services
 {
-    public class IceRPCClient(ClientReceiver clientReceiver, ILoggerFactory loggerFactory) : IClientConnection<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage, Pipeline>
+    public class IceRPCClient(ClientReceiver clientReceiver, ILoggerFactory loggerFactory) : IClientConnection<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage, Pipeline, Identity>
     {
-        private IceRpc.ClientConnection _client;
         private Pipeline _pipeline;
+        private Identity _Identity;
         private IceRPCClientOption _option;
+        private IceRpc.ClientConnection _client;
 
         public IceRpc.ClientConnection Connection { get => _client; }
 
         public IceRPCClientOption Options { get => _option; }
 
         public Pipeline Pipeline { get => _pipeline; }
+
+        public Identity  Identity { get => _Identity; }
 
         public Task ConnectAsync(CancellationToken cancellationToken = default)
         {
@@ -37,6 +40,11 @@ namespace SageKing.IceRPC.Client.Services
         public void Dispose()
         {
             _client?.DisposeAsync();
+        }
+
+        public Identity GetIdentity()
+        {
+            throw new NotImplementedException();
         }
 
         public void InitClient(IceRPCClientOption option)
@@ -118,7 +126,16 @@ namespace SageKing.IceRPC.Client.Services
             _pipeline = new Pipeline()
                 .UseLogger(loggerFactory)
                 .UseDeadline(TimeSpan.FromSeconds(_option.Timeout))
-                .Into(_client); 
+                .Into(_client);
+            
+            //生成身份信息
+            _Identity = new Identity()
+            {
+                Guid = Guid.NewGuid().ToString("N"),
+                Name = _option.ClientId,
+                Type = _option.ClientType
+            };
+
         }
 
         public async Task<StreamPackage> SendStreamPackageListAsync(IEnumerable<StreamPackage> param, string msg, CancellationToken cancellationToken = default)

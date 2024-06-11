@@ -37,13 +37,11 @@ public partial interface IClientReceiver
 
     /// <summary>注册回调对象</summary>
     /// <param name="ident">身份信息</param>
-    /// <param name="type">客户端类型</param>
     /// <param name="features">The invocation features.</param>
     /// <param name="cancellationToken">A cancellation token that receives the cancellation requests.</param>
     /// <returns>int 返回结果</returns>
     global::System.Threading.Tasks.Task<int> RegClientAsync(
         Identity ident,
-        int type,
         IceRpc.Features.IFeatureCollection? features = null,
         global::System.Threading.CancellationToken cancellationToken = default);
 }
@@ -87,14 +85,12 @@ public readonly partial record struct ClientReceiverProxy : IClientReceiver, IPr
             return pipe_.Reader;
         }
 
-        /// <summary>Encodes the arguments of operation <c>RegClient</c> into a request payload.</summary>
+        /// <summary>Encodes the argument of operation <c>RegClient</c> into a request payload.</summary>
         /// <param name="ident">身份信息</param>
-        /// <param name="type">客户端类型</param>
         /// <param name="encodeOptions">The Slice encode options.</param>
         /// <returns>The payload encoded with <see cref="SliceEncoding.Slice2" />.</returns>
         public static global::System.IO.Pipelines.PipeReader EncodeRegClient(
             Identity ident,
-            int type,
             SliceEncodeOptions? encodeOptions = null)
         {
             var pipe_ = new global::System.IO.Pipelines.Pipe(
@@ -105,7 +101,6 @@ public readonly partial record struct ClientReceiverProxy : IClientReceiver, IPr
             int startPos_ = encoder_.EncodedByteCount;
 
             ident.Encode(ref encoder_);
-            encoder_.EncodeInt32(type);
             encoder_.EncodeVarInt32(Slice2Definitions.TagEndMarker);
 
             SliceEncoder.EncodeVarUInt62((ulong)(encoder_.EncodedByteCount - startPos_), sizePlaceholder_);
@@ -218,12 +213,11 @@ public readonly partial record struct ClientReceiverProxy : IClientReceiver, IPr
     /// <inheritdoc/>
     public global::System.Threading.Tasks.Task<int> RegClientAsync(
         Identity ident,
-        int type,
         IceRpc.Features.IFeatureCollection? features = null,
         global::System.Threading.CancellationToken cancellationToken = default) =>
         this.InvokeAsync(
             "RegClient",
-            Request.EncodeRegClient(ident, type, encodeOptions: EncodeOptions),
+            Request.EncodeRegClient(ident, encodeOptions: EncodeOptions),
             payloadContinuation: null,
             Response.DecodeRegClientAsync,
             features,
@@ -284,17 +278,12 @@ public partial interface IClientReceiverService
         /// <summary>Decodes the request payload of operation <c>RegClient</c>.</summary>
         /// <param name="request">The incoming request.</param>
         /// <param name="cancellationToken">A cancellation token that receives the cancellation requests.</param>
-        public static global::System.Threading.Tasks.ValueTask<(Identity Ident, int Type)> DecodeRegClientAsync(
+        public static global::System.Threading.Tasks.ValueTask<Identity> DecodeRegClientAsync(
             IceRpc.IncomingRequest request,
             global::System.Threading.CancellationToken cancellationToken) =>
             request.DecodeArgsAsync(
                 SliceEncoding.Slice2,
-                (ref SliceDecoder decoder) =>
-                {
-                    var sliceP_ident = new Identity(ref decoder);
-                    var sliceP_type = decoder.DecodeInt32();
-                    return (sliceP_ident, sliceP_type);
-                },
+                (ref SliceDecoder decoder) => new Identity(ref decoder),
                 defaultActivator: null,
                 cancellationToken);
     }
@@ -367,13 +356,11 @@ public partial interface IClientReceiverService
 
     /// <summary>注册回调对象</summary>
     /// <param name="ident">身份信息</param>
-    /// <param name="type">客户端类型</param>
     /// <param name="features">The dispatch features.</param>
     /// <param name="cancellationToken">A cancellation token that receives the cancellation requests.</param>
     /// <returns>int 返回结果</returns>
     public global::System.Threading.Tasks.ValueTask<int> RegClientAsync(
         Identity ident,
-        int type,
         IceRpc.Features.IFeatureCollection features,
         global::System.Threading.CancellationToken cancellationToken);
 
@@ -402,8 +389,8 @@ public partial interface IClientReceiverService
         global::System.Threading.CancellationToken cancellationToken)
     {
         request.CheckNonIdempotent();
-        var args = await Request.DecodeRegClientAsync(request, cancellationToken).ConfigureAwait(false);
-        var returnValue = await target.RegClientAsync(args.Ident, args.Type, request.Features, cancellationToken).ConfigureAwait(false);
+        var sliceP_ident = await Request.DecodeRegClientAsync(request, cancellationToken).ConfigureAwait(false);
+        var returnValue = await target.RegClientAsync(sliceP_ident, request.Features, cancellationToken).ConfigureAwait(false);
         return new IceRpc.OutgoingResponse(request)
         {
             Payload = Response.EncodeRegClient(returnValue, request.Features.Get<ISliceFeature>()?.EncodeOptions),
@@ -434,13 +421,11 @@ public partial interface IServerReceiver
 
     /// <summary>注册回调对象</summary>
     /// <param name="ident">身份信息</param>
-    /// <param name="type">客户端类型</param>
     /// <param name="features">The invocation features.</param>
     /// <param name="cancellationToken">A cancellation token that receives the cancellation requests.</param>
     /// <returns>int 返回结果</returns>
     global::System.Threading.Tasks.Task<int> RegClientAsync(
         Identity ident,
-        int type,
         IceRpc.Features.IFeatureCollection? features = null,
         global::System.Threading.CancellationToken cancellationToken = default);
 }
@@ -484,14 +469,12 @@ public readonly partial record struct ServerReceiverProxy : IServerReceiver, IPr
             return pipe_.Reader;
         }
 
-        /// <summary>Encodes the arguments of operation <c>RegClient</c> into a request payload.</summary>
+        /// <summary>Encodes the argument of operation <c>RegClient</c> into a request payload.</summary>
         /// <param name="ident">身份信息</param>
-        /// <param name="type">客户端类型</param>
         /// <param name="encodeOptions">The Slice encode options.</param>
         /// <returns>The payload encoded with <see cref="SliceEncoding.Slice2" />.</returns>
         public static global::System.IO.Pipelines.PipeReader EncodeRegClient(
             Identity ident,
-            int type,
             SliceEncodeOptions? encodeOptions = null)
         {
             var pipe_ = new global::System.IO.Pipelines.Pipe(
@@ -502,7 +485,6 @@ public readonly partial record struct ServerReceiverProxy : IServerReceiver, IPr
             int startPos_ = encoder_.EncodedByteCount;
 
             ident.Encode(ref encoder_);
-            encoder_.EncodeInt32(type);
             encoder_.EncodeVarInt32(Slice2Definitions.TagEndMarker);
 
             SliceEncoder.EncodeVarUInt62((ulong)(encoder_.EncodedByteCount - startPos_), sizePlaceholder_);
@@ -615,12 +597,11 @@ public readonly partial record struct ServerReceiverProxy : IServerReceiver, IPr
     /// <inheritdoc/>
     public global::System.Threading.Tasks.Task<int> RegClientAsync(
         Identity ident,
-        int type,
         IceRpc.Features.IFeatureCollection? features = null,
         global::System.Threading.CancellationToken cancellationToken = default) =>
         this.InvokeAsync(
             "RegClient",
-            Request.EncodeRegClient(ident, type, encodeOptions: EncodeOptions),
+            Request.EncodeRegClient(ident, encodeOptions: EncodeOptions),
             payloadContinuation: null,
             Response.DecodeRegClientAsync,
             features,
@@ -681,17 +662,12 @@ public partial interface IServerReceiverService
         /// <summary>Decodes the request payload of operation <c>RegClient</c>.</summary>
         /// <param name="request">The incoming request.</param>
         /// <param name="cancellationToken">A cancellation token that receives the cancellation requests.</param>
-        public static global::System.Threading.Tasks.ValueTask<(Identity Ident, int Type)> DecodeRegClientAsync(
+        public static global::System.Threading.Tasks.ValueTask<Identity> DecodeRegClientAsync(
             IceRpc.IncomingRequest request,
             global::System.Threading.CancellationToken cancellationToken) =>
             request.DecodeArgsAsync(
                 SliceEncoding.Slice2,
-                (ref SliceDecoder decoder) =>
-                {
-                    var sliceP_ident = new Identity(ref decoder);
-                    var sliceP_type = decoder.DecodeInt32();
-                    return (sliceP_ident, sliceP_type);
-                },
+                (ref SliceDecoder decoder) => new Identity(ref decoder),
                 defaultActivator: null,
                 cancellationToken);
     }
@@ -764,13 +740,11 @@ public partial interface IServerReceiverService
 
     /// <summary>注册回调对象</summary>
     /// <param name="ident">身份信息</param>
-    /// <param name="type">客户端类型</param>
     /// <param name="features">The dispatch features.</param>
     /// <param name="cancellationToken">A cancellation token that receives the cancellation requests.</param>
     /// <returns>int 返回结果</returns>
     public global::System.Threading.Tasks.ValueTask<int> RegClientAsync(
         Identity ident,
-        int type,
         IceRpc.Features.IFeatureCollection features,
         global::System.Threading.CancellationToken cancellationToken);
 
@@ -799,8 +773,8 @@ public partial interface IServerReceiverService
         global::System.Threading.CancellationToken cancellationToken)
     {
         request.CheckNonIdempotent();
-        var args = await Request.DecodeRegClientAsync(request, cancellationToken).ConfigureAwait(false);
-        var returnValue = await target.RegClientAsync(args.Ident, args.Type, request.Features, cancellationToken).ConfigureAwait(false);
+        var sliceP_ident = await Request.DecodeRegClientAsync(request, cancellationToken).ConfigureAwait(false);
+        var returnValue = await target.RegClientAsync(sliceP_ident, request.Features, cancellationToken).ConfigureAwait(false);
         return new IceRpc.OutgoingResponse(request)
         {
             Payload = Response.EncodeRegClient(returnValue, request.Features.Get<ISliceFeature>()?.EncodeOptions),

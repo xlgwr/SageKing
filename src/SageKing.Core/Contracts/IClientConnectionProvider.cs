@@ -9,12 +9,12 @@ namespace SageKing.Core.Contracts;
 /// <summary>
 /// 
 /// </summary>
-/// <typeparam name="C">ClientConnection</typeparam>
-/// <typeparam name="P">IceRPCClientOption</typeparam>
-/// <typeparam name="T">StreamPackage</typeparam>
-/// <typeparam name="L">Pipeline</typeparam>
-public interface IClientConnectionProvider<C, P, T, L>
+/// <typeparam name="Tclientconn">ClientConnection</typeparam>
+/// <typeparam name="Toption">IceRPCClientOption</typeparam>
+/// <typeparam name="Tpackage">StreamPackage</typeparam>
+/// <typeparam name="Tpipe">Pipeline</typeparam>
+public interface IClientConnectionProvider<Tclientconn, Toption, Tpackage, Tpipe, TIdentity>
 {
-    public IClientConnection<C, P, T, L> GetClientConnection(string servername);
+    public IClientConnection<Tclientconn, Toption, Tpackage, Tpipe, TIdentity> GetClientConnection(string servername);
 
 }

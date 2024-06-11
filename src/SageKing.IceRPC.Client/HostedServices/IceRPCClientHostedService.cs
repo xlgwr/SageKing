@@ -19,16 +19,16 @@ public class IceRPCClientHostedService : IHostedService, IDisposable
 
     private readonly ILogger _logger;
     private readonly IServiceProvider _serviceProvider;
-    private readonly Dictionary<string, IClientConnection<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage, Pipeline>> _clientDic;
+    private readonly Dictionary<string, IClientConnection<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage, Pipeline, Identity>> _clientDic;
 
     public IceRPCClientHostedService(IServiceProvider serviceProvider, ILoggerFactory loggerFactory, IOptions<List<IceRPCClientOption>> options)
     {
         _serviceProvider = serviceProvider;
         _logger = loggerFactory.CreateLogger<IceRPCClientHostedService>();
-        _clientDic = new Dictionary<string, IClientConnection<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage, Pipeline>>();
+        _clientDic = new Dictionary<string, IClientConnection<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage, Pipeline, Identity>>();
 
         var scope = _serviceProvider.CreateScope();
-        var instanceClientProvider = scope.ServiceProvider.GetRequiredService<IClientConnectionProvider<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage, Pipeline>>();
+        var instanceClientProvider = scope.ServiceProvider.GetRequiredService<IClientConnectionProvider<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage, Pipeline, Identity>>();
 
         foreach (var item in options.Value)
         {
@@ -52,19 +52,17 @@ public class IceRPCClientHostedService : IHostedService, IDisposable
             {
                 foreach (var item in _clientDic)
                 {
-                    // 
+                    // 连接
                     await item.Value!.ConnectAsync();
-
-                    var proxy = new ServerReceiverProxy(item.Value.Pipeline);
-
-                    var ident = new Identity() { Category = item.Value.Options.ClientId, Name = Guid.NewGuid().ToString("N") };
-
+                    
+                    // 获取服务端代码
+                    var proxy = item.Value.Pipeline.GetServerReceiverProxy();
 
                     //注册客户端
-                    var reg = await proxy.RegClientAsync(ident, item.Value.Options.ClientType);
+                    var reg = await proxy.RegClientAsync(item.Value.Identity);
 
                     //发送hello
-                    var result = await proxy.SendStreamPackageListAsync($"Hello:Server,{item.Key},My Name->{ident.Category}:{Environment.UserName}".GetDataStreamBody(), "send");
+                    var result = await proxy.SendStreamPackageListAsync($"Hello:Server,{item.Key},My Name->{item.Value.Identity.Name}:{Environment.UserName}".GetDataStreamBody(), "send");
 
                     _logger.LogInformation($"### StartAsync ConnectAsync：{item.Key},greeting:{result.GetString()}");
                 }

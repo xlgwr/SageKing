@@ -9,15 +9,22 @@ namespace SageKing.Core.Contracts;
 /// <summary>
 /// 
 /// </summary>
-/// <typeparam name="C">ClientConnection</typeparam>
-/// <typeparam name="P">IceRPCClientOption</typeparam>
-/// <typeparam name="T">StreamPackage</typeparam>
-public interface IClientConnection<C, P, T, L> : IDisposable
+/// <typeparam name="Tclientconn">ClientConnection</typeparam>
+/// <typeparam name="Toption">IceRPCClientOption</typeparam>
+/// <typeparam name="Tpackage">StreamPackage</typeparam>
+/// <typeparam name="Tpipe">Pipeline</typeparam>
+public interface IClientConnection<Tclientconn, Toption, Tpackage, Tpipe, TIdentity> : IDisposable
 {
-    public C Connection { get; }
-    public L Pipeline { get; }
-    public P Options { get; }
-    public void InitClient(P options);
+    public Tclientconn Connection { get; }
+
+    public Tpipe Pipeline { get; }
+
+    public Toption Options { get; }
+
+    public TIdentity Identity { get; }
+
+    public void InitClient(Toption options);
+
     public Task ConnectAsync(CancellationToken cancellationToken = default(CancellationToken));
 
     public Task ShutdownAsync(CancellationToken cancellationToken = default(CancellationToken));
@@ -29,5 +36,5 @@ public interface IClientConnection<C, P, T, L> : IDisposable
     /// <param name="msg"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public Task<T> SendStreamPackageListAsync(IEnumerable<T> param, string msg, CancellationToken cancellationToken = default(CancellationToken));
+    public Task<Tpackage> SendStreamPackageListAsync(IEnumerable<Tpackage> param, string msg, CancellationToken cancellationToken = default(CancellationToken));
 }

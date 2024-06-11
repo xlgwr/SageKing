@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SageKing.Core.Contracts
 {
-    public interface IPushPackage<P>
+    public interface IPushPackage<Tpackage>
     {
         /// <summary>
         /// 
@@ -16,6 +16,6 @@ namespace SageKing.Core.Contracts
         /// <param name="connectionId">为空时，推所有</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public bool PushStreamPackageListAsync(IEnumerable<P> param, string msg, string connectionId, CancellationToken cancellationToken = default(CancellationToken));
+        public bool PushStreamPackageListAsync(IEnumerable<Tpackage> param, string msg, string connectionId, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

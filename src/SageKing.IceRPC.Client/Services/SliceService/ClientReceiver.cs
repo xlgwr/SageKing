@@ -35,7 +35,7 @@ public partial class ClientReceiver(IMediator mediator, ILoggerFactory loggerFac
         return rsp;
     }
 
-    public ValueTask<int> RegClientAsync(Identity ident, int type, IFeatureCollection features, CancellationToken cancellationToken)
+    public ValueTask<int> RegClientAsync(Identity ident, IFeatureCollection features, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }

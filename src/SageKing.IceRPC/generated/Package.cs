@@ -125,32 +125,56 @@ public partial record struct StreamPackage
 /// <remarks>The Slice compiler generated this record struct from the Slice struct <c>SageKingIceRPC::Identity</c>.</remarks>
 public partial record struct Identity
 {
+    public string Guid { get; set; }
+
     public string Name { get; set; }
 
+    /// <summary>类别是强调区别</summary>
     public string Category { get; set; }
 
+    /// <summary>类型是强调共性</summary>
+    public int Type { get; set; }
+
+    /// <summary>用于授权验证</summary>
+    public string Token { get; set; }
+
     /// <summary>Constructs a new instance of <see cref="Identity" />.</summary>
+    /// <param name="category">类别是强调区别</param>
+    /// <param name="type">类型是强调共性</param>
+    /// <param name="token">用于授权验证</param>
     public Identity(
+        string guid,
         string name,
-        string category)
+        string category,
+        int type,
+        string token)
     {
+        this.Guid = guid;
         this.Name = name;
         this.Category = category;
+        this.Type = type;
+        this.Token = token;
     }
 
     /// <summary>Constructs a new instance of <see cref="Identity" /> and decodes its fields from a Slice decoder.</summary>
     /// <param name="decoder">The Slice decoder.</param>
     public Identity(ref SliceDecoder decoder)
     {
+        this.Guid = decoder.DecodeString();
         this.Name = decoder.DecodeString();
         this.Category = decoder.DecodeString();
+        this.Type = decoder.DecodeInt32();
+        this.Token = decoder.DecodeString();
     }
 
     /// <summary>Encodes the fields of this struct with a Slice encoder.</summary>
     /// <param name="encoder">The Slice encoder.</param>
     public readonly void Encode(ref SliceEncoder encoder)
     {
+        encoder.EncodeString(this.Guid);
         encoder.EncodeString(this.Name);
         encoder.EncodeString(this.Category);
+        encoder.EncodeInt32(this.Type);
+        encoder.EncodeString(this.Token);
     }
 }

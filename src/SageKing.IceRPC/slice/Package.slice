@@ -43,8 +43,14 @@ typealias  StreamPackageList = Sequence<StreamPackage>
 /// 实体结构
 /// 身份 基础信息
 compact struct Identity {
+    guid: string
     name: string
+    /// 类别是强调区别
     category: string
+    /// 类型是强调共性
+    type: int32
+    /// 用于授权验证
+    token: string
 }
 
 /// 接口方法 
@@ -65,7 +71,7 @@ interface ClientReceiver
 	/// @param ident: 身份信息
 	/// @param type: 客户端类型
 	/// @returns: int 返回结果
-    RegClient(ident:Identity,  type:int32)->int32
+    RegClient(ident:Identity)->int32
 }
 
 /// 接口方法
@@ -87,5 +93,5 @@ interface ServerReceiver
 	/// @param ident: 身份信息
 	/// @param type: 客户端类型
 	/// @returns: int 返回结果
-    RegClient(ident:Identity,  type:int32)->int32
+    RegClient(ident:Identity)->int32
 }

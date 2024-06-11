@@ -43,9 +43,9 @@ public partial class ServerReceiver(
         return rsp;
     }
 
-    public ValueTask<int> RegClientAsync(Identity ident, int type, IFeatureCollection features, CancellationToken cancellationToken)
+    public ValueTask<int> RegClientAsync(Identity ident, IFeatureCollection features, CancellationToken cancellationToken)
     {
-        logger.LogInformation($"RegClientAsync:{ident},{type}");
+        logger.LogInformation($"RegClientAsync:{ident}");
 
         IDispatchInformationFeature dispatch = features.Get<IDispatchInformationFeature>();
 
@@ -55,7 +55,7 @@ public partial class ServerReceiver(
 
         string iceproxyid = Guid.NewGuid().ToString();
 
-        return new ValueTask<int>(connectionInfoManagement.AddClientConnectionInfo(ident.Category, ident.Name, remoteAddress, type, dispatch.ConnectionContext, iceproxyid));
+        return new ValueTask<int>(connectionInfoManagement.AddClientConnectionInfo(ident, remoteAddress, dispatch.ConnectionContext, iceproxyid));
 
     }
 }

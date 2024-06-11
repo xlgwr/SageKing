@@ -9,9 +9,9 @@ namespace SageKing.Core.Contracts;
 /// <summary>
 /// 服务提供器
 /// </summary>
-/// <typeparam name="A">ServerAddress</typeparam>
-/// <typeparam name="T">StreamPackage</typeparam>
-public interface IServerProvider<A, T>
+/// <typeparam name="TserverAddress">ServerAddress</typeparam>
+/// <typeparam name="Tpackage">StreamPackage</typeparam>
+public interface IServerProvider<TserverAddress, Tpackage>
 {
-    public IServer<A, T> GetServer();
+    public IServer<TserverAddress, Tpackage> GetServer();
 }
