@@ -30,7 +30,7 @@ namespace SageKing.IceRPC.Client.Services
 
         public Pipeline Pipeline { get => _pipeline; }
 
-        public Identity  Identity { get => _Identity; }
+        public Identity Identity { get => _Identity; }
 
         public Task ConnectAsync(CancellationToken cancellationToken = default)
         {
@@ -127,13 +127,15 @@ namespace SageKing.IceRPC.Client.Services
                 .UseLogger(loggerFactory)
                 .UseDeadline(TimeSpan.FromSeconds(_option.Timeout))
                 .Into(_client);
-            
+
             //生成身份信息
             _Identity = new Identity()
             {
                 Guid = Guid.NewGuid().ToString("N"),
                 Name = _option.ClientId,
-                Type = _option.ClientType
+                Type = _option.ClientType,
+                Category = string.Empty,
+                Token = string.Empty
             };
 
         }
