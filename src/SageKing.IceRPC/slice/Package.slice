@@ -69,8 +69,7 @@ interface ClientReceiver
 	///
     /// 注册回调对象
 	/// @param ident: 身份信息
-	/// @param type: 客户端类型
-	/// @returns: int 返回结果
+	/// @returns: int 返回客户端类型结果
     RegClient(ident:Identity)->int32
 }
 
@@ -90,8 +89,7 @@ interface ServerReceiver
  
     ///
     /// 注册回调对象
-	/// @param ident: 身份信息
-	/// @param type: 客户端类型
-	/// @returns: int 返回结果
+	/// @param ident: 身份信息 
+	/// @returns: int 返回客户端类型结果
     RegClient(ident:Identity)->int32
 }

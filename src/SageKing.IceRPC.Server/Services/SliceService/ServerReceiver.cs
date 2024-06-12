@@ -22,6 +22,11 @@ public partial class ServerReceiver(
 
     ILogger logger = loggerFactory.CreateLogger<ServerReceiver>();
 
+    /// <summary>
+    /// 服务端类型
+    /// </summary>
+    public int ServerType { get; set; }
+
     public async ValueTask<StreamPackage> SendStreamPackageListAsync(StreamPackage[] requestFields, string msgType, IFeatureCollection features, CancellationToken cancellationToken)
     {
         logger.LogInformation($"SendStreamPackageListAsync:msgName:{msgType}:{requestFields.toJsonNoByteStr()}");
@@ -55,7 +60,9 @@ public partial class ServerReceiver(
 
         string iceproxyid = Guid.NewGuid().ToString();
 
-        return new ValueTask<int>(connectionInfoManagement.AddClientConnectionInfo(ident, remoteAddress, dispatch.ConnectionContext, iceproxyid));
+        connectionInfoManagement.AddClientConnectionInfo(ident, remoteAddress, dispatch.ConnectionContext, iceproxyid);
+
+        return new ValueTask<int>(ServerType);
 
     }
 }

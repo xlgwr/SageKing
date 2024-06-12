@@ -17,7 +17,12 @@ using SageKing.Core.Extensions;
 
 namespace SageKing.IceRPC.Client.Services
 {
-    public class IceRPCClient(ClientReceiver clientReceiver, ILoggerFactory loggerFactory) : IClientConnection<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage, Pipeline, Identity>
+    public class IceRPCClient(
+        ClientReceiver clientReceiver,
+        ILoggerFactory loggerFactory,
+        IOptions<ClientTypeDicOptions> clientTypeDic
+        ) :
+        IClientConnection<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage, Pipeline, Identity>
     {
         private Pipeline _pipeline;
         private Identity _Identity;
@@ -50,10 +55,10 @@ namespace SageKing.IceRPC.Client.Services
             var proxy = Pipeline.GetServerReceiverProxy();
 
             //注册客户端,获取服务端类型
-            ServerType = await proxy.RegClientAsync(Identity); 
+            ServerType = await proxy.RegClientAsync(Identity);
 
             //发送hello
-            var result = await proxy.SendStreamPackageListAsync($"Hello:Server,{Options.ServerName},My Name->{Identity.Name}:{Environment.UserName}".GetDataStreamBody(), "send");
+            var result = await proxy.SendStreamPackageListAsync($"Hello:Server,{Options.ServerName}[{clientTypeDic.Value.GetDesc(ServerType)}],My Name->{Identity.Name}:{Environment.UserName}".GetDataStreamBody(), "send");
 
             _logger.LogInformation($"### StartAsync ConnectAsync：hello greeting:{result.GetString()}");
 
@@ -62,7 +67,7 @@ namespace SageKing.IceRPC.Client.Services
         public void Dispose()
         {
             _client?.DisposeAsync();
-        } 
+        }
 
         public void InitClient(IceRPCClientOption option)
         {

@@ -39,7 +39,7 @@ public partial interface IClientReceiver
     /// <param name="ident">身份信息</param>
     /// <param name="features">The invocation features.</param>
     /// <param name="cancellationToken">A cancellation token that receives the cancellation requests.</param>
-    /// <returns>int 返回结果</returns>
+    /// <returns>int 返回客户端类型结果</returns>
     global::System.Threading.Tasks.Task<int> RegClientAsync(
         Identity ident,
         IceRpc.Features.IFeatureCollection? features = null,
@@ -358,7 +358,7 @@ public partial interface IClientReceiverService
     /// <param name="ident">身份信息</param>
     /// <param name="features">The dispatch features.</param>
     /// <param name="cancellationToken">A cancellation token that receives the cancellation requests.</param>
-    /// <returns>int 返回结果</returns>
+    /// <returns>int 返回客户端类型结果</returns>
     public global::System.Threading.Tasks.ValueTask<int> RegClientAsync(
         Identity ident,
         IceRpc.Features.IFeatureCollection features,
@@ -423,7 +423,7 @@ public partial interface IServerReceiver
     /// <param name="ident">身份信息</param>
     /// <param name="features">The invocation features.</param>
     /// <param name="cancellationToken">A cancellation token that receives the cancellation requests.</param>
-    /// <returns>int 返回结果</returns>
+    /// <returns>int 返回客户端类型结果</returns>
     global::System.Threading.Tasks.Task<int> RegClientAsync(
         Identity ident,
         IceRpc.Features.IFeatureCollection? features = null,
@@ -742,7 +742,7 @@ public partial interface IServerReceiverService
     /// <param name="ident">身份信息</param>
     /// <param name="features">The dispatch features.</param>
     /// <param name="cancellationToken">A cancellation token that receives the cancellation requests.</param>
-    /// <returns>int 返回结果</returns>
+    /// <returns>int 返回客户端类型结果</returns>
     public global::System.Threading.Tasks.ValueTask<int> RegClientAsync(
         Identity ident,
         IceRpc.Features.IFeatureCollection features,
