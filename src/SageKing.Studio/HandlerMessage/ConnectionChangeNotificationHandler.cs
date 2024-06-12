@@ -11,11 +11,11 @@ public class ConnectionChangeNotificationHandler(PackagesDataService packagesDat
     {
         if (notification.isAdd)
         {
-            packagesData.dataClientDic[notification.ClientConnection.ConnectionId] = notification.ClientConnection;
+            packagesData.DataClientDic[notification.ClientConnection.ConnectionId] = notification.ClientConnection;
         }
         else
         {
-            packagesData.dataClientDic.TryRemove(notification.ClientConnection.ConnectionId, out _);
+            packagesData.DataClientDic.TryRemove(notification.ClientConnection.ConnectionId, out _);
         }
     }
 }

@@ -43,5 +43,9 @@ namespace SageKing.IceRPC.Client.Services
             }
             throw new InvalidOperationException($"{servername} 不存在");
         }
+        public IList<string> GetServerNames()
+        {
+            return _dics.Keys.ToList();
+        }
     }
 }

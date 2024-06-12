@@ -12,8 +12,15 @@
 <p>ICE Package List</p>
 <div>
     <label>发送信息</label>
-    <input type="text" @bind="Message" width="200" />
+    <input @ref="inputMessageRef" type="text" @bind="Message" width="300" />
+    <select @bind="selectServerName" style="height:30px;width:120px;margin:2px;">
+        @foreach (var item in serverNamelst)
+        {
+            <option value="@item" style="height:30px;">@item</option>
+        }
+    </select>
     <button @onclick="Send">发送</button>
+    <label>@Notice</label>
 </div>
 @if (dic == null)
 {
@@ -56,16 +63,37 @@ else
     private ConcurrentDictionary<string, List<StreamPackage[]>>? dic;
 
     private string Message = string.Empty;
+    private string Notice = string.Empty;
+    private string selectServerName = string.Empty;
+    private ElementReference inputMessageRef;
+    private List<string> serverNamelst = new List<string>();
 
     protected override async Task OnInitializedAsync()
     {
-        dic = dataService.dataDic;
+        dic = dataService.DataDic;
+        serverNamelst = dataService.ClientConnectionProvider.GetServerNames().ToList();
         await base.OnInitializedAsync();
     }
     private async void Send()
     {
-        var result = await dataService.SendMsg(Message);
+        if (Message.IsNullOrEmpty())
+        {
+            Notice = $"请输入发送内容。{DateTime.Now}";
+            await inputMessageRef.FocusAsync();
+            return;
+        }
+        if (selectServerName.IsNullOrEmpty())
+        {
+            Notice = $"请选择一个服务端。{DateTime.Now}";
+            return;
+        }
+        Notice = $"开始向服务端【{selectServerName}】发送";
 
+        var result = await dataService.SendMsg(Message, selectServerName);
+
+        Message = string.Empty;
+        Notice = $"完成发送服务端【{selectServerName}】";
+        await inputMessageRef.FocusAsync();
         StateHasChanged();
     }
 }

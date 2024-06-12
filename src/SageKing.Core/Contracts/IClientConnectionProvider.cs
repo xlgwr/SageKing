@@ -15,6 +15,17 @@ namespace SageKing.Core.Contracts;
 /// <typeparam name="Tpipe">Pipeline</typeparam>
 public interface IClientConnectionProvider<Tclientconn, Toption, Tpackage, Tpipe, TIdentity>
 {
+    /// <summary>
+    /// 获取服务连接
+    /// </summary>
+    /// <param name="servername"></param>
+    /// <returns></returns>
     public IClientConnection<Tclientconn, Toption, Tpackage, Tpipe, TIdentity> GetClientConnection(string servername);
 
+
+    /// <summary>
+    /// 获取服务端列表
+    /// </summary>
+    /// <returns></returns>
+    public IList<string> GetServerNames();
 }

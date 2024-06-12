@@ -9,13 +9,13 @@ public class ServerReceiverHandler(PackagesDataService packagesData) : IRequestH
 {
     public async Task<StreamPackage> Handle(ServerReceiverRequest request, CancellationToken cancellationToken)
     {
-        if (packagesData.dataDic.TryGetValue(request.msgType, out var list))
+        if (packagesData.DataDic.TryGetValue(request.msgType, out var list))
         {
             list.Add(request.Packages);
         }
         else
         {
-            packagesData.dataDic[request.msgType] = new List<StreamPackage[]> { request.Packages };
+            packagesData.DataDic[request.msgType] = new List<StreamPackage[]> { request.Packages };
         }
         await Task.CompletedTask;
         return 1000.GetStreamPackage(0, "ServerReceiverHandler 处理成功");

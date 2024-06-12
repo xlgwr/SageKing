@@ -1,4 +1,5 @@
 ﻿using IceRpc;
+using Microsoft.Extensions.Options;
 using SageKing.Core.Contracts;
 using SageKing.IceRPC.Client.Options;
 using SageKing.IceRPC.Extensions;
@@ -8,16 +9,21 @@ namespace SageKing.Studio.Data
 {
     public class PackagesDataService
     {
-        private readonly IClientConnectionProvider<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage, Pipeline, Identity> _clientConnectionProvider;
+        public readonly IClientConnectionProvider<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage, Pipeline, Identity> ClientConnectionProvider;
 
-        public ConcurrentDictionary<string, List<StreamPackage[]>> dataDic;
-        public ConcurrentDictionary<string, ClientConnectionInfo<IConnectionContext>> dataClientDic;
+        public readonly ClientTypeDicOptions ClientTypeDic;
+        public ConcurrentDictionary<string, List<StreamPackage[]>> DataDic;
+        public ConcurrentDictionary<string, ClientConnectionInfo<IConnectionContext>> DataClientDic;
 
-        public PackagesDataService(IClientConnectionProvider<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage, Pipeline, Identity> clientConnectionProvider)
+        public PackagesDataService(
+            IClientConnectionProvider<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage, Pipeline, Identity> clientConnectionProvider,
+             IOptions<ClientTypeDicOptions> clientTypeDic
+            )
         {
-            dataDic = new ConcurrentDictionary<string, List<StreamPackage[]>>();
-            dataClientDic = new ConcurrentDictionary<string, ClientConnectionInfo<IConnectionContext>>();
-            _clientConnectionProvider = clientConnectionProvider;
+            this.ClientTypeDic = clientTypeDic.Value;
+            this.DataDic = new ConcurrentDictionary<string, List<StreamPackage[]>>();
+            this.DataClientDic = new ConcurrentDictionary<string, ClientConnectionInfo<IConnectionContext>>();
+            this.ClientConnectionProvider = clientConnectionProvider;
         }
 
         public async Task<int> SendMsg(string msg, string serverName = "server1")
@@ -26,8 +32,9 @@ namespace SageKing.Studio.Data
             {
                 return await Task.FromResult(0);
             }
-            var connection = _clientConnectionProvider.GetClientConnection(serverName);
-            var result = await connection.SendStreamPackageListAsync(msg.GetDataStreamBody(), "Test:Send");
+            var connection = this.ClientConnectionProvider.GetClientConnection(serverName);
+            var getdesc = ClientTypeDic.GetDesc(connection.ServerType);
+            var result = await connection.SendStreamPackageListAsync(msg.GetDataStreamBody(), $"Test:Send->{serverName}[{getdesc}]");
             return await Task.FromResult(1);
 
         }
@@ -38,10 +45,11 @@ namespace SageKing.Studio.Data
             {
                 return await Task.FromResult(0);
             }
-            if (dataClientDic.TryGetValue(connectionid, out var client))
+            if (DataClientDic.TryGetValue(connectionid, out var client))
             {
                 var connection = client.GetClientReceiverProxy();
-                var result = await connection.PushStreamPackageListAsync(msg.GetDataStreamBody(), $"Test:Push->{client.ClientId}");
+                var getdesc = ClientTypeDic.GetDesc(client.ClientType);
+                var result = await connection.PushStreamPackageListAsync(msg.GetDataStreamBody(), $"Test:Push->{client.ClientId}[{getdesc}]");
             }
             return await Task.FromResult(1);
 
