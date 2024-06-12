@@ -1,5 +1,7 @@
 ﻿using IceRpc.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using SageKing.IceRPC.Client.Services.SliceService;
+using SageKing.IceRPC.Features;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace SageKing.IceRPC.Client.Features;
 
+[DependsOn(typeof(IceRPCFeature))]
 public class IceRPCClientFeature : FeatureBase
 {
     public IceRPCClientFeature(IModule module) : base(module)

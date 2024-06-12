@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SageKing.IceRPC.Features;
 using SageKing.IceRPC.Server.HostedServices;
 using SageKing.MediatR.Features;
 
 namespace SageKing.IceRPC.Server.Features;
 
+[DependsOn(typeof(IceRPCFeature))]
 public class IceRPCServerFeature : FeatureBase
 {
     public IceRPCServerFeature(IModule module) : base(module)

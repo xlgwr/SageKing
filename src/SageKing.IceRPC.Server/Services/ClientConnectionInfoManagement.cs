@@ -1,5 +1,6 @@
 ﻿using IceRpc.Slice;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using SageKing.Core.Contracts;
 using SageKing.Core.Extensions;
 using SageKing.IceRPC.Extensions;
@@ -25,9 +26,12 @@ namespace SageKing.IceRPC.Server.Services
         private static readonly object _lockPush = new object();
         private readonly ConcurrentDictionary<string, ClientConnectionInfo<IConnectionContext>> _clientsDic;
 
-        public ClientConnectionInfoManagement(IMediator mediator, ILoggerFactory loggerFactory)
+        public readonly ClientTypeDicOptions _clientTypeDic;
+
+        public ClientConnectionInfoManagement(IMediator mediator, ILoggerFactory loggerFactory, IOptions<ClientTypeDicOptions> clientTypeDic)
         {
             _mediator = mediator;
+            _clientTypeDic = clientTypeDic.Value;
             logger = loggerFactory.CreateLogger<ClientConnectionInfoManagement>();
             _clientsDic = new ConcurrentDictionary<string, ClientConnectionInfo<IConnectionContext>>();
         }
@@ -38,7 +42,7 @@ namespace SageKing.IceRPC.Server.Services
             {
                 string connectionId = identity.Guid;
                 string clientId = identity.Name;
-                int type = identity.Type;
+                int clientype = identity.Type;
 
                 if (_clientsDic.TryGetValue(connectionId, out var oldInfo))
                 {
@@ -59,7 +63,8 @@ namespace SageKing.IceRPC.Server.Services
                 info.RemoteAddress = remteAddress;
                 info.Connection = conn;
 
-                info.ClientType = type.GetValue<ClientType>((int)ClientType.UNKNOW);
+                info.ClientType = clientype;
+                info.ClientTypeDesc = _clientTypeDic.GetDesc(clientype);
                 info.LoginDateTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                 var isAdd = _clientsDic.TryAdd(connectionId, info);
 
@@ -166,7 +171,7 @@ namespace SageKing.IceRPC.Server.Services
             return _clientsDic.ToDictionary(a => a.Key, a => a.Value);
         }
 
-        public List<ClientConnectionInfo<IConnectionContext>> GetClientConnectionList(ClientType type)
+        public List<ClientConnectionInfo<IConnectionContext>> GetClientConnectionList(int type)
         {
             return _clientsDic.Values.Where(a => a.ClientType == type).ToList();
         }

@@ -1,4 +1,5 @@
 ﻿using SageKing.IceRPC.Client.Features;
+using SageKing.IceRPC.Features;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +21,12 @@ public static class ModuleExtensions
         {
             a.RegisterServicesFromAssembly(typeof(IceRPCClientFeature).Assembly);
         });
+
+        //module.UseIceRPC(o => o.ClientTypeDicOptions += a =>
+        //{
+        //    a.TryAdd(33, "测试客户端33");
+        //});
+
         return module;
     }
 }

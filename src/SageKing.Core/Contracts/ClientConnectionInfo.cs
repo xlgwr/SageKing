@@ -24,7 +24,7 @@ public record class ClientConnectionInfo<T>
     public bool IsLogin { get; set; }
     public string Ver { get; set; }
     //public IceBaseOptions Option { get; set; }
-    public ClientType ClientType { get; set; }
+    public int ClientType { get; set; }
     public string UserType { get; set; }
     /// <summary>
     /// 主用于对比是否同一连接
@@ -37,10 +37,8 @@ public record class ClientConnectionInfo<T>
     {
         get { return _userDic; }
     }
-    public string ClientTypeDesc
-    {
-        get { return ClientType.GetDescription(); }
-    }
+    public string ClientTypeDesc { get; set; }
+
     public string IpPort
     {
         get
@@ -51,7 +49,6 @@ public record class ClientConnectionInfo<T>
 
     public override string ToString()
     {
-
         return $"ClientId:{ClientId},ConnectionId:{this.ConnectionId},ClientType:{this.ClientType},{this.ClientTypeDesc},IceProxyId：{this.IceProxyId},IsLogin：{this.IsLogin},RemoteAddress：{this.RemoteAddress},UserType：{this.UserType},Ver：{this.Ver},LoginDateTime：{this.LoginDateTime}";
     }
 }

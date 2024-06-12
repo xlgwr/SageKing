@@ -28,4 +28,8 @@
 	  <ProjectReference Include="..\SageKing.Common\SageKing.MediatR\SageKing.MediatR.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Datas\" />
+	</ItemGroup>
+
 </Project>

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Options;
 using SageKing.IceRPC.Client.Options;
 using SageKing.IceRPC.Server.Options;
 using SageKing.Studio.Data;
@@ -10,20 +11,25 @@ var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
 //add SageKing
-builder.Services.AddSageKing(sageking =>
+builder.Services.AddSageKing(sk =>
 {
-    sageking.UseIceMediatR(o => o.MediatRServiceConfiguration += a =>
+    sk.UseIceMediatR(o => o.MediatRServiceConfiguration += a =>
     {
         a.RegisterServicesFromAssemblies(typeof(Program).Assembly);
     });
 
-    sageking.UseIceRPCServer(o => o.IceRPCServerOptions += options =>
+    sk.UseIceRPC(o => o.ClientTypeDicOptions += options =>
+    {
+        configuration.GetSection(ClientTypeDicOptions.SectionName).Bind(options);
+    });
+
+    sk.UseIceRPCServer(o => o.IceRPCServerOptions += options =>
     {
 
         configuration.GetSection(IceRPCServerOption.SectionName).Bind(options);
     });
 
-    sageking.UseIceRPCClient(o => o.IceRPCClientOptions += options =>
+    sk.UseIceRPCClient(o => o.IceRPCClientOptions += options =>
     {
 
         configuration.GetSection(IceRPCClientOption.SectionName).Bind(options);

@@ -19,6 +19,11 @@ public static class ModuleExtensions
         {
             a.RegisterServicesFromAssembly(typeof(IceRPCServerFeature).Assembly);
         });
+
+        //module.UseIceRPC(o => o.ClientTypeDicOptions += a =>
+        //{
+        //    a.TryAdd(110, "测试服务110");
+        //});
         return module;
     }
 

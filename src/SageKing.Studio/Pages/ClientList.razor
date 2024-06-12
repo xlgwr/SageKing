@@ -18,12 +18,12 @@
 </div>
 <div>
     <label>当前选择项:</label>
-    <ul>
+    <div>
         @foreach (var item in selected)
         {
-            <li>@item</li>
+            <span>@item,</span>
         }
-    </ul>
+    </div>
 </div>
 @if (dic == null)
 {

@@ -13,7 +13,7 @@ using Microsoft.Extensions.Options;
 using SageKing.IceRPC.Client.Extensions;
 using SageKing.IceRPC.Client.Services.SliceService;
 using SageKing.Core.Options;
-using SageKing.IceRPC.IceFeatures;
+using SageKing.Core.Extensions;
 
 namespace SageKing.IceRPC.Client.Services
 {
@@ -23,6 +23,7 @@ namespace SageKing.IceRPC.Client.Services
         private Identity _Identity;
         private IceRPCClientOption _option;
         private IceRpc.ClientConnection _client;
+        private readonly ILogger _logger = loggerFactory.CreateLogger<IceRPCClient>();
 
         public IceRpc.ClientConnection Connection { get => _client; }
 
@@ -32,20 +33,36 @@ namespace SageKing.IceRPC.Client.Services
 
         public Identity Identity { get => _Identity; }
 
-        public Task ConnectAsync(CancellationToken cancellationToken = default)
+        public int ClientType => _option.ClientType;
+
+        public int ServerType { get; private set; }
+
+        /// <summary>
+        /// 连接及注册客户端
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task ConnectAsync(CancellationToken cancellationToken = default)
         {
-            return _client.ConnectAsync(cancellationToken);
+            await _client.ConnectAsync(cancellationToken);
+
+            // 获取服务端代码
+            var proxy = Pipeline.GetServerReceiverProxy();
+
+            //注册客户端,获取服务端类型
+            ServerType = await proxy.RegClientAsync(Identity); 
+
+            //发送hello
+            var result = await proxy.SendStreamPackageListAsync($"Hello:Server,{Options.ServerName},My Name->{Identity.Name}:{Environment.UserName}".GetDataStreamBody(), "send");
+
+            _logger.LogInformation($"### StartAsync ConnectAsync：hello greeting:{result.GetString()}");
+
         }
 
         public void Dispose()
         {
             _client?.DisposeAsync();
-        }
-
-        public Identity GetIdentity()
-        {
-            throw new NotImplementedException();
-        }
+        } 
 
         public void InitClient(IceRPCClientOption option)
         {
@@ -133,7 +150,7 @@ namespace SageKing.IceRPC.Client.Services
             {
                 Guid = Guid.NewGuid().ToString("N"),
                 Name = _option.ClientId,
-                Type = _option.ClientType,
+                Type = (int)_option.ClientType,
                 Category = string.Empty,
                 Token = string.Empty
             };

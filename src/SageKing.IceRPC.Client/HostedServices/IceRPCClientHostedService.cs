@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ZeroC.Slice;
 
 namespace SageKing.IceRPC.Client.HostedServices;
 
@@ -27,6 +28,7 @@ public class IceRPCClientHostedService : IHostedService, IDisposable
         _logger = loggerFactory.CreateLogger<IceRPCClientHostedService>();
         _clientDic = new Dictionary<string, IClientConnection<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage, Pipeline, Identity>>();
 
+        //初始化客户端
         var scope = _serviceProvider.CreateScope();
         var instanceClientProvider = scope.ServiceProvider.GetRequiredService<IClientConnectionProvider<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage, Pipeline, Identity>>();
 
@@ -54,17 +56,8 @@ public class IceRPCClientHostedService : IHostedService, IDisposable
                 {
                     // 连接
                     await item.Value!.ConnectAsync();
-                    
-                    // 获取服务端代码
-                    var proxy = item.Value.Pipeline.GetServerReceiverProxy();
+                    _logger.LogInformation($"### StartAsync ConnectAsync：{item.Key}");
 
-                    //注册客户端
-                    var reg = await proxy.RegClientAsync(item.Value.Identity);
-
-                    //发送hello
-                    var result = await proxy.SendStreamPackageListAsync($"Hello:Server,{item.Key},My Name->{item.Value.Identity.Name}:{Environment.UserName}".GetDataStreamBody(), "send");
-
-                    _logger.LogInformation($"### StartAsync ConnectAsync：{item.Key},greeting:{result.GetString()}");
                 }
             });
 

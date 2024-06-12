@@ -17,4 +17,8 @@ public record class IceRPCServerOption : IceBaseOptions
         this.CertificateFileName = "certs/server.p12";
     }
 
+    /// <summary>
+    /// 服务端类型
+    /// </summary>
+    public int ServerType { get; set; }
 }

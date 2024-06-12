@@ -16,7 +16,7 @@ namespace SageKing.Core.Contracts;
 public interface IClientConnectionInfoManagement<TconnContext, Tpackage, Tidentity> : IPushPackage<Tpackage>, IDisposable
 {
 
-    public List<ClientConnectionInfo<TconnContext>> GetClientConnectionList(ClientType type);
+    public List<ClientConnectionInfo<TconnContext>> GetClientConnectionList(int clienttype);
 
     public Dictionary<string, ClientConnectionInfo<TconnContext>> GetClientConnectionDic();
 

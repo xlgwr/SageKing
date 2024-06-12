@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SageKing.IceRPC.Client.Services
 {
-    internal class IceRPCClientProvider : IClientConnectionProvider<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage, Pipeline, Identity>
+    public class IceRPCClientProvider : IClientConnectionProvider<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage, Pipeline, Identity>
     {
         private IDictionary<string, IClientConnection<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage, Pipeline, Identity>> _dics;
 

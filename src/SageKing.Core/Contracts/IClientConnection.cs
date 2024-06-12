@@ -21,7 +21,20 @@ public interface IClientConnection<Tclientconn, Toption, Tpackage, Tpipe, TIdent
 
     public Toption Options { get; }
 
+    /// <summary>
+    /// 客户端认证信息
+    /// </summary>
     public TIdentity Identity { get; }
+
+    /// <summary>
+    /// 客户端类型 <ref>ClientType</ref>
+    /// </summary>
+    public int ClientType { get; }
+
+    /// <summary>
+    /// 服务端类型 <ref>ClientType</ref>
+    /// </summary>
+    public int ServerType { get; }
 
     public void InitClient(Toption options);
 

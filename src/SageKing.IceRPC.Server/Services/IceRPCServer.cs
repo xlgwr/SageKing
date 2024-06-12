@@ -21,6 +21,8 @@ public class IceRPCServer : IServer<ServerAddress, StreamPackage>
     private readonly IceRPCServerOption _option;
     private readonly ClientConnectionInfoManagement _connectionInfoManagement;
 
+    public int ServerType => _option.ServerType;
+
     public IceRPCServer(
         IOptions<IceRPCServerOption> iceRPCServerOption,
         ClientConnectionInfoManagement connectionInfoManagement,

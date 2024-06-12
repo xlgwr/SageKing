@@ -95,24 +95,4 @@ public static class EnumExts
         }
         return (T)Enum.ToObject(typeof(T), value);
     }
-
-    #region ClientType dic
-    /// <summary>
-    /// 0-clientType
-    /// </summary>
-    /// <param name="clientType"></param>
-    /// <returns></returns>
-    public static Dictionary<int, string> ClientTypeDic(this ClientType clientType)
-    {
-        var result = new Dictionary<int, string>();
-
-        for (int i = 0; i <= (int)clientType; i++)
-        {
-            result[i] = ((ClientType)i).GetDescription();
-        }
-
-        return result;
-
-    }
-    #endregion
 }

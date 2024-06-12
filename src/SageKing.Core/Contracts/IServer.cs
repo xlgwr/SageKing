@@ -13,6 +13,11 @@ namespace SageKing.Core.Contracts
     /// <typeparam name="Tpackage">StreamPackage</typeparam>
     public interface IServer<TserverAddress, Tpackage> : IPushPackage<Tpackage>, IDisposable
     {
+        /// <summary>
+        /// 服务类型
+        /// </summary>
+        public int ServerType { get; }
+
         public TserverAddress Listen();
 
         public Task ShutdownAsync(CancellationToken cancellationToken = default(CancellationToken));
