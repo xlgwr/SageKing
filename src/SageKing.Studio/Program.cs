@@ -41,8 +41,11 @@ builder.Services.AddSageKing(sk =>
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
+//other services
 builder.Services.AddSingleton<PackagesDataService>();
 builder.Services.AddSingleton<WeatherForecastService>();
+
+builder.Services.AddAntDesign();
 
 var app = builder.Build();
 

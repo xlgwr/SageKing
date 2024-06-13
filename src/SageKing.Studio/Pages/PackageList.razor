@@ -10,17 +10,17 @@
 <h1>ICE Package</h1>
 
 <p>ICE Package List</p>
-<div>
-    <label>发送信息</label>
-    <input @ref="inputMessageRef" type="text" @bind="Message" width="300" />
-    <select @bind="selectServerName" style="height:30px;width:120px;margin:2px;">
+<div class="form-control">
+    <label class="col-form-label">发送信息</label>
+    <input class="input-group" @ref="inputMessageRef" type="text" @bind="Message" />
+    <select class="form-select row-cols-xxl-2" @bind="selectServerName">
         @foreach (var item in serverNamelst)
         {
-            <option value="@item" style="height:30px;">@item</option>
+            <option class="col-form-label" value="@item">@item</option>
         }
     </select>
-    <button @onclick="Send">发送</button>
-    <label>@Notice</label>
+    <button class="btn btn-primary " @onclick="Send">发送</button>
+    <label class="validation-message">@Notice</label>
 </div>
 @if (dic == null)
 {

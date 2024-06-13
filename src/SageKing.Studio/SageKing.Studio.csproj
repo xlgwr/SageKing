@@ -17,4 +17,8 @@
 	  <ProjectReference Include="..\SageKing.IceRPC.Server\SageKing.IceRPC.Server.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <PackageReference Include="AntDesign" />
+	</ItemGroup>
+
 </Project>
