@@ -1,72 +1,93 @@
 ﻿@page "/PackageList"
 
-<PageTitle>ICE Package</PageTitle>
-
-@using SageKing.Studio.Data
-@using System.Collections.Concurrent
+<PageTitle>消息管理中心</PageTitle>
 
 @inject PackagesDataService dataService
 
-<h1>ICE Package</h1>
+<h2>消息管理中心</h2>
+<br/>
+<Form @ref="form"
+      Model="@model"
+      ValidateOnChange="true"
+      LabelColSpan="2">
 
-<p>ICE Package List</p>
-<div class="form-control">
-    <label class="col-form-label">发送信息</label>
-    <input class="input-group" @ref="inputMessageRef" type="text" @bind="Message" />
-    <select class="form-select row-cols-xxl-2" @bind="selectServerName">
-        @foreach (var item in serverNamelst)
-        {
-            <option class="col-form-label" value="@item">@item</option>
-        }
-    </select>
-    <button class="btn btn-primary " @onclick="Send">发送</button>
-    <label class="validation-message">@Notice</label>
-</div>
+    <FormItem Label="推送内容">
+        <TextArea ShowCount MaxLength="200" Placeholder="输入推送内容" @ref="inputMessageRef" @bind-Value="@context.Message"></TextArea>
+    </FormItem>
+
+    <FormItem Label="服务端" HasFeedback>
+        <Select DataSource="@serverNamelst"
+                Mode="multiple"
+                Placeholder="请选择服务端"
+                @bind-Values="@context.ServerIds"
+                TItemValue="string"
+                TItem="string"
+                Style="width: 100%; margin-bottom: 8px;"
+                EnableSearch
+                AllowClear>
+        </Select>
+    </FormItem>
+
+    <FormItem WrapperColOffset="1">
+        <Button Type="@ButtonType.Primary" @onclick="Send" Loading="@loading">发送</Button>
+        <label class="validation-message">@Notice</label>
+    </FormItem>
+
+</Form>
+
 @if (dic == null)
 {
-    <p><em>Loading...</em></p>
+    <Spin size="large" Tip="Loading..." />
 }
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>MsgType</th>
-                <th>Count</th>
-                <th>Message</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in dic)
-            {
-                <tr>
-                    <td>@item.Key</td>
-                    <td>@item.Value.Count</td>
-                    <td>
-                        <ul>
+    <Table @ref="table" TItem="KeyValuePair<string, List<StreamPackage[]>>" DataSource="@dic"
+           @bind-SelectedRows="@selectedRows" RowKey="a=>a.Key">
 
-                            @foreach (var item2 in item.Value)
-                            {
-                                <li>
-                                    @item2.GetString().FirstOrDefault()
-                                </li>
-                            }
-                        </ul>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+        <Selection Key="@context.Key" Type="@selectionType"></Selection>
+        <PropertyColumn Property="c=>c.Key" Title="MsgType"></PropertyColumn>
+        <PropertyColumn Property="c=>c.Value.Count" Title="Count"></PropertyColumn> 
+        <Column TData="KeyValuePair<string, List<StreamPackage[]>>" Title="Message">
+            <ul>
+                @foreach (var item in context.Value)
+                {
+                    <li>@item.GetString().FirstOrDefault()</li>
+                }
+            </ul> 
+        </Column>
+    </Table>
+
 }
 
 @code {
-    private ConcurrentDictionary<string, List<StreamPackage[]>>? dic;
 
-    private string Message = string.Empty;
-    private string Notice = string.Empty;
-    private string selectServerName = string.Empty;
-    private ElementReference inputMessageRef;
-    private List<string> serverNamelst = new List<string>();
+    class Model
+    {
+        [Required]
+        public string Message { get; set; }
+
+        [RequiredList]
+        public IEnumerable<string> ServerIds { get; set; }
+    }
+}
+
+@code {
+
+    bool loading;
+
+    Model model = new Model();
+    AntDesign.Form<Model> form;
+
+    string Notice = string.Empty;
+    AntDesign.Input<string> inputMessageRef;
+
+    ITable table;
+    string selectionType = "checkbox";
+
+    List<string> serverNamelst = new List<string>();
+    ConcurrentDictionary<string, List<StreamPackage[]>>? dic;
+    IEnumerable<KeyValuePair<string, List<StreamPackage[]>>> selectedRows;
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -76,24 +97,37 @@ else
     }
     private async void Send()
     {
-        if (Message.IsNullOrEmpty())
+        if (!form.Validate())
         {
-            Notice = $"请输入发送内容。{DateTime.Now}";
-            await inputMessageRef.FocusAsync();
+            return;
+        };
+
+        Notice = $"开始向【{model.ServerIds.Count()}】服务端发送";
+
+        loading = true;
+
+        foreach (var item in model.ServerIds)
+        {
+            var result = await dataService.SendMsg(model.Message, item);
+        }
+
+        loading = false;
+
+        model.Message = string.Empty;
+        Notice = $"完成发送【{model.ServerIds.Count()}】服务端";
+
+        await inputMessageRef.Focus();
+
+        StateHasChanged();
+    }
+
+    async Task OnRowExpand(RowData<KeyValuePair<string, List<StreamPackage[]>>> rowData)
+    {
+        if (rowData.Data.Value != null)
+        {
             return;
         }
-        if (selectServerName.IsNullOrEmpty())
-        {
-            Notice = $"请选择一个服务端。{DateTime.Now}";
-            return;
-        }
-        Notice = $"开始向服务端【{selectServerName}】发送";
-
-        var result = await dataService.SendMsg(Message, selectServerName);
-
-        Message = string.Empty;
-        Notice = $"完成发送服务端【{selectServerName}】";
-        await inputMessageRef.FocusAsync();
+        await Task.CompletedTask;
         StateHasChanged();
     }
 }

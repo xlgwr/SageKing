@@ -1,14 +1,11 @@
 ﻿@page "/ClientList"
 
-<PageTitle>ClientList</PageTitle>
-
-@using SageKing.Studio.Data
-@using System.Collections.Concurrent
+<PageTitle>客户端管理中心</PageTitle>
 
 @inject PackagesDataService dataService
 
-<h1>ClientList</h1>
-
+<h2>客户端管理</h2>
+<br />
 <Form @ref="form"
       Model="@model"
       ValidateOnChange="true"
@@ -26,7 +23,7 @@
                 TItem="string"
                 OnSelectedItemsChanged="OnSelectedItemsChangedHandler"
                 Style="width: 100%; margin-bottom: 8px;"
-                EnableSearch
+                EnableSearch 
                 AllowClear>
             <SelectOptions>
                 @foreach (var item in dic)
@@ -37,16 +34,16 @@
         </Select>
     </FormItem>
 
-    <FormItem WrapperColOffset="2">
+    <FormItem WrapperColOffset="1">
         <Button Type="@ButtonType.Primary" @onclick="Push" Loading="@loading">推送</Button>
         <label class="validation-message">@Notice</label>
-    </FormItem>
+    </FormItem> 
 
 </Form>
 
 @if (dic == null)
 {
-    <p><em>Loading...</em></p>
+    <Spin size="large" Tip="Loading..." />
 }
 else
 {
@@ -61,8 +58,7 @@ else
 }
 
 @code {
-
-    public class Model
+    class Model
     {
         [Required]
         public string Message { get; set; }
@@ -70,18 +66,21 @@ else
         [RequiredList]
         public IEnumerable<string> ConnectIds { get; set; }
     }
+}
 
-    private Model model = new Model();
+@code {
+
+    bool loading;
+
+    Model model = new Model();
     AntDesign.Form<Model> form;
 
-    private ConcurrentDictionary<string, ClientConnectionInfo<IConnectionContext>>? dic;
-    private string Notice = string.Empty;
+    string Notice = string.Empty;
     AntDesign.Input<string> inputMessageRef;
-
-    private bool loading;
 
     ITable table;
     string selectionType = "checkbox";
+    ConcurrentDictionary<string, ClientConnectionInfo<IConnectionContext>>? dic;
     IEnumerable<KeyValuePair<string, ClientConnectionInfo<IConnectionContext>>> selectedRows;
 
     protected override async Task OnInitializedAsync()
@@ -90,6 +89,7 @@ else
         selectedRows = new List<KeyValuePair<string, ClientConnectionInfo<IConnectionContext>>>();
         await base.OnInitializedAsync();
     }
+
     private void OnSelectedItemsChangedHandler(IEnumerable<string> values)
     {
         if (values != null)
@@ -101,6 +101,7 @@ else
             table.SetSelection(null);
         }
     }
+
     private async void Push()
     {
 
@@ -112,10 +113,12 @@ else
         Notice = $"开始推送:{selectedRows.Count()}个客户端";
 
         loading = true;
+
         foreach (var item in selectedRows)
         {
             var result = await dataService.PushMsg(model.Message, item.Key);
         }
+
         loading = false;
 
         model.Message = string.Empty;
