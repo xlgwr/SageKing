@@ -26,6 +26,10 @@ public partial class ServerReceiver(
     /// 服务端类型
     /// </summary>
     public int ServerType { get; set; }
+    /// <summary>
+    /// 服务名称
+    /// </summary>
+    public string ServerName { get; set; }
 
     public async ValueTask<StreamPackage> SendStreamPackageListAsync(StreamPackage[] requestFields, string msgType, IFeatureCollection features, CancellationToken cancellationToken)
     {
@@ -36,7 +40,7 @@ public partial class ServerReceiver(
         {
             try
             {
-                return await mediator.Send(new ServerReceiverRequest(requestFields, msgType));
+                return await mediator.Send(new ServerReceiverRequest(requestFields, msgType, ServerName, ServerType));
             }
             catch (System.Exception ex)
             {

@@ -14,6 +14,7 @@ using SageKing.IceRPC.Client.Extensions;
 using SageKing.IceRPC.Client.Services.SliceService;
 using SageKing.Core.Options;
 using SageKing.Core.Extensions;
+using SageKingIceRpc;
 
 namespace SageKing.IceRPC.Client.Services
 {
@@ -97,6 +98,18 @@ namespace SageKing.IceRPC.Client.Services
             }
             #endregion
 
+            //生成身份信息
+            _Identity = new Identity()
+            {
+                Guid = Guid.NewGuid().ToString("N"),
+                Name = _option.ClientId,
+                Type = _option.ClientType,
+                Category = string.Empty,
+                Token = string.Empty
+            };
+
+            clientReceiver.Identity = _Identity;
+
             router = router.Map<IClientReceiverService>(clientReceiver);
 
             //option
@@ -148,17 +161,7 @@ namespace SageKing.IceRPC.Client.Services
             _pipeline = new Pipeline()
                 .UseLogger(loggerFactory)
                 .UseDeadline(TimeSpan.FromSeconds(_option.Timeout))
-                .Into(_client);
-
-            //生成身份信息
-            _Identity = new Identity()
-            {
-                Guid = Guid.NewGuid().ToString("N"),
-                Name = _option.ClientId,
-                Type = (int)_option.ClientType,
-                Category = string.Empty,
-                Token = string.Empty
-            };
+                .Into(_client); 
 
         }
 

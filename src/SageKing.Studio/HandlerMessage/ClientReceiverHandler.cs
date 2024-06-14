@@ -17,6 +17,12 @@ public class ClientReceiverHandler(PackagesDataService packagesData) : IRequestH
         {
             packagesData.DataDic[request.msgType] = new List<StreamPackage[]> { request.Packages };
         }
+
+        string desc = $"【{request.ClientName}:{packagesData.ClientTypeDic.GetDesc(request.ClientType)}】收到##$" +
+            $"{request.msgType}:" +
+            $"Packages:{request.Packages?.Length}";
+        packagesData.NoticeAction?.Invoke($"客户端收到消息", desc, 1);
+
         await Task.CompletedTask;
         return 1000.GetStreamPackage(0, "ClientReceiverHandler 处理成功");
     }

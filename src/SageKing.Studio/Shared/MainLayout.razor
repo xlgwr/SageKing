@@ -1,5 +1,8 @@
 ﻿@inherits LayoutComponentBase
 
+@inject NotificationService _notice
+@inject PackagesDataService _package
+
 <PageTitle>SageKing.Studio</PageTitle>
 
 <div class="page">
@@ -9,7 +12,7 @@
 
     <main>
         @* <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+        <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
         </div> *@
 
         <article class="content px-4">
@@ -17,3 +20,19 @@
         </article>
     </main>
 </div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        _package.NoticeAction += (msg, desc, type) =>
+        {
+            _notice.Open(new NotificationConfig()
+                {
+                    Message = msg,
+                    Description = desc
+                });
+        };
+
+        base.OnInitialized();
+    }
+}

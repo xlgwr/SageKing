@@ -32,8 +32,11 @@ public class IceRPCServer : IServer<ServerAddress, StreamPackage>
 
         _option = iceRPCServerOption.Value;
         _logger = loggerFactory.CreateLogger<IceRpc.Server>();
+
         _connectionInfoManagement = connectionInfoManagement;
+
         serverReceiver.ServerType = _option.ServerType;
+        serverReceiver.ServerName = _option.ServerName;
 
         // Create a simple console logger factory and configure the log level for category IceRpc.
         //using ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>

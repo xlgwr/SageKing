@@ -14,6 +14,9 @@ namespace SageKing.IceRPC.Client.Services.SliceService;
 public partial class ClientReceiver(IMediator mediator, ILoggerFactory loggerFactory) : IClientReceiverService
 {
     ILogger logger = loggerFactory.CreateLogger<ClientReceiver>();
+
+    public Identity Identity {  get; set; }
+
     public async ValueTask<StreamPackage> PushStreamPackageListAsync(StreamPackage[] responseFields, string msgType, IFeatureCollection features, CancellationToken cancellationToken)
     {
         Console.WriteLine($"PushStreamPackageListAsync:msgType:{msgType}:{responseFields.toJsonNoByteStr()}");
@@ -23,7 +26,7 @@ public partial class ClientReceiver(IMediator mediator, ILoggerFactory loggerFac
         {
             try
             {
-                return await mediator.Send(new ClientReceiverRequest(responseFields, msgType));
+                return await mediator.Send(new ClientReceiverRequest(responseFields, msgType,Identity.Name, Identity.Type));
             }
             catch (System.Exception ex)
             {

@@ -15,6 +15,11 @@ namespace SageKing.Studio.Data
         public ConcurrentDictionary<string, List<StreamPackage[]>> DataDic;
         public ConcurrentDictionary<string, ClientConnectionInfo<IConnectionContext>> DataClientDic;
 
+        /// <summary>
+        /// messsage,desc,type
+        /// </summary>
+        public Action<string, string, int> NoticeAction = (a, b, type) => { };
+
         public PackagesDataService(
             IClientConnectionProvider<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage, Pipeline, Identity> clientConnectionProvider,
              IOptions<ClientTypeDicOptions> clientTypeDic

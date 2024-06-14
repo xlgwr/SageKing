@@ -8,4 +8,4 @@ using System.Threading.Tasks;
 
 namespace SageKing.IceRPC.EventMessage;
 
-public record ServerReceiverRequest(StreamPackage[] Packages, string msgType) : IRequest<StreamPackage>;
+public record ServerReceiverRequest(StreamPackage[] Packages, string msgType, string serverName, int serverType) : IRequest<StreamPackage>;

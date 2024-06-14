@@ -3,6 +3,7 @@
 <PageTitle>客户端管理中心</PageTitle>
 
 @inject PackagesDataService dataService
+@inject NotificationService _notice
 
 <h2>客户端管理</h2>
 <br />
@@ -23,7 +24,7 @@
                 TItem="string"
                 OnSelectedItemsChanged="OnSelectedItemsChangedHandler"
                 Style="width: 100%; margin-bottom: 8px;"
-                EnableSearch 
+                EnableSearch
                 AllowClear>
             <SelectOptions>
                 @foreach (var item in dic)
@@ -37,7 +38,7 @@
     <FormItem WrapperColOffset="1">
         <Button Type="@ButtonType.Primary" @onclick="Push" Loading="@loading">推送</Button>
         <label class="validation-message">@Notice</label>
-    </FormItem> 
+    </FormItem>
 
 </Form>
 
@@ -126,8 +127,8 @@ else
 
         await inputMessageRef.Focus();
 
-        StateHasChanged();
-    }
+        StateHasChanged(); 
+    } 
 
     public void OnRowClick(RowData<KeyValuePair<string, ClientConnectionInfo<IConnectionContext>>> row)
     {

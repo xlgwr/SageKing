@@ -7,4 +7,4 @@ using System.Threading.Tasks;
 
 namespace SageKing.IceRPC.EventMessage;
 
-public record ClientReceiverRequest(StreamPackage[] Packages, string msgType) : IRequest<StreamPackage>;
+public record ClientReceiverRequest(StreamPackage[] Packages, string msgType, string ClientName, int ClientType) : IRequest<StreamPackage>;
