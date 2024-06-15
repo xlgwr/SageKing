@@ -3,6 +3,7 @@ global using System.ComponentModel.DataAnnotations;
 global using Microsoft.Extensions.DependencyInjection;
 
 global using SageKing.Core.Contracts;
+global using SageKing.Core.Attributes;
 global using SageKing.Core.Extensions;
 global using SageKing.Core.EventMessage;
 
