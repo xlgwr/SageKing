@@ -13,12 +13,15 @@ public interface ISageKingMessage
 {
     public string Id { get; set; }
 
+    public string Varsion { get; set; }
+
     public string Name { get; set; }
 
     public int Type { get; set; }
 
     public string Description { get; set; }
 
+    #region Add Or Update
     /// <summary>
     /// 新增 属性
     /// </summary>
@@ -26,14 +29,38 @@ public interface ISageKingMessage
     /// <param name="attributeName"></param>
     /// <param name="value"></param>
     /// <returns></returns>
-    public bool AddOrUpdate(string attributeName, (object value, DataStreamTypeEnum type) value);
+    public bool AddOrUpdate(string attributeName, DataStreamTypValue<string> value);
+    public bool AddOrUpdate(string attributeName, DataStreamTypValue<sbyte> value);
+    public bool AddOrUpdate(string attributeName, DataStreamTypValue<byte> value);
+    public bool AddOrUpdate(string attributeName, DataStreamTypValue<short> value);
+    public bool AddOrUpdate(string attributeName, DataStreamTypValue<int> value);
+    public bool AddOrUpdate(string attributeName, DataStreamTypValue<uint> value);
+    public bool AddOrUpdate(string attributeName, DataStreamTypValue<long> value);
+    public bool AddOrUpdate(string attributeName, DataStreamTypValue<ulong> value);
+    public bool AddOrUpdate(string attributeName, DataStreamTypValue<float> value);
+    public bool AddOrUpdate(string attributeName, DataStreamTypValue<double> value);
 
+    #endregion
+
+    #region Get
     /// <summary>
     /// 获取 属性值
     /// </summary>
     /// <param name="attributeName"></param>
     /// <returns></returns>
-    public (object value, DataStreamTypeEnum type) Get(string attributeName);
+    public string Get(string attributeName);
+    public sbyte Getsbyte(string attributeName);
+    public byte Getbyte(string attributeName);
+    public short Getshort(string attributeName);
+    public ushort Getushort(string attributeName);
+    public int Getint(string attributeName);
+    public uint Getuint(string attributeName);
+    public long Getlong(string attributeName);
+    public ulong Getulong(string attributeName);
+    public float Getfloat(string attributeName);
+    public double Getdouble(string attributeName);
+
+    #endregion
 
     /// <summary>
     /// 移除 属性
@@ -41,7 +68,7 @@ public interface ISageKingMessage
     /// <typeparam name="T"></typeparam>
     /// <param name="attributeName"></param>
     /// <returns></returns>
-    public bool Remove<T>(string attributeName);
+    public bool Remove(string attributeName, DataStreamTypeEnum type);
 
     /// <summary>
     /// 收到消息， 加载数据，并初始化
