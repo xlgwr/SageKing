@@ -38,10 +38,7 @@ namespace SageKing.IceRPC.Extensions
         }
         public static bool AddOrUpdatePost(this ConcurrentDictionary<string, string> dic, string attributeName, DataStreamTypValue<string> value, ConcurrentDictionary<DataStreamTypeEnum, ConcurrentDictionary<string, int>> posDic)
         {
-            if (dic == null)
-            {
-                dic = new();
-            }
+            
 
             var type = value.type;
             if (!dic.ContainsKey(attributeName))

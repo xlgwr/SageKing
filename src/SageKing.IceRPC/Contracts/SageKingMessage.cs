@@ -65,51 +65,61 @@ namespace SageKing.IceRPC.Contracts
 
         public bool AddOrUpdate(string attributeName, DataStreamTypValue<string> value)
         {
+            if (_0string == null) _0string = new();
             return _0string.AddOrUpdatePost(attributeName, value, _AttributePosition);
         }
 
         public bool AddOrUpdate(string attributeName, DataStreamTypValue<sbyte> value)
         {
+            if (_1Int8Arr_sbyte == null) _1Int8Arr_sbyte = new();
             return _1Int8Arr_sbyte.AddOrUpdatePost(attributeName, value, _AttributePosition);
         }
 
         public bool AddOrUpdate(string attributeName, DataStreamTypValue<byte> value)
         {
+            if (_2Uint8Arr_byte == null) _2Uint8Arr_byte = new();
             return _2Uint8Arr_byte.AddOrUpdatePost(attributeName, value, _AttributePosition);
         }
 
         public bool AddOrUpdate(string attributeName, DataStreamTypValue<short> value)
         {
+            if (_3Int16_short == null) _3Int16_short = new();
             return _3Int16_short.AddOrUpdatePost(attributeName, value, _AttributePosition);
         }
 
         public bool AddOrUpdate(string attributeName, DataStreamTypValue<int> value)
         {
+            if (_5eint32_int == null) _5eint32_int = new();
             return _5eint32_int.AddOrUpdatePost(attributeName, value, _AttributePosition);
         }
 
         public bool AddOrUpdate(string attributeName, DataStreamTypValue<uint> value)
         {
+            if (_6uint32_uint == null) _6uint32_uint = new();
             return _6uint32_uint.AddOrUpdatePost(attributeName, value, _AttributePosition);
         }
 
         public bool AddOrUpdate(string attributeName, DataStreamTypValue<long> value)
         {
+            if (_7int64_long == null) _7int64_long = new();
             return _7int64_long.AddOrUpdatePost(attributeName, value, _AttributePosition);
         }
 
         public bool AddOrUpdate(string attributeName, DataStreamTypValue<ulong> value)
         {
+            if (_8Uint64_ulong == null) _8Uint64_ulong = new();
             return _8Uint64_ulong.AddOrUpdatePost(attributeName, value, _AttributePosition);
         }
 
         public bool AddOrUpdate(string attributeName, DataStreamTypValue<float> value)
         {
+            if (_9Float32_float == null) _9Float32_float = new();
             return _9Float32_float.AddOrUpdatePost(attributeName, value, _AttributePosition);
         }
 
         public bool AddOrUpdate(string attributeName, DataStreamTypValue<double> value)
         {
+            if (_10Float64_double == null) _10Float64_double = new();
             return _10Float64_double.AddOrUpdatePost(attributeName, value, _AttributePosition);
 
         }

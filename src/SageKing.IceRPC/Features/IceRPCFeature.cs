@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SageKing.IceRPC.Contracts;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,6 +21,7 @@ public class IceRPCFeature : FeatureBase
     /// <inheritdoc />
     public override void Apply()
     {
-        Services.Configure(ClientTypeDicOptions);
+        Services.Configure(ClientTypeDicOptions)
+            .AddTransient<ISageKingMessage, SageKingMessage>();
     }
 }

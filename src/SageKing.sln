@@ -43,6 +43,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Benchmark", "Benchmark", "{
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SageKing.IceRPC.BenchmarkTest", "..\tests\Benchmark\SageKing.IceRPC.BenchmarkTest\SageKing.IceRPC.BenchmarkTest.csproj", "{6FA303CE-AE5D-4F22-8BFC-D5990E2764D3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SageKing.IceRPC.Test", "..\tests\SageKing.IceRPC.Test\SageKing.IceRPC.Test.csproj", "{02F6F45F-F3CC-43F8-8D8D-6F25E7C8A146}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -89,6 +91,10 @@ Global
 		{6FA303CE-AE5D-4F22-8BFC-D5990E2764D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6FA303CE-AE5D-4F22-8BFC-D5990E2764D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6FA303CE-AE5D-4F22-8BFC-D5990E2764D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02F6F45F-F3CC-43F8-8D8D-6F25E7C8A146}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02F6F45F-F3CC-43F8-8D8D-6F25E7C8A146}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02F6F45F-F3CC-43F8-8D8D-6F25E7C8A146}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02F6F45F-F3CC-43F8-8D8D-6F25E7C8A146}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -106,6 +112,7 @@ Global
 		{06A7E516-E44E-4CA6-AA94-34344BC4DAD2} = {7318F886-7E45-4156-B221-F68837DC28BA}
 		{14ABD1CF-E742-4CB6-9BED-5356D724D8DD} = {A7236CC3-9B63-4DEE-A157-36ED3C326ADD}
 		{6FA303CE-AE5D-4F22-8BFC-D5990E2764D3} = {14ABD1CF-E742-4CB6-9BED-5356D724D8DD}
+		{02F6F45F-F3CC-43F8-8D8D-6F25E7C8A146} = {A7236CC3-9B63-4DEE-A157-36ED3C326ADD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2F631A7F-D4DD-4C8D-A8B9-47797DD7B86A}
