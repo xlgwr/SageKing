@@ -132,6 +132,48 @@ public class Tests
         public double name18 { get; set; } = 110.11;
 
 
+        private bool _isChange = false;
+        private StreamPackageData _packageData;
+
+        #region 数据 AttributeValue
+
+        /// <summary>
+        /// 属性值 
+        /// </summary>
+        private Dictionary<string, string> _string0;
+        private Dictionary<string, sbyte> _int8Arr_sbyte1;
+        private Dictionary<string, byte> _uint8Arr_byte2;
+        private Dictionary<string, short> _int16_short3;
+        private Dictionary<string, ushort> _uint16_ushort4;
+        private Dictionary<string, int> _int32_int5;
+        private Dictionary<string, uint> _uint32_uint6;
+        private Dictionary<string, long> _int64_long7;
+        private Dictionary<string, ulong> _uint64_ulong8;
+        private Dictionary<string, float> _float32_float9;
+        private Dictionary<string, double> _float64_double10;
+        #endregion
+        /// <summary>
+        /// 属性位置
+        /// 用于解包定位
+        /// </summary>
+        private readonly Dictionary<DataStreamTypeEnum, Dictionary<string, int>> _attributePosition;
+
+        public EntityDemo()
+        {
+            _isChange = false;
+            _attributePosition = new();
+        }
+
+        public string Id { get; set; }
+
+        public string Varsion { get; set; }
+
+        public string Name { get; set; }
+
+        public int Type { get; set; }
+
+        public string Description { get; set; }
+
     }
 
 
