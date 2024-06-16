@@ -1,13 +1,15 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Microsoft.VisualBasic;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace SageKing.IceRPC.Extensions
 {
-    public static class ConcurrentDictionaryExts
+    public static class SageKingMessageExts
     {
         public static bool AddOrUpdatePost<T>(this ConcurrentDictionary<string, T> dic, string attributeName, DataStreamTypValue<T> value, ConcurrentDictionary<DataStreamTypeEnum, ConcurrentDictionary<string, int>> posDic)
             where T : struct
@@ -86,6 +88,27 @@ namespace SageKing.IceRPC.Extensions
             {
                 dic[item.Key] = value.value[item.Value];
             }
+        }
+        public static T[] GetArray<T>(this List<string> sortAttribute, ConcurrentDictionary<string, T> dataDic)
+            where T : struct
+        {
+
+            List<T> lst = new();
+            foreach (var item in sortAttribute)
+            {
+                lst.Add(dataDic[item]);
+            }
+            return lst.ToArray();
+        }
+
+        public static string[] GetArray(this List<string> sortAttribute, ConcurrentDictionary<string, string> dataDic)
+        {
+            List<string> lst = new();
+            foreach (var item in sortAttribute)
+            {
+                lst.Add(dataDic[item]);
+            }
+            return lst.ToArray();
         }
     }
 }

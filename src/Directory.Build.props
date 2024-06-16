@@ -7,6 +7,9 @@
 		<!-- Copy the PDBs from the NuGet packages to get file names and line numbers in stack traces. -->
 		<CopyDebugSymbolFilesFromPackages>true</CopyDebugSymbolFilesFromPackages>
 		<EnablePreviewFeatures>True</EnablePreviewFeatures>
+		<!-- Missing XML comment for publicly visible type or member. -->
+		<NoWarn>CS1591</NoWarn>
+		<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
 	</PropertyGroup>
 
 	<PropertyGroup>
