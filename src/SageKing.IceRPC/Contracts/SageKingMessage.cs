@@ -225,25 +225,8 @@ namespace SageKing.IceRPC.Contracts
         /// <exception cref="NotSupportedException"></exception>
         public void LoadData(StreamPackageData packageData)
         {
-            DataStreamTypValue<string[]> temp0string = null;
-            DataStreamTypValue<sbyte[]> temp1Int8Arr_sbyte = null;
-            DataStreamTypValue<byte[]> temp2Uint8Arr_byte = null;
-            DataStreamTypValue<short[]> temp3Int16_short = null;
-            DataStreamTypValue<ushort[]> temp4uint16_ushort = null;
-            DataStreamTypValue<int[]> temp5int32_int = null;
-            DataStreamTypValue<uint[]> temp6uint32_uint = null;
-            DataStreamTypValue<long[]> temp7int64_long = null;
-            DataStreamTypValue<ulong[]> temp8Uint64_ulong = null;
-            DataStreamTypValue<float[]> temp9Float32_float = null;
-            DataStreamTypValue<double[]> temp10Float64_double = null;
-
             foreach (var rowType in packageData.RowType)
             {
-                if (!Enum.IsDefined(typeof(DataStreamTypeEnum), rowType))
-                {
-                    throw new NotSupportedException($"当前类型【{rowType}】不在支持范围内");
-                }
-
                 var getTypeMenu = (DataStreamTypeEnum)rowType;
 
                 int index = 0;
@@ -253,57 +236,57 @@ namespace SageKing.IceRPC.Contracts
                 switch (getTypeMenu)
                 {
                     case DataStreamTypeEnum.StringArr:
-                        temp0string = new DataStreamTypValue<string[]>(getTypeMenu, currDatabyte.GetString());
+                        var temp0string = new DataStreamTypValue<string[]>(getTypeMenu, currDatabyte.GetString());
                         _string0 = new();
                         temp0string.GetPostData<string>(_string0, _attributePosition);
                         break;
                     case DataStreamTypeEnum.Int8Arr:
-                        temp1Int8Arr_sbyte = new DataStreamTypValue<sbyte[]>(getTypeMenu, currDatabyte.Getsbyte());
+                        var temp1Int8Arr_sbyte = new DataStreamTypValue<sbyte[]>(getTypeMenu, currDatabyte.Getsbyte());
                         _int8Arr_sbyte1 = new();
                         temp1Int8Arr_sbyte.GetPostData<sbyte>(_int8Arr_sbyte1, _attributePosition);
                         break;
                     case DataStreamTypeEnum.Uint8Arr:
-                        temp2Uint8Arr_byte = new DataStreamTypValue<byte[]>(getTypeMenu, currDatabyte.Getbyte());
+                        var temp2Uint8Arr_byte = new DataStreamTypValue<byte[]>(getTypeMenu, currDatabyte.Getbyte());
                         _uint8Arr_byte2 = new();
                         temp2Uint8Arr_byte.GetPostData<byte>(_uint8Arr_byte2, _attributePosition);
                         break;
                     case DataStreamTypeEnum.Int16Arr:
-                        temp3Int16_short = new DataStreamTypValue<short[]>(getTypeMenu, currDatabyte.Getshort());
+                        var temp3Int16_short = new DataStreamTypValue<short[]>(getTypeMenu, currDatabyte.Getshort());
                         _int16_short3 = new();
                         temp3Int16_short.GetPostData<short>(_int16_short3, _attributePosition);
                         break;
                     case DataStreamTypeEnum.Uint16Arr:
-                        temp4uint16_ushort = new DataStreamTypValue<ushort[]>(getTypeMenu, currDatabyte.Getushort());
+                        var temp4uint16_ushort = new DataStreamTypValue<ushort[]>(getTypeMenu, currDatabyte.Getushort());
                         _uint16_ushort4 = new();
                         temp4uint16_ushort.GetPostData<ushort>(_uint16_ushort4, _attributePosition);
                         break;
                     case DataStreamTypeEnum.Int32Arr:
-                        temp5int32_int = new DataStreamTypValue<int[]>(getTypeMenu, currDatabyte.Getint());
+                        var temp5int32_int = new DataStreamTypValue<int[]>(getTypeMenu, currDatabyte.Getint());
                         _int32_int5 = new();
                         temp5int32_int.GetPostData<int>(_int32_int5, _attributePosition);
                         break;
                     case DataStreamTypeEnum.Uint32Arr:
-                        temp6uint32_uint = new DataStreamTypValue<uint[]>(getTypeMenu, currDatabyte.Getuint());
+                        var temp6uint32_uint = new DataStreamTypValue<uint[]>(getTypeMenu, currDatabyte.Getuint());
                         _uint32_uint6 = new();
                         temp6uint32_uint.GetPostData<uint>(_uint32_uint6, _attributePosition);
                         break;
                     case DataStreamTypeEnum.Int64Arr:
-                        temp7int64_long = new DataStreamTypValue<long[]>(getTypeMenu, currDatabyte.Getlong());
+                        var temp7int64_long = new DataStreamTypValue<long[]>(getTypeMenu, currDatabyte.Getlong());
                         _int64_long7 = new();
                         temp7int64_long.GetPostData<long>(_int64_long7, _attributePosition);
                         break;
                     case DataStreamTypeEnum.Uint64Arr:
-                        temp8Uint64_ulong = new DataStreamTypValue<ulong[]>(getTypeMenu, currDatabyte.Getulong());
+                        var temp8Uint64_ulong = new DataStreamTypValue<ulong[]>(getTypeMenu, currDatabyte.Getulong());
                         _uint64_ulong8 = new();
                         temp8Uint64_ulong.GetPostData<ulong>(_uint64_ulong8, _attributePosition);
                         break;
                     case DataStreamTypeEnum.Float32Arr:
-                        temp9Float32_float = new DataStreamTypValue<float[]>(getTypeMenu, currDatabyte.Getfloat());
+                        var temp9Float32_float = new DataStreamTypValue<float[]>(getTypeMenu, currDatabyte.Getfloat());
                         _float32_float9 = new();
                         temp9Float32_float.GetPostData<float>(_float32_float9, _attributePosition);
                         break;
                     case DataStreamTypeEnum.Float64Arr:
-                        temp10Float64_double = new DataStreamTypValue<double[]>(getTypeMenu, currDatabyte.Getdouble());
+                        var temp10Float64_double = new DataStreamTypValue<double[]>(getTypeMenu, currDatabyte.Getdouble());
                         _float64_double10 = new();
                         temp10Float64_double.GetPostData<double>(_float64_double10, _attributePosition);
                         break;
@@ -342,7 +325,7 @@ namespace SageKing.IceRPC.Contracts
                 switch (type)
                 {
                     case DataStreamTypeEnum.StringArr:
-                        databody.Add(sortAttribute.GetArray(_string0).ToIceByte());
+                        databody.Add(sortAttribute.GetArray(_string0));
                         break;
                     case DataStreamTypeEnum.Int8Arr:
                         databody.Add(sortAttribute.GetArray(_int8Arr_sbyte1).ToIceByte());

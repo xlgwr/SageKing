@@ -87,22 +87,26 @@ namespace SageKing.IceRPC.Extensions
             where T : struct
         {
 
-            List<T> lst = new();
+            T[] lst = new T[sortAttribute.Count];
+            int i = 0;
             foreach (var item in sortAttribute)
             {
-                lst.Add(dataDic[item]);
+                lst[i] = dataDic[item];
+                i++;
             }
-            return lst.ToArray();
+            return lst;
         }
 
-        public static string[] GetArray(this List<string> sortAttribute, Dictionary<string, string> dataDic)
+        public static byte[] GetArray(this List<string> sortAttribute, Dictionary<string, string> dataDic)
         {
-            List<string> lst = new();
+            string[] lst = new string[sortAttribute.Count];
+            int i = 0;
             foreach (var item in sortAttribute)
             {
-                lst.Add(dataDic[item]);
+                lst[i] = dataDic[item];
+                i++;
             }
-            return lst.ToArray();
+            return lst.ToIceByte();
         }
 
         public static T GetDefault<T>(this Dictionary<string, T> dic, string key, T defaultValue = default(T))
