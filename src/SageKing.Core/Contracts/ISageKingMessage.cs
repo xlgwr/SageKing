@@ -76,13 +76,13 @@ public interface ISageKingMessage
     /// </summary>
     /// <param name="posDic">DataStreamTypeEnum arr集合类型>=50</param>
     /// <returns></returns>
-    public bool InitAttribytePos(Dictionary<DataStreamTypeEnum, Dictionary<string, int>> posDic);
+    public bool InitAttribytePos(Dictionary<DataStreamTypeEnum, Dictionary<string, byte>> posDic);
 
     /// <summary>
     /// 获取属性及位置
     /// </summary>
     /// <returns></returns>
-    public Dictionary<DataStreamTypeEnum, Dictionary<string, int>> GetPosData();
+    public Dictionary<DataStreamTypeEnum, Dictionary<string, byte>> GetPosData();
 
     /// <summary>
     /// 收到消息， 加载数据，并初始化

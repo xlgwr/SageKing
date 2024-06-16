@@ -56,7 +56,7 @@ public class Tests
     }
 
     [Benchmark]
-    public void GetSageKingMessageTBype()
+    public void GetSageKingMessageToBype()
     {
         data1.ToData(true);
     } 

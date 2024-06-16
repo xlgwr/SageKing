@@ -12,7 +12,7 @@ namespace SageKing.IceRPC.Extensions
 {
     public static class SageKingMessageExts
     {
-        public static bool AddOrUpdatePost<T>(this Dictionary<string, T> dic, string attributeName, DataStreamTypValue<T> value, Dictionary<DataStreamTypeEnum, Dictionary<string, int>> posDic)
+        public static bool AddOrUpdatePost<T>(this Dictionary<string, T> dic, string attributeName, DataStreamTypValue<T> value, Dictionary<DataStreamTypeEnum, Dictionary<string, byte>> posDic)
             where T : struct
         {
             if (dic == null)
@@ -25,8 +25,8 @@ namespace SageKing.IceRPC.Extensions
             {
                 if (posDic.TryGetValue(type, out var pos))
                 {
-                    int count = pos.Count;
-                    pos[attributeName] = count;
+                    var count = pos.Count;
+                    pos[attributeName] = (byte)count;
                 }
                 else
                 {
@@ -37,17 +37,15 @@ namespace SageKing.IceRPC.Extensions
             dic[attributeName] = value.Value;
             return true;
         }
-        public static bool AddOrUpdatePost(this Dictionary<string, string> dic, string attributeName, DataStreamTypValue<string> value, Dictionary<DataStreamTypeEnum, Dictionary<string, int>> posDic)
+        public static bool AddOrUpdatePost(this Dictionary<string, string> dic, string attributeName, DataStreamTypValue<string> value, Dictionary<DataStreamTypeEnum, Dictionary<string, byte>> posDic)
         {
-
-
             var type = value.DataStreamType;
             if (!dic.ContainsKey(attributeName))
             {
                 if (posDic.TryGetValue(type, out var pos))
                 {
                     int count = pos.Count;
-                    pos[attributeName] = count;
+                    pos[attributeName] = (byte)count;
                 }
                 else
                 {
@@ -59,8 +57,7 @@ namespace SageKing.IceRPC.Extensions
             return true;
         }
 
-
-        public static bool RemovePost<T>(this Dictionary<string, T> dic, string attributeName, DataStreamTypeEnum type, Dictionary<DataStreamTypeEnum, Dictionary<string, int>> posDic, ref bool isChange)
+        public static bool RemovePost<T>(this Dictionary<string, T> dic, string attributeName, DataStreamTypeEnum type, Dictionary<DataStreamTypeEnum, Dictionary<string, byte>> posDic, ref bool isChange)
         {
             if (dic.Remove(attributeName, out _))
             {
@@ -69,11 +66,11 @@ namespace SageKing.IceRPC.Extensions
                     pos.Remove(attributeName, out _);
                 }
                 isChange = true;
-            };
+            }
             return true;
         }
 
-        public static void GetPostData<T>(this DataStreamTypValue<T[]> value, Dictionary<string, T> dic, Dictionary<DataStreamTypeEnum, Dictionary<string, int>> posDic)
+        public static void GetPostData<T>(this DataStreamTypValue<T[]> value, Dictionary<string, T> dic, Dictionary<DataStreamTypeEnum, Dictionary<string, byte>> posDic)
         {
             dic.Clear();
             var getPost = posDic[value.DataStreamType];
@@ -83,10 +80,10 @@ namespace SageKing.IceRPC.Extensions
             }
 
         }
+
         public static T[] GetArray<T>(this List<string> sortAttribute, Dictionary<string, T> dataDic)
             where T : struct
         {
-
             T[] lst = new T[sortAttribute.Count];
             int i = 0;
             foreach (var item in sortAttribute)
@@ -109,7 +106,7 @@ namespace SageKing.IceRPC.Extensions
             return lst.ToIceByte();
         }
 
-        public static T GetDefault<T>(this Dictionary<string, T> dic, string key, T defaultValue = default(T))
+        public static T GetDefault<T>(this Dictionary<string, T> dic, string key, T defaultValue = default!)
         {
             if (dic.TryGetValue(key, out var value))
             {

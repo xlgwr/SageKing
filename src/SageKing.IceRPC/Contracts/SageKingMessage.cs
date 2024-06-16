@@ -38,7 +38,7 @@ namespace SageKing.IceRPC.Contracts
         /// 属性位置
         /// 用于解包定位
         /// </summary>
-        private readonly Dictionary<DataStreamTypeEnum, Dictionary<string, int>> _attributePosition;
+        private readonly Dictionary<DataStreamTypeEnum, Dictionary<string, byte>> _attributePosition;
 
         public SageKingMessage()
         {
@@ -340,11 +340,11 @@ namespace SageKing.IceRPC.Contracts
             return _packageData;
         }
 
-        public bool InitAttribytePos(Dictionary<DataStreamTypeEnum, Dictionary<string, int>> posDic)
+        public bool InitAttribytePos(Dictionary<DataStreamTypeEnum, Dictionary<string, byte>> posDic)
         {
             return posDic.InitDictionary(_attributePosition);
         }
-        public Dictionary<DataStreamTypeEnum, Dictionary<string, int>> GetPosData()
+        public Dictionary<DataStreamTypeEnum, Dictionary<string, byte>> GetPosData()
         {
             return _attributePosition.GetDictionary();
         }
