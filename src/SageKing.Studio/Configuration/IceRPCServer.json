@@ -1,0 +1,14 @@
+{
+  //
+  // 服务端配置，当前服务运行的参数
+  //
+  "IceRPCServer": {
+    "ServerName": "server1", //不能为空，唯一
+    "ServerType": 30, //服务端类型 see ClientType enum
+    "ServerAddress": "icerpc://[::0]:4062",
+    "IsQuic": false,
+    "IsTcpTLS": true,
+    "UseCompressor": false,
+    "CertificateFileName": "certs/server.p12"
+  }
+}

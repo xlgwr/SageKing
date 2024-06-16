@@ -1,3 +1,6 @@
+using Microsoft.Extensions.Configuration;
+using System.Text.RegularExpressions;
+
 namespace SageKing.Extensions;
 
 /// <summary>
@@ -42,4 +45,5 @@ public static class ModuleExtensions
         Modules[services] = module;
         return module;
     }
+
 }

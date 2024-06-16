@@ -1,0 +1,31 @@
+{
+  //
+  // 客户端配置，需要连接的服务端参数
+  //
+  "IceRPCClients": [
+    {
+      "ClientId": "clientTest1", // 客户端id
+      "ClientType": 1, // 客户端类型 see ClientTypeDic
+      "Timeout": 20,
+
+      "ServerName": "server1", // 服务器不能为空，唯一
+      "ServerAddress": "icerpc://localhost:4062",
+      "IsQuic": false,
+      "IsTcpTLS": true,
+      "UseCompressor": false,
+      "CertificateFileName": "certs/cacert.der"
+    },
+    {
+      "ClientId": "clientBB2", // 客户端id
+      "ClientType": 3, // 客户端类型 see ClientTypeDic
+      "Timeout": 20,
+
+      "ServerName": "server2", // 服务器不能为空，唯一
+      "ServerAddress": "icerpc://localhost:4062",
+      "IsQuic": false,
+      "IsTcpTLS": true,
+      "UseCompressor": false,
+      "CertificateFileName": "certs/cacert.der"
+    }
+  ]
+}

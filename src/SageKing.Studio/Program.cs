@@ -2,14 +2,15 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
-using SageKing.IceRPC.Client.Options;
-using SageKing.IceRPC.Server.Options;
 using SageKing.Studio.Data;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
-var configuration = builder.Configuration;
 
+//配置 本地 Configuration 目录下json文件
+builder.Configuration.AddConfigurationJsonFiles(builder.Environment);
+
+var configuration = builder.Configuration;
 //add SageKing
 builder.Services.AddSageKing(sk =>
 {
