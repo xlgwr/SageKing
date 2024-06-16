@@ -11,7 +11,5 @@ namespace SageKing.Core.Contracts
     /// </summary>
     /// <param name="RowType"></param>
     /// <param name="DataBody"></param>
-    public record class StreamPackageData(byte[] RowType, byte[][] DataBody);
-
-    public record class DataStreamTypValue<T>(DataStreamTypeEnum type, T value);
-}
+    public record class StreamPackageData(byte[] RowType, byte[][] DataBody); 
+};

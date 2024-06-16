@@ -19,7 +19,7 @@ namespace SageKing.IceRPC.Extensions
                 dic = new();
             }
 
-            var type = value.type;
+            var type = value.DataStreamType;
             if (!dic.ContainsKey(attributeName))
             {
                 if (posDic.TryGetValue(type, out var pos))
@@ -33,14 +33,14 @@ namespace SageKing.IceRPC.Extensions
                     posDic[type][attributeName] = 0;
                 }
             }
-            dic[attributeName] = value.value;
+            dic[attributeName] = value.Value;
             return true;
         }
         public static bool AddOrUpdatePost(this ConcurrentDictionary<string, string> dic, string attributeName, DataStreamTypValue<string> value, ConcurrentDictionary<DataStreamTypeEnum, ConcurrentDictionary<string, int>> posDic)
         {
-            
 
-            var type = value.type;
+
+            var type = value.DataStreamType;
             if (!dic.ContainsKey(attributeName))
             {
                 if (posDic.TryGetValue(type, out var pos))
@@ -54,7 +54,7 @@ namespace SageKing.IceRPC.Extensions
                     posDic[type][attributeName] = 0;
                 }
             }
-            dic[attributeName] = value.value;
+            dic[attributeName] = value.Value;
             return true;
         }
 
@@ -74,17 +74,14 @@ namespace SageKing.IceRPC.Extensions
 
         public static void GetPostData<T>(this DataStreamTypValue<T[]> value, ConcurrentDictionary<string, T> dic, ConcurrentDictionary<DataStreamTypeEnum, ConcurrentDictionary<string, int>> posDic)
         {
-            if (value == null)
-            {
-                return;
-
-            }
-            var getPost = posDic[value.type];
+            
+            var getPost = posDic[value.DataStreamType];
             dic = new();
             foreach (var item in getPost)
             {
-                dic[item.Key] = value.value[item.Value];
+                dic[item.Key] = value.Value[item.Value];
             }
+
         }
         public static T[] GetArray<T>(this List<string> sortAttribute, ConcurrentDictionary<string, T> dataDic)
             where T : struct
@@ -106,6 +103,15 @@ namespace SageKing.IceRPC.Extensions
                 lst.Add(dataDic[item]);
             }
             return lst.ToArray();
+        }
+
+        public static T GetDefault<T>(this IDictionary<string, T> dic, string key, T defaultValue = default(T))
+        {
+            if (dic.TryGetValue(key, out var value))
+            {
+                return value;
+            }
+            return defaultValue;
         }
     }
 }

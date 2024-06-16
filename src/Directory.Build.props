@@ -8,7 +8,7 @@
 		<CopyDebugSymbolFilesFromPackages>true</CopyDebugSymbolFilesFromPackages>
 		<EnablePreviewFeatures>True</EnablePreviewFeatures>
 		<!-- Missing XML comment for publicly visible type or member. -->
-		<NoWarn>CS1591</NoWarn>
+		<NoWarn>CS1591;CS8618;SA1028;SA1503;SA1600;SA1614;SA1616;SA1627;SA1629;SA1124</NoWarn>
 		<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
 	</PropertyGroup>
 
