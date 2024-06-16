@@ -1,4 +1,5 @@
-﻿using SageKing.IceRPC.Extensions;
+﻿using SageKing.Core.Extensions;
+using SageKing.IceRPC.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -63,6 +64,7 @@ namespace SageKing.IceRPC.Contracts
             {
                 _string0 = new();
             }
+            _isChange = true;
             return _string0.AddOrUpdatePost(attributeName, value, _attributePosition);
         }
 
@@ -72,6 +74,7 @@ namespace SageKing.IceRPC.Contracts
             {
                 _int8Arr_sbyte1 = new();
             }
+            _isChange = true;
             return _int8Arr_sbyte1.AddOrUpdatePost(attributeName, value, _attributePosition);
         }
 
@@ -81,6 +84,7 @@ namespace SageKing.IceRPC.Contracts
             {
                 _uint8Arr_byte2 = new();
             }
+            _isChange = true;
             return _uint8Arr_byte2.AddOrUpdatePost(attributeName, value, _attributePosition);
         }
 
@@ -90,6 +94,7 @@ namespace SageKing.IceRPC.Contracts
             {
                 _int16_short3 = new();
             }
+            _isChange = true;
             return _int16_short3.AddOrUpdatePost(attributeName, value, _attributePosition);
         }
 
@@ -99,6 +104,7 @@ namespace SageKing.IceRPC.Contracts
             {
                 _int32_int5 = new();
             }
+            _isChange = true;
             return _int32_int5.AddOrUpdatePost(attributeName, value, _attributePosition);
         }
 
@@ -108,6 +114,7 @@ namespace SageKing.IceRPC.Contracts
             {
                 _uint32_uint6 = new();
             }
+            _isChange = true;
             return _uint32_uint6.AddOrUpdatePost(attributeName, value, _attributePosition);
         }
 
@@ -117,6 +124,7 @@ namespace SageKing.IceRPC.Contracts
             {
                 _int64_long7 = new();
             }
+            _isChange = true;
             return _int64_long7.AddOrUpdatePost(attributeName, value, _attributePosition);
         }
 
@@ -126,6 +134,7 @@ namespace SageKing.IceRPC.Contracts
             {
                 _uint64_ulong8 = new();
             }
+            _isChange = true;
             return _uint64_ulong8.AddOrUpdatePost(attributeName, value, _attributePosition);
         }
 
@@ -135,6 +144,7 @@ namespace SageKing.IceRPC.Contracts
             {
                 _float32_float9 = new();
             }
+            _isChange = true;
             return _float32_float9.AddOrUpdatePost(attributeName, value, _attributePosition);
         }
 
@@ -144,6 +154,7 @@ namespace SageKing.IceRPC.Contracts
             {
                 _float64_double10 = new();
             }
+            _isChange = true;
             return _float64_double10.AddOrUpdatePost(attributeName, value, _attributePosition);
         }
 
@@ -207,50 +218,6 @@ namespace SageKing.IceRPC.Contracts
 
         #endregion
 
-        public bool Remove(string attributeName, DataStreamTypeEnum type)
-        {
-            switch (type)
-            {
-                case DataStreamTypeEnum.String:
-                    return _string0.RemovePost(attributeName, type, _attributePosition, ref _isChange);
-                    break;
-                case DataStreamTypeEnum.Int8:
-                    return _int8Arr_sbyte1.RemovePost(attributeName, type, _attributePosition, ref _isChange);
-                    break;
-                case DataStreamTypeEnum.Uint8:
-                    return _uint8Arr_byte2.RemovePost(attributeName, type, _attributePosition, ref _isChange);
-                    break;
-                case DataStreamTypeEnum.Int16:
-                    return _int16_short3.RemovePost(attributeName, type, _attributePosition, ref _isChange);
-                    break;
-                case DataStreamTypeEnum.Uint16:
-                    return _uint16_ushort4.RemovePost(attributeName, type, _attributePosition, ref _isChange);
-                    break;
-                case DataStreamTypeEnum.Int32:
-                    return _int32_int5.RemovePost(attributeName, type, _attributePosition, ref _isChange);
-                    break;
-                case DataStreamTypeEnum.Uint32:
-                    return _uint32_uint6.RemovePost(attributeName, type, _attributePosition, ref _isChange);
-                    break;
-                case DataStreamTypeEnum.Int64:
-                    return _int64_long7.RemovePost(attributeName, type, _attributePosition, ref _isChange);
-                    break;
-                case DataStreamTypeEnum.Uint64:
-                    return _uint64_ulong8.RemovePost(attributeName, type, _attributePosition, ref _isChange);
-                    break;
-                case DataStreamTypeEnum.Float32:
-                    return _float32_float9.RemovePost(attributeName, type, _attributePosition, ref _isChange);
-                    break;
-                case DataStreamTypeEnum.Float64:
-                    return _float64_double10.RemovePost(attributeName, type, _attributePosition, ref _isChange);
-                    break;
-                default:
-                    throw new NotSupportedException($"当前类型【{type}】暂时不支持");
-                    break;
-            }
-            return true;
-        }
-
         /// <summary>
         /// 从数据流包中解码数据.
         /// </summary>
@@ -272,7 +239,7 @@ namespace SageKing.IceRPC.Contracts
 
             foreach (var rowType in packageData.RowType)
             {
-                if (Enum.IsDefined(typeof(DataStreamTypeEnum), rowType))
+                if (!Enum.IsDefined(typeof(DataStreamTypeEnum), rowType))
                 {
                     throw new NotSupportedException($"当前类型【{rowType}】不在支持范围内");
                 }
@@ -287,52 +254,63 @@ namespace SageKing.IceRPC.Contracts
                 {
                     case DataStreamTypeEnum.StringArr:
                         temp0string = new DataStreamTypValue<string[]>(getTypeMenu, currDatabyte.GetString());
+                        _string0 = new();
                         temp0string.GetPostData<string>(_string0, _attributePosition);
                         break;
                     case DataStreamTypeEnum.Int8Arr:
                         temp1Int8Arr_sbyte = new DataStreamTypValue<sbyte[]>(getTypeMenu, currDatabyte.Getsbyte());
+                        _int8Arr_sbyte1 = new();
                         temp1Int8Arr_sbyte.GetPostData<sbyte>(_int8Arr_sbyte1, _attributePosition);
                         break;
                     case DataStreamTypeEnum.Uint8Arr:
                         temp2Uint8Arr_byte = new DataStreamTypValue<byte[]>(getTypeMenu, currDatabyte.Getbyte());
+                        _uint8Arr_byte2 = new();
                         temp2Uint8Arr_byte.GetPostData<byte>(_uint8Arr_byte2, _attributePosition);
                         break;
                     case DataStreamTypeEnum.Int16Arr:
                         temp3Int16_short = new DataStreamTypValue<short[]>(getTypeMenu, currDatabyte.Getshort());
+                        _int16_short3 = new();
                         temp3Int16_short.GetPostData<short>(_int16_short3, _attributePosition);
                         break;
                     case DataStreamTypeEnum.Uint16Arr:
                         temp4uint16_ushort = new DataStreamTypValue<ushort[]>(getTypeMenu, currDatabyte.Getushort());
+                        _uint16_ushort4 = new();
                         temp4uint16_ushort.GetPostData<ushort>(_uint16_ushort4, _attributePosition);
                         break;
                     case DataStreamTypeEnum.Int32Arr:
                         temp5int32_int = new DataStreamTypValue<int[]>(getTypeMenu, currDatabyte.Getint());
+                        _int32_int5 = new();
                         temp5int32_int.GetPostData<int>(_int32_int5, _attributePosition);
                         break;
                     case DataStreamTypeEnum.Uint32Arr:
                         temp6uint32_uint = new DataStreamTypValue<uint[]>(getTypeMenu, currDatabyte.Getuint());
+                        _uint32_uint6 = new();
                         temp6uint32_uint.GetPostData<uint>(_uint32_uint6, _attributePosition);
                         break;
                     case DataStreamTypeEnum.Int64Arr:
                         temp7int64_long = new DataStreamTypValue<long[]>(getTypeMenu, currDatabyte.Getlong());
+                        _int64_long7 = new();
                         temp7int64_long.GetPostData<long>(_int64_long7, _attributePosition);
                         break;
                     case DataStreamTypeEnum.Uint64Arr:
                         temp8Uint64_ulong = new DataStreamTypValue<ulong[]>(getTypeMenu, currDatabyte.Getulong());
+                        _uint64_ulong8 = new();
                         temp8Uint64_ulong.GetPostData<ulong>(_uint64_ulong8, _attributePosition);
                         break;
                     case DataStreamTypeEnum.Float32Arr:
                         temp9Float32_float = new DataStreamTypValue<float[]>(getTypeMenu, currDatabyte.Getfloat());
+                        _float32_float9 = new();
                         temp9Float32_float.GetPostData<float>(_float32_float9, _attributePosition);
                         break;
                     case DataStreamTypeEnum.Float64Arr:
                         temp10Float64_double = new DataStreamTypValue<double[]>(getTypeMenu, currDatabyte.Getdouble());
+                        _float64_double10 = new();
                         temp10Float64_double.GetPostData<double>(_float64_double10, _attributePosition);
                         break;
                     default:
                         throw new NotSupportedException($"当前类型【{getTypeMenu}】暂时不支持");
                         break;
-                } 
+                }
 
                 index++;
             }
@@ -407,5 +385,104 @@ namespace SageKing.IceRPC.Contracts
 
             return _packageData;
         }
+
+        public bool InitAttribytePos(Dictionary<DataStreamTypeEnum, Dictionary<string, int>> posDic)
+        {
+            return posDic.InitConcurrentDictionary(_attributePosition);
+        }
+        public Dictionary<DataStreamTypeEnum, Dictionary<string, int>> GetPosData()
+        {
+            return _attributePosition.GetDictionary();
+        }
+        public bool Remove(string attributeName, DataStreamTypeEnum type)
+        {
+            switch (type)
+            {
+                case DataStreamTypeEnum.StringArr:
+                    return _string0.RemovePost(attributeName, type, _attributePosition, ref _isChange);
+                    break;
+                case DataStreamTypeEnum.Int8Arr:
+                    return _int8Arr_sbyte1.RemovePost(attributeName, type, _attributePosition, ref _isChange);
+                    break;
+                case DataStreamTypeEnum.Uint8Arr:
+                    return _uint8Arr_byte2.RemovePost(attributeName, type, _attributePosition, ref _isChange);
+                    break;
+                case DataStreamTypeEnum.Int16Arr:
+                    return _int16_short3.RemovePost(attributeName, type, _attributePosition, ref _isChange);
+                    break;
+                case DataStreamTypeEnum.Uint16Arr:
+                    return _uint16_ushort4.RemovePost(attributeName, type, _attributePosition, ref _isChange);
+                    break;
+                case DataStreamTypeEnum.Int32Arr:
+                    return _int32_int5.RemovePost(attributeName, type, _attributePosition, ref _isChange);
+                    break;
+                case DataStreamTypeEnum.Uint32Arr:
+                    return _uint32_uint6.RemovePost(attributeName, type, _attributePosition, ref _isChange);
+                    break;
+                case DataStreamTypeEnum.Int64Arr:
+                    return _int64_long7.RemovePost(attributeName, type, _attributePosition, ref _isChange);
+                    break;
+                case DataStreamTypeEnum.Uint64Arr:
+                    return _uint64_ulong8.RemovePost(attributeName, type, _attributePosition, ref _isChange);
+                    break;
+                case DataStreamTypeEnum.Float32Arr:
+                    return _float32_float9.RemovePost(attributeName, type, _attributePosition, ref _isChange);
+                    break;
+                case DataStreamTypeEnum.Float64Arr:
+                    return _float64_double10.RemovePost(attributeName, type, _attributePosition, ref _isChange);
+                    break;
+                default:
+                    throw new NotSupportedException($"当前类型【{type}】暂时不支持");
+                    break;
+            }
+            return true;
+        }
+
+        public void ClearData()
+        {
+            foreach (var type in _attributePosition.Keys)
+            {
+                switch (type)
+                {
+                    case DataStreamTypeEnum.StringArr:
+                        _string0.Clear();
+                        break;
+                    case DataStreamTypeEnum.Int8Arr:
+                        _int8Arr_sbyte1.Clear();
+                        break;
+                    case DataStreamTypeEnum.Uint8Arr:
+                        _uint8Arr_byte2.Clear();
+                        break;
+                    case DataStreamTypeEnum.Int16Arr:
+                        _int16_short3.Clear();
+                        break;
+                    case DataStreamTypeEnum.Uint16Arr:
+                        _uint16_ushort4.Clear();
+                        break;
+                    case DataStreamTypeEnum.Int32Arr:
+                        _int32_int5.Clear();
+                        break;
+                    case DataStreamTypeEnum.Uint32Arr:
+                        _uint32_uint6.Clear();
+                        break;
+                    case DataStreamTypeEnum.Int64Arr:
+                        _int64_long7.Clear();
+                        break;
+                    case DataStreamTypeEnum.Uint64Arr:
+                        _uint64_ulong8.Clear();
+                        break;
+                    case DataStreamTypeEnum.Float32Arr:
+                        _float32_float9.Clear();
+                        break;
+                    case DataStreamTypeEnum.Float64Arr:
+                        _float64_double10.Clear();
+                        break;
+                    default:
+                        throw new NotSupportedException($"当前类型【{type}】暂时不支持");
+                        break;
+                }
+            }
+        }
+
     }
 }

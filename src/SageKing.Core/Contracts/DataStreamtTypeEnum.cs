@@ -13,10 +13,11 @@ namespace SageKing.Core.Contracts
     /// </summary>
     public enum DataStreamTypeEnum : byte
     {
+        None = 0,
         /// <summary>
         /// ICE 实体类型
         /// </summary>
-        IceObject = 0,
+        IceObject = 1,
         /// <summary>
         /// 单个类型
         /// </summary>

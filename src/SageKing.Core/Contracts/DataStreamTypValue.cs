@@ -8,7 +8,7 @@ namespace SageKing.Core.Contracts
 {
     public record class DataStreamTypValue<T>
     {
-        DataStreamTypeEnum _streamType = DataStreamTypeEnum.IceObject;
+        DataStreamTypeEnum _streamType = DataStreamTypeEnum.None;
 
         public DataStreamTypValue(T value)
         {
@@ -31,11 +31,14 @@ namespace SageKing.Core.Contracts
         {
             get
             {
-                if (_streamType != DataStreamTypeEnum.IceObject)
+                if (_streamType != DataStreamTypeEnum.None)
                 {
                     return _streamType;
                 }
-                return CsharpTypeForICE.GetDataStreamTypeEnum(this.ValueType);
+
+                _streamType = CsharpTypeForICE.GetDataStreamTypeEnum(this.ValueType);
+
+                return _streamType;
             }
         }
     }

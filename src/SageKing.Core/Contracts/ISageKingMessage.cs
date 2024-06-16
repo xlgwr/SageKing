@@ -67,8 +67,22 @@ public interface ISageKingMessage
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="attributeName"></param>
+    /// <param name="type">应为arr集合类型>=50</param>
     /// <returns></returns>
     public bool Remove(string attributeName, DataStreamTypeEnum type);
+
+    /// <summary>
+    /// 初始化属性及位置
+    /// </summary>
+    /// <param name="posDic">DataStreamTypeEnum arr集合类型>=50</param>
+    /// <returns></returns>
+    public bool InitAttribytePos(Dictionary<DataStreamTypeEnum, Dictionary<string, int>> posDic);
+
+    /// <summary>
+    /// 获取属性及位置
+    /// </summary>
+    /// <returns></returns>
+    public Dictionary<DataStreamTypeEnum, Dictionary<string, int>> GetPosData();
 
     /// <summary>
     /// 收到消息， 加载数据，并初始化
@@ -81,4 +95,9 @@ public interface ISageKingMessage
     /// </summary>
     /// <returns></returns>
     public StreamPackageData ToData();
+
+    /// <summary>
+    /// 清理数据,不清理位置信息
+    /// </summary>
+    public void ClearData();
 }

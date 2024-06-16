@@ -6,7 +6,7 @@ using Xunit.Abstractions;
 
 namespace SageKing.IceRPC.Test
 {
-    public class SageKingMessage_Test(ISageKingMessage sageKingMessage, IFixture _fixture)
+    public class SageKingMessage_Test(ISageKingMessage sageKingMessage, ISageKingMessage sageKingMessageLoad, IFixture _fixture)
     {
         [Theory]
         [InlineData("strdemo")]
@@ -52,6 +52,57 @@ namespace SageKing.IceRPC.Test
             Assert.Equal(getValue, value.Value);
 
             Assert.Equal(getValue2, default(int));
+        }
+
+        [Fact]
+        public void toData_loadData()
+        {
+            //Arrange 
+            var attributename = _fixture.Create<string>();
+
+            int step = 0;
+            for (int i = 0; i < 3; i++)
+            {
+                var valuestring = new DataStreamTypValue<string>(_fixture.Create<string>());
+                var valueInt = new DataStreamTypValue<int>(_fixture.Create<int>());
+                var valuebyte = new DataStreamTypValue<byte>(_fixture.Create<byte>());
+                var valuefloat = new DataStreamTypValue<float>(_fixture.Create<float>());
+                var valuelong = new DataStreamTypValue<long>(_fixture.Create<long>());
+                var valuedouble = new DataStreamTypValue<double>(_fixture.Create<double>());
+
+                //Act
+                sageKingMessage.AddOrUpdate($"{attributename}_{step}", valuestring);
+                sageKingMessage.AddOrUpdate($"{attributename}_{step + 1}", valueInt);
+                sageKingMessage.AddOrUpdate($"{attributename}_{step + 2}", valuebyte);
+                sageKingMessage.AddOrUpdate($"{attributename}_{step + 3}", valuefloat);
+                sageKingMessage.AddOrUpdate($"{attributename}_{step + 4}", valuelong);
+                sageKingMessage.AddOrUpdate($"{attributename}_{step + 5}", valuedouble);
+
+                step += 8;
+            }
+
+            //”√”⁄≤‚ ‘load
+            var attributenameLoad = _fixture.Create<string>();
+            sageKingMessage.AddOrUpdate($"{attributenameLoad}", new DataStreamTypValue<string>(attributenameLoad));
+
+            //Act
+
+            //test todata
+            var result = sageKingMessage.ToData();
+
+            //test loaddata
+            sageKingMessageLoad.InitAttribytePos(sageKingMessage.GetPosData());
+
+            sageKingMessageLoad.LoadData(result);
+
+            var getLoaddata = sageKingMessageLoad.Get(attributenameLoad);
+
+            //Assert
+            Assert.Equal(result.RowType?.Length, 6);
+            Assert.Equal(result.DataBody?.Length, 6);
+
+            Assert.Equal(getLoaddata, attributenameLoad);
+
         }
     }
 }

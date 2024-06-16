@@ -74,9 +74,8 @@ namespace SageKing.IceRPC.Extensions
 
         public static void GetPostData<T>(this DataStreamTypValue<T[]> value, ConcurrentDictionary<string, T> dic, ConcurrentDictionary<DataStreamTypeEnum, ConcurrentDictionary<string, int>> posDic)
         {
-            
-            var getPost = posDic[value.DataStreamType];
-            dic = new();
+
+            var getPost = posDic[value.DataStreamType]; 
             foreach (var item in getPost)
             {
                 dic[item.Key] = value.Value[item.Value];
@@ -112,6 +111,55 @@ namespace SageKing.IceRPC.Extensions
                 return value;
             }
             return defaultValue;
+        }
+
+        /// <summary>
+        /// 用当前值，初始化目标值
+        /// </summary>
+        /// <typeparam name="A"></typeparam>
+        /// <typeparam name="B"></typeparam>
+        /// <typeparam name="C"></typeparam>
+        /// <param name="d"></param>
+        /// <param name="targetDic"></param>
+        /// <returns></returns>
+        public static bool InitConcurrentDictionary<A, B, C>(this Dictionary<A, Dictionary<B, C>> d, ConcurrentDictionary<A, ConcurrentDictionary<B, C>> targetDic)
+        {
+            if (!d.Any())
+            {
+                return false;
+            }
+            targetDic.Clear();
+            foreach (var item in d)
+            {
+                var posItem = new ConcurrentDictionary<B, C>();
+
+                foreach (var child in item.Value)
+                {
+                    posItem[child.Key] = child.Value;
+                }
+                targetDic[item.Key] = posItem;
+            }
+            return true;
+        }
+
+        public static Dictionary<A, Dictionary<B, C>> GetDictionary<A, B, C>(this ConcurrentDictionary<A, ConcurrentDictionary<B, C>> d)
+        {
+            if (!d.Any())
+            {
+                return new();
+            }
+            var toDic = new Dictionary<A, Dictionary<B, C>>();
+            foreach (var item in d)
+            {
+                var posItem = new Dictionary<B, C>();
+
+                foreach (var child in item.Value)
+                {
+                    posItem[child.Key] = child.Value;
+                }
+                toDic[item.Key] = posItem;
+            }
+            return toDic;
         }
     }
 }

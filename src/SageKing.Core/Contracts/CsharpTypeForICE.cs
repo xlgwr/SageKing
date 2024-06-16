@@ -27,47 +27,47 @@ namespace SageKing.Core.Contracts
         {
             if (type == CsharpTypeForICE.String)
             {
-                return DataStreamTypeEnum.String;
+                return DataStreamTypeEnum.StringArr;
             }
             else if (type == CsharpTypeForICE.sbyte_Int8)
             {
-                return DataStreamTypeEnum.Int8;
+                return DataStreamTypeEnum.Int8Arr;
             }
             else if (type == CsharpTypeForICE.byte_Uint8)
             {
-                return DataStreamTypeEnum.Int8;
+                return DataStreamTypeEnum.Uint8Arr;
             }
             else if (type == CsharpTypeForICE.short_Int16)
             {
-                return DataStreamTypeEnum.Int16;
+                return DataStreamTypeEnum.Int16Arr;
             }
             else if (type == CsharpTypeForICE.ushort_Uint16)
             {
-                return DataStreamTypeEnum.Uint16;
+                return DataStreamTypeEnum.Uint16Arr;
             }
             else if (type == CsharpTypeForICE.int_Int32)
             {
-                return DataStreamTypeEnum.Int32;
+                return DataStreamTypeEnum.Int32Arr;
             }
             else if (type == CsharpTypeForICE.uint_Uint32)
             {
-                return DataStreamTypeEnum.Uint32;
+                return DataStreamTypeEnum.Uint32Arr;
             }
             else if (type == CsharpTypeForICE.long_Int64)
             {
-                return DataStreamTypeEnum.Int64;
+                return DataStreamTypeEnum.Int64Arr;
             }
             else if (type == CsharpTypeForICE.float_Float32)
             {
-                return DataStreamTypeEnum.Float32;
+                return DataStreamTypeEnum.Float32Arr;
             }
             else if (type == CsharpTypeForICE.double_Float64)
             {
-                return DataStreamTypeEnum.Float64;
+                return DataStreamTypeEnum.Float64Arr;
             }
             else
             {
-                return DataStreamTypeEnum.IceObject;
+                return DataStreamTypeEnum.None;
             }
         }
     }
