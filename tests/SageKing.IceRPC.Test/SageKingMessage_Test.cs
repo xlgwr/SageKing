@@ -9,7 +9,7 @@ namespace SageKing.IceRPC.Test
     public class SageKingMessage_Test(ISageKingMessage sageKingMessage, IFixture _fixture)
     {
         [Fact]
-        public void AddOrUpdate_string()
+        public void AddOrUpdate_Get_remove_string()
         {
             //Arrange 
             var attributename = _fixture.Create<string>();
@@ -20,8 +20,16 @@ namespace SageKing.IceRPC.Test
 
             var getValue = sageKingMessage.Get(attributename);
 
+            sageKingMessage.Remove(attributename, value.type);
+
+            var getValue2 = sageKingMessage.Get(attributename);
+
             //Assert
             Assert.Equal(getValue, value.value);
+
+            Assert.Equal(getValue2, string.Empty);
+
+
         }
     }
 }

@@ -229,44 +229,39 @@ namespace SageKing.IceRPC.Contracts
         #endregion
         public bool Remove(string attributeName, DataStreamTypeEnum type)
         {
-            if (Enum.IsDefined(typeof(DataStreamTypeEnum), type))
-            {
-                throw new NotSupportedException($"当前类型【{type}】不支持范围内");
-            }
-
             switch (type)
             {
-                case DataStreamTypeEnum.StringArr:
+                case DataStreamTypeEnum.String:
                     return _0string.RemovePost(attributeName, type, _AttributePosition, ref _isChange);
                     break;
-                case DataStreamTypeEnum.Int8Arr:
+                case DataStreamTypeEnum.Int8:
                     return _1Int8Arr_sbyte.RemovePost(attributeName, type, _AttributePosition, ref _isChange);
                     break;
-                case DataStreamTypeEnum.Uint8Arr:
+                case DataStreamTypeEnum.Uint8:
                     return _2Uint8Arr_byte.RemovePost(attributeName, type, _AttributePosition, ref _isChange);
                     break;
-                case DataStreamTypeEnum.Int16Arr:
+                case DataStreamTypeEnum.Int16:
                     return _3Int16_short.RemovePost(attributeName, type, _AttributePosition, ref _isChange);
                     break;
-                case DataStreamTypeEnum.Uint16Arr:
+                case DataStreamTypeEnum.Uint16:
                     return _4uint16_ushort.RemovePost(attributeName, type, _AttributePosition, ref _isChange);
                     break;
-                case DataStreamTypeEnum.Int32Arr:
+                case DataStreamTypeEnum.Int32:
                     return _5eint32_int.RemovePost(attributeName, type, _AttributePosition, ref _isChange);
                     break;
-                case DataStreamTypeEnum.Uint32Arr:
+                case DataStreamTypeEnum.Uint32:
                     return _6uint32_uint.RemovePost(attributeName, type, _AttributePosition, ref _isChange);
                     break;
-                case DataStreamTypeEnum.Int64Arr:
+                case DataStreamTypeEnum.Int64:
                     return _7int64_long.RemovePost(attributeName, type, _AttributePosition, ref _isChange);
                     break;
-                case DataStreamTypeEnum.Uint64Arr:
+                case DataStreamTypeEnum.Uint64:
                     return _8Uint64_ulong.RemovePost(attributeName, type, _AttributePosition, ref _isChange);
                     break;
-                case DataStreamTypeEnum.Float32Arr:
+                case DataStreamTypeEnum.Float32:
                     return _9Float32_float.RemovePost(attributeName, type, _AttributePosition, ref _isChange);
                     break;
-                case DataStreamTypeEnum.Float64Arr:
+                case DataStreamTypeEnum.Float64:
                     return _10Float64_double.RemovePost(attributeName, type, _AttributePosition, ref _isChange);
                     break;
                 default:
