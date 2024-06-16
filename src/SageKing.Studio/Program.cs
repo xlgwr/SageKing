@@ -11,6 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddConfigurationJsonFiles(builder.Environment);
 
 var configuration = builder.Configuration;
+
 //add SageKing
 builder.Services.AddSageKing(sk =>
 {
