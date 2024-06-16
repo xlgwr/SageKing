@@ -75,7 +75,7 @@ namespace SageKing.IceRPC.Extensions
 
         public static void GetPostData<T>(this DataStreamTypValue<T[]> value, Dictionary<string, T> dic, Dictionary<DataStreamTypeEnum, Dictionary<string, int>> posDic)
         {
-
+            dic.Clear();
             var getPost = posDic[value.DataStreamType];
             foreach (var item in getPost)
             {

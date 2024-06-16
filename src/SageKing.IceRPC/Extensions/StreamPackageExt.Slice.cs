@@ -85,6 +85,26 @@ public static partial class StreamPackageExt
     #region 数组类
 
     #region string[]
+    static object _lockPipeArr=new object();
+    static Pipe PipeArr;
+    public static Pipe GetPipeArr()
+    {
+        if (PipeArr != null)
+        {
+            PipeArr.Reset();
+            return PipeArr;
+        }
+        // Arrange
+        // now with a custom memory pool with a tiny max buffer size
+        var customPool = (1024).GetMemoryPool();
+
+        // minimumSegmentSize is not the same as the sizeHint given to GetMemory/GetSpan; it refers to the
+        // minBufferSize given to Rent
+
+        PipeArr = new Pipe(new PipeOptions(pool: customPool, minimumSegmentSize: 5));
+
+        return PipeArr;
+    }
     /// <summary>
     /// 生成ICE字节流
     /// </summary>
@@ -92,26 +112,22 @@ public static partial class StreamPackageExt
     /// <returns></returns>
     public static byte[] ToIceByte(this string[] strings)
     {
-        // Arrange
-        // now with a custom memory pool with a tiny max buffer size
-        using var customPool = (1024 * 1024).GetMemoryPool();
+        lock (_lockPipeArr)
+        {
+            var pipe = GetPipeArr();
+            var encoder = new SliceEncoder(pipe.Writer, SliceEncoding.Slice2);
+            encoder.EncodeSequence(strings, (ref SliceEncoder encoder, string value) => encoder.EncodeString(value));
 
-        // minimumSegmentSize is not the same as the sizeHint given to GetMemory/GetSpan; it refers to the
-        // minBufferSize given to Rent
+            pipe.Writer.Complete();
+            pipe.Reader.TryRead(out ReadResult readResult);
 
-        var pipe = new Pipe(new PipeOptions(pool: customPool, minimumSegmentSize: 5));
-        var encoder = new SliceEncoder(pipe.Writer, SliceEncoding.Slice2);
-        encoder.EncodeSequence(strings, (ref SliceEncoder encoder, string value) => encoder.EncodeString(value));
+            var result = readResult.Buffer.ToArray();
 
-        pipe.Writer.Complete();
-        pipe.Reader.TryRead(out ReadResult readResult);
+            // Cleanup pipe
+            pipe.Reader.Complete();
 
-        var result = readResult.Buffer.ToArray();
-
-        // Cleanup pipe
-        pipe.Reader.Complete();
-
-        return result;
+            return result;
+        }
     }
 
     public static string[] GetString(this byte[] bytes)
@@ -129,26 +145,23 @@ public static partial class StreamPackageExt
     /// <returns></returns>
     public static byte[] ToIceByte(this sbyte[] sbytes)
     {
-        // Arrange
-        // now with a custom memory pool with a tiny max buffer size
-        using var customPool = (1024 * 1024).GetMemoryPool();
+        lock (_lockPipeArr)
+        {
+            var pipe = GetPipeArr();
+            var encoder = new SliceEncoder(pipe.Writer, SliceEncoding.Slice2);
+            encoder.EncodeSequence(sbytes, (ref SliceEncoder encoder, sbyte value) => encoder.EncodeInt8(value));
 
-        // minimumSegmentSize is not the same as the sizeHint given to GetMemory/GetSpan; it refers to the
-        // minBufferSize given to Rent
+            pipe.Writer.Complete();
+            pipe.Reader.TryRead(out ReadResult readResult);
 
-        var pipe = new Pipe(new PipeOptions(pool: customPool, minimumSegmentSize: 5));
-        var encoder = new SliceEncoder(pipe.Writer, SliceEncoding.Slice2);
-        encoder.EncodeSequence(sbytes, (ref SliceEncoder encoder, sbyte value) => encoder.EncodeInt8(value));
+            var result = readResult.Buffer.ToArray();
 
-        pipe.Writer.Complete();
-        pipe.Reader.TryRead(out ReadResult readResult);
+            // Cleanup pipe
+            pipe.Reader.Complete();
 
-        var result = readResult.Buffer.ToArray();
+            return result;
 
-        // Cleanup pipe
-        pipe.Reader.Complete();
-
-        return result;
+        }
     }
 
     public static sbyte[] Getsbyte(this byte[] bytes)
@@ -167,26 +180,24 @@ public static partial class StreamPackageExt
     /// <returns></returns>
     public static byte[] ToIceByte(this byte[] bytes)
     {
-        // Arrange
-        // now with a custom memory pool with a tiny max buffer size
-        using var customPool = (1024 * 1024).GetMemoryPool();
+        lock (_lockPipeArr)
+        {
+            var pipe = GetPipeArr();
 
-        // minimumSegmentSize is not the same as the sizeHint given to GetMemory/GetSpan; it refers to the
-        // minBufferSize given to Rent
+            var encoder = new SliceEncoder(pipe.Writer, SliceEncoding.Slice2);
+            encoder.EncodeSequence(bytes, (ref SliceEncoder encoder, byte value) => encoder.EncodeUInt8(value));
 
-        var pipe = new Pipe(new PipeOptions(pool: customPool, minimumSegmentSize: 5));
-        var encoder = new SliceEncoder(pipe.Writer, SliceEncoding.Slice2);
-        encoder.EncodeSequence(bytes, (ref SliceEncoder encoder, byte value) => encoder.EncodeUInt8(value));
+            pipe.Writer.Complete();
+            pipe.Reader.TryRead(out ReadResult readResult);
 
-        pipe.Writer.Complete();
-        pipe.Reader.TryRead(out ReadResult readResult);
+            var result = readResult.Buffer.ToArray();
 
-        var result = readResult.Buffer.ToArray();
+            // Cleanup pipe
+            pipe.Reader.Complete();
 
-        // Cleanup pipe
-        pipe.Reader.Complete();
+            return result;
 
-        return result;
+        }
     }
 
     public static byte[] Getbyte(this byte[] bytes)
@@ -205,26 +216,23 @@ public static partial class StreamPackageExt
     /// <returns></returns>
     public static byte[] ToIceByte(this short[] shorts)
     {
-        // Arrange
-        // now with a custom memory pool with a tiny max buffer size
-        using var customPool = (1024 * 1024).GetMemoryPool();
+        lock (_lockPipeArr)
+        {
+            var pipe = GetPipeArr();
+            var encoder = new SliceEncoder(pipe.Writer, SliceEncoding.Slice2);
+            encoder.EncodeSequence(shorts, (ref SliceEncoder encoder, short value) => encoder.EncodeInt16(value));
 
-        // minimumSegmentSize is not the same as the sizeHint given to GetMemory/GetSpan; it refers to the
-        // minBufferSize given to Rent
+            pipe.Writer.Complete();
+            pipe.Reader.TryRead(out ReadResult readResult);
 
-        var pipe = new Pipe(new PipeOptions(pool: customPool, minimumSegmentSize: 5));
-        var encoder = new SliceEncoder(pipe.Writer, SliceEncoding.Slice2);
-        encoder.EncodeSequence(shorts, (ref SliceEncoder encoder, short value) => encoder.EncodeInt16(value));
+            var result = readResult.Buffer.ToArray();
 
-        pipe.Writer.Complete();
-        pipe.Reader.TryRead(out ReadResult readResult);
+            // Cleanup pipe
+            pipe.Reader.Complete();
 
-        var result = readResult.Buffer.ToArray();
+            return result;
 
-        // Cleanup pipe
-        pipe.Reader.Complete();
-
-        return result;
+        }
     }
 
     public static short[] Getshort(this byte[] shorts)
@@ -243,26 +251,23 @@ public static partial class StreamPackageExt
     /// <returns></returns>
     public static byte[] ToIceByte(this ushort[] ushorts)
     {
-        // Arrange
-        // now with a custom memory pool with a tiny max buffer size
-        using var customPool = (1024 * 1024).GetMemoryPool();
+        lock (_lockPipeArr)
+        {
+            var pipe = GetPipeArr();
+            var encoder = new SliceEncoder(pipe.Writer, SliceEncoding.Slice2);
+            encoder.EncodeSequence(ushorts, (ref SliceEncoder encoder, ushort value) => encoder.EncodeUInt16(value));
 
-        // minimumSegmentSize is not the same as the sizeHint given to GetMemory/GetSpan; it refers to the
-        // minBufferSize given to Rent
+            pipe.Writer.Complete();
+            pipe.Reader.TryRead(out ReadResult readResult);
 
-        var pipe = new Pipe(new PipeOptions(pool: customPool, minimumSegmentSize: 5));
-        var encoder = new SliceEncoder(pipe.Writer, SliceEncoding.Slice2);
-        encoder.EncodeSequence(ushorts, (ref SliceEncoder encoder, ushort value) => encoder.EncodeUInt16(value));
+            var result = readResult.Buffer.ToArray();
 
-        pipe.Writer.Complete();
-        pipe.Reader.TryRead(out ReadResult readResult);
+            // Cleanup pipe
+            pipe.Reader.Complete();
 
-        var result = readResult.Buffer.ToArray();
+            return result;
 
-        // Cleanup pipe
-        pipe.Reader.Complete();
-
-        return result;
+        }
     }
 
     public static ushort[] Getushort(this byte[] ushorts)
@@ -281,26 +286,23 @@ public static partial class StreamPackageExt
     /// <returns></returns>
     public static byte[] ToIceByte(this int[] ints)
     {
-        // Arrange
-        // now with a custom memory pool with a tiny max buffer size
-        using var customPool = (1024 * 1024).GetMemoryPool();
+        lock (_lockPipeArr)
+        {
 
-        // minimumSegmentSize is not the same as the sizeHint given to GetMemory/GetSpan; it refers to the
-        // minBufferSize given to Rent
+            var pipe = GetPipeArr();
+            var encoder = new SliceEncoder(pipe.Writer, SliceEncoding.Slice2);
+            encoder.EncodeSequence(ints, (ref SliceEncoder encoder, int value) => encoder.EncodeInt32(value));
 
-        var pipe = new Pipe(new PipeOptions(pool: customPool, minimumSegmentSize: 5));
-        var encoder = new SliceEncoder(pipe.Writer, SliceEncoding.Slice2);
-        encoder.EncodeSequence(ints, (ref SliceEncoder encoder, int value) => encoder.EncodeInt32(value));
+            pipe.Writer.Complete();
+            pipe.Reader.TryRead(out ReadResult readResult);
 
-        pipe.Writer.Complete();
-        pipe.Reader.TryRead(out ReadResult readResult);
+            var result = readResult.Buffer.ToArray();
 
-        var result = readResult.Buffer.ToArray();
+            // Cleanup pipe
+            pipe.Reader.Complete();
 
-        // Cleanup pipe
-        pipe.Reader.Complete();
-
-        return result;
+            return result;
+        }
     }
 
     public static int[] Getint(this byte[] ints)
@@ -319,26 +321,23 @@ public static partial class StreamPackageExt
     /// <returns></returns>
     public static byte[] ToIceByte(this uint[] uints)
     {
-        // Arrange
-        // now with a custom memory pool with a tiny max buffer size
-        using var customPool = (1024 * 1024).GetMemoryPool();
+        lock (_lockPipeArr)
+        {
 
-        // minimumSegmentSize is not the same as the sizeHuint given to GetMemory/GetSpan; it refers to the
-        // minBufferSize given to Rent
+            var pipe = GetPipeArr();
+            var encoder = new SliceEncoder(pipe.Writer, SliceEncoding.Slice2);
+            encoder.EncodeSequence(uints, (ref SliceEncoder encoder, uint value) => encoder.EncodeUInt32(value));
 
-        var pipe = new Pipe(new PipeOptions(pool: customPool, minimumSegmentSize: 5));
-        var encoder = new SliceEncoder(pipe.Writer, SliceEncoding.Slice2);
-        encoder.EncodeSequence(uints, (ref SliceEncoder encoder, uint value) => encoder.EncodeUInt32(value));
+            pipe.Writer.Complete();
+            pipe.Reader.TryRead(out ReadResult readResult);
 
-        pipe.Writer.Complete();
-        pipe.Reader.TryRead(out ReadResult readResult);
+            var result = readResult.Buffer.ToArray();
 
-        var result = readResult.Buffer.ToArray();
+            // Cleanup pipe
+            pipe.Reader.Complete();
 
-        // Cleanup pipe
-        pipe.Reader.Complete();
-
-        return result;
+            return result;
+        }
     }
 
     public static uint[] Getuint(this byte[] uints)
@@ -357,26 +356,23 @@ public static partial class StreamPackageExt
     /// <returns></returns>
     public static byte[] ToIceByte(this long[] longs)
     {
-        // Arrange
-        // now with a custom memory pool with a tiny max buffer size
-        using var customPool = (1024 * 1024).GetMemoryPool();
+        lock (_lockPipeArr)
+        {
+            var pipe = GetPipeArr();
+            var encoder = new SliceEncoder(pipe.Writer, SliceEncoding.Slice2);
+            encoder.EncodeSequence(longs, (ref SliceEncoder encoder, long value) => encoder.EncodeInt64(value));
 
-        // minimumSegmentSize is not the same as the sizeHlong given to GetMemory/GetSpan; it refers to the
-        // minBufferSize given to Rent
+            pipe.Writer.Complete();
+            pipe.Reader.TryRead(out ReadResult readResult);
 
-        var pipe = new Pipe(new PipeOptions(pool: customPool, minimumSegmentSize: 5));
-        var encoder = new SliceEncoder(pipe.Writer, SliceEncoding.Slice2);
-        encoder.EncodeSequence(longs, (ref SliceEncoder encoder, long value) => encoder.EncodeInt64(value));
+            var result = readResult.Buffer.ToArray();
 
-        pipe.Writer.Complete();
-        pipe.Reader.TryRead(out ReadResult readResult);
+            // Cleanup pipe
+            pipe.Reader.Complete();
 
-        var result = readResult.Buffer.ToArray();
+            return result;
 
-        // Cleanup pipe
-        pipe.Reader.Complete();
-
-        return result;
+        }
     }
 
     public static long[] Getlong(this byte[] longs)
@@ -395,26 +391,23 @@ public static partial class StreamPackageExt
     /// <returns></returns>
     public static byte[] ToIceByte(this ulong[] ulongs)
     {
-        // Arrange
-        // now with a custom memory pool with a tiny max buffer size
-        using var customPool = (1024 * 1024).GetMemoryPool();
+        lock (_lockPipeArr)
+        {
 
-        // minimumSegmentSize is not the same as the sizeHulong given to GetMemory/GetSpan; it refers to the
-        // minBufferSize given to Rent
+            var pipe = GetPipeArr();
+            var encoder = new SliceEncoder(pipe.Writer, SliceEncoding.Slice2);
+            encoder.EncodeSequence(ulongs, (ref SliceEncoder encoder, ulong value) => encoder.EncodeUInt64(value));
 
-        var pipe = new Pipe(new PipeOptions(pool: customPool, minimumSegmentSize: 5));
-        var encoder = new SliceEncoder(pipe.Writer, SliceEncoding.Slice2);
-        encoder.EncodeSequence(ulongs, (ref SliceEncoder encoder, ulong value) => encoder.EncodeUInt64(value));
+            pipe.Writer.Complete();
+            pipe.Reader.TryRead(out ReadResult readResult);
 
-        pipe.Writer.Complete();
-        pipe.Reader.TryRead(out ReadResult readResult);
+            var result = readResult.Buffer.ToArray();
 
-        var result = readResult.Buffer.ToArray();
+            // Cleanup pipe
+            pipe.Reader.Complete();
 
-        // Cleanup pipe
-        pipe.Reader.Complete();
-
-        return result;
+            return result;
+        }
     }
 
     public static ulong[] Getulong(this byte[] ulongs)
@@ -433,26 +426,23 @@ public static partial class StreamPackageExt
     /// <returns></returns>
     public static byte[] ToIceByte(this float[] floats)
     {
-        // Arrange
-        // now with a custom memory pool with a tiny max buffer size
-        using var customPool = (1024 * 1024).GetMemoryPool();
+        lock (_lockPipeArr)
+        {
+            var pipe = GetPipeArr();
+            var encoder = new SliceEncoder(pipe.Writer, SliceEncoding.Slice2);
+            encoder.EncodeSequence(floats, (ref SliceEncoder encoder, float value) => encoder.EncodeFloat32(value));
 
-        // minimumSegmentSize is not the same as the sizeHfloat given to GetMemory/GetSpan; it refers to the
-        // minBufferSize given to Rent
+            pipe.Writer.Complete();
+            pipe.Reader.TryRead(out ReadResult readResult);
 
-        var pipe = new Pipe(new PipeOptions(pool: customPool, minimumSegmentSize: 5));
-        var encoder = new SliceEncoder(pipe.Writer, SliceEncoding.Slice2);
-        encoder.EncodeSequence(floats, (ref SliceEncoder encoder, float value) => encoder.EncodeFloat32(value));
+            var result = readResult.Buffer.ToArray();
 
-        pipe.Writer.Complete();
-        pipe.Reader.TryRead(out ReadResult readResult);
+            // Cleanup pipe
+            pipe.Reader.Complete();
 
-        var result = readResult.Buffer.ToArray();
+            return result;
 
-        // Cleanup pipe
-        pipe.Reader.Complete();
-
-        return result;
+        }
     }
 
     public static float[] Getfloat(this byte[] floats)
@@ -471,26 +461,23 @@ public static partial class StreamPackageExt
     /// <returns></returns>
     public static byte[] ToIceByte(this double[] doubles)
     {
-        // Arrange
-        // now with a custom memory pool with a tiny max buffer size
-        using var customPool = (1024 * 1024).GetMemoryPool();
+        lock (_lockPipeArr)
+        {
+            var pipe = GetPipeArr();
+            var encoder = new SliceEncoder(pipe.Writer, SliceEncoding.Slice2);
+            encoder.EncodeSequence(doubles, (ref SliceEncoder encoder, double value) => encoder.EncodeFloat64(value));
 
-        // minimumSegmentSize is not the same as the sizeHdouble given to GetMemory/GetSpan; it refers to the
-        // minBufferSize given to Rent
+            pipe.Writer.Complete();
+            pipe.Reader.TryRead(out ReadResult readResult);
 
-        var pipe = new Pipe(new PipeOptions(pool: customPool, minimumSegmentSize: 5));
-        var encoder = new SliceEncoder(pipe.Writer, SliceEncoding.Slice2);
-        encoder.EncodeSequence(doubles, (ref SliceEncoder encoder, double value) => encoder.EncodeFloat64(value));
+            var result = readResult.Buffer.ToArray();
 
-        pipe.Writer.Complete();
-        pipe.Reader.TryRead(out ReadResult readResult);
+            // Cleanup pipe
+            pipe.Reader.Complete();
 
-        var result = readResult.Buffer.ToArray();
+            return result;
 
-        // Cleanup pipe
-        pipe.Reader.Complete();
-
-        return result;
+        }
     }
 
     public static double[] Getdouble(this byte[] doubles)

@@ -15,12 +15,15 @@ namespace SageKing.Core.Contracts
             this.Value = value;
             this.ValueType = typeof(T);
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="type">用Arr相关</param>
+        /// <param name="value"></param>
         public DataStreamTypValue(DataStreamTypeEnum type, T value)
         {
             _streamType = type;
-
             this.Value = value;
-            this.ValueType = typeof(T);
         }
 
         public T Value { get; private set; }
@@ -35,7 +38,10 @@ namespace SageKing.Core.Contracts
                 {
                     return _streamType;
                 }
-
+                if (this.ValueType == null)
+                {
+                    this.ValueType = typeof(T);
+                }
                 _streamType = CsharpTypeForICE.GetDataStreamTypeEnum(this.ValueType);
 
                 return _streamType;

@@ -60,100 +60,71 @@ namespace SageKing.IceRPC.Contracts
 
         public bool AddOrUpdate(string attributeName, DataStreamTypValue<string> value)
         {
-            if (_string0 == null)
-            {
-                _string0 = new();
-            }
+            _string0 ??= new();
             _isChange = true;
             return _string0.AddOrUpdatePost(attributeName, value, _attributePosition);
         }
 
         public bool AddOrUpdate(string attributeName, DataStreamTypValue<sbyte> value)
         {
-            if (_int8Arr_sbyte1 == null)
-            {
-                _int8Arr_sbyte1 = new();
-            }
+            _int8Arr_sbyte1 ??= new();
             _isChange = true;
             return _int8Arr_sbyte1.AddOrUpdatePost(attributeName, value, _attributePosition);
         }
 
         public bool AddOrUpdate(string attributeName, DataStreamTypValue<byte> value)
         {
-            if (_uint8Arr_byte2 == null)
-            {
-                _uint8Arr_byte2 = new();
-            }
+            _uint8Arr_byte2 ??= new();
+
             _isChange = true;
             return _uint8Arr_byte2.AddOrUpdatePost(attributeName, value, _attributePosition);
         }
 
         public bool AddOrUpdate(string attributeName, DataStreamTypValue<short> value)
         {
-            if (_int16_short3 == null)
-            {
-                _int16_short3 = new();
-            }
+            _int16_short3 ??= new();
             _isChange = true;
             return _int16_short3.AddOrUpdatePost(attributeName, value, _attributePosition);
         }
 
         public bool AddOrUpdate(string attributeName, DataStreamTypValue<int> value)
         {
-            if (_int32_int5 == null)
-            {
-                _int32_int5 = new();
-            }
+            _int32_int5 ??= new();
             _isChange = true;
             return _int32_int5.AddOrUpdatePost(attributeName, value, _attributePosition);
         }
 
         public bool AddOrUpdate(string attributeName, DataStreamTypValue<uint> value)
         {
-            if (_uint32_uint6 == null)
-            {
-                _uint32_uint6 = new();
-            }
+            _uint32_uint6 ??= new();
             _isChange = true;
             return _uint32_uint6.AddOrUpdatePost(attributeName, value, _attributePosition);
         }
 
         public bool AddOrUpdate(string attributeName, DataStreamTypValue<long> value)
         {
-            if (_int64_long7 == null)
-            {
-                _int64_long7 = new();
-            }
+            _int64_long7 ??= new();
             _isChange = true;
             return _int64_long7.AddOrUpdatePost(attributeName, value, _attributePosition);
         }
 
         public bool AddOrUpdate(string attributeName, DataStreamTypValue<ulong> value)
         {
-            if (_uint64_ulong8 == null)
-            {
-                _uint64_ulong8 = new();
-            }
+            _uint64_ulong8 ??= new();
             _isChange = true;
             return _uint64_ulong8.AddOrUpdatePost(attributeName, value, _attributePosition);
         }
 
         public bool AddOrUpdate(string attributeName, DataStreamTypValue<float> value)
         {
-            if (_float32_float9 == null)
-            {
-                _float32_float9 = new();
-            }
+            _float32_float9 ??= new();
             _isChange = true;
             return _float32_float9.AddOrUpdatePost(attributeName, value, _attributePosition);
         }
 
         public bool AddOrUpdate(string attributeName, DataStreamTypValue<double> value)
         {
-            if (_float64_double10 == null)
-            {
-                _float64_double10 = new();
-            }
+            _float64_double10 ??= new();
             _isChange = true;
             return _float64_double10.AddOrUpdatePost(attributeName, value, _attributePosition);
         }
@@ -237,57 +208,57 @@ namespace SageKing.IceRPC.Contracts
                 {
                     case DataStreamTypeEnum.StringArr:
                         var temp0string = new DataStreamTypValue<string[]>(getTypeMenu, currDatabyte.GetString());
-                        _string0 = new();
+                        _string0 ??= new();
                         temp0string.GetPostData<string>(_string0, _attributePosition);
                         break;
                     case DataStreamTypeEnum.Int8Arr:
                         var temp1Int8Arr_sbyte = new DataStreamTypValue<sbyte[]>(getTypeMenu, currDatabyte.Getsbyte());
-                        _int8Arr_sbyte1 = new();
+                        _int8Arr_sbyte1 ??= new();
                         temp1Int8Arr_sbyte.GetPostData<sbyte>(_int8Arr_sbyte1, _attributePosition);
                         break;
                     case DataStreamTypeEnum.Uint8Arr:
                         var temp2Uint8Arr_byte = new DataStreamTypValue<byte[]>(getTypeMenu, currDatabyte.Getbyte());
-                        _uint8Arr_byte2 = new();
+                        _uint8Arr_byte2 ??= new();
                         temp2Uint8Arr_byte.GetPostData<byte>(_uint8Arr_byte2, _attributePosition);
                         break;
                     case DataStreamTypeEnum.Int16Arr:
                         var temp3Int16_short = new DataStreamTypValue<short[]>(getTypeMenu, currDatabyte.Getshort());
-                        _int16_short3 = new();
+                        _int16_short3 ??= new();
                         temp3Int16_short.GetPostData<short>(_int16_short3, _attributePosition);
                         break;
                     case DataStreamTypeEnum.Uint16Arr:
                         var temp4uint16_ushort = new DataStreamTypValue<ushort[]>(getTypeMenu, currDatabyte.Getushort());
-                        _uint16_ushort4 = new();
+                        _uint16_ushort4 ??= new();
                         temp4uint16_ushort.GetPostData<ushort>(_uint16_ushort4, _attributePosition);
                         break;
                     case DataStreamTypeEnum.Int32Arr:
                         var temp5int32_int = new DataStreamTypValue<int[]>(getTypeMenu, currDatabyte.Getint());
-                        _int32_int5 = new();
+                        _int32_int5 ??= new();
                         temp5int32_int.GetPostData<int>(_int32_int5, _attributePosition);
                         break;
                     case DataStreamTypeEnum.Uint32Arr:
                         var temp6uint32_uint = new DataStreamTypValue<uint[]>(getTypeMenu, currDatabyte.Getuint());
-                        _uint32_uint6 = new();
+                        _uint32_uint6 ??= new();
                         temp6uint32_uint.GetPostData<uint>(_uint32_uint6, _attributePosition);
                         break;
                     case DataStreamTypeEnum.Int64Arr:
                         var temp7int64_long = new DataStreamTypValue<long[]>(getTypeMenu, currDatabyte.Getlong());
-                        _int64_long7 = new();
+                        _int64_long7 ??= new();
                         temp7int64_long.GetPostData<long>(_int64_long7, _attributePosition);
                         break;
                     case DataStreamTypeEnum.Uint64Arr:
                         var temp8Uint64_ulong = new DataStreamTypValue<ulong[]>(getTypeMenu, currDatabyte.Getulong());
-                        _uint64_ulong8 = new();
+                        _uint64_ulong8 ??= new();
                         temp8Uint64_ulong.GetPostData<ulong>(_uint64_ulong8, _attributePosition);
                         break;
                     case DataStreamTypeEnum.Float32Arr:
                         var temp9Float32_float = new DataStreamTypValue<float[]>(getTypeMenu, currDatabyte.Getfloat());
-                        _float32_float9 = new();
+                        _float32_float9 ??= new();
                         temp9Float32_float.GetPostData<float>(_float32_float9, _attributePosition);
                         break;
                     case DataStreamTypeEnum.Float64Arr:
                         var temp10Float64_double = new DataStreamTypValue<double[]>(getTypeMenu, currDatabyte.Getdouble());
-                        _float64_double10 = new();
+                        _float64_double10 ??= new();
                         temp10Float64_double.GetPostData<double>(_float64_double10, _attributePosition);
                         break;
                     default:

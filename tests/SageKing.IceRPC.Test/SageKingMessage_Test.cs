@@ -66,6 +66,7 @@ namespace SageKing.IceRPC.Test
                 var valuestring = new DataStreamTypValue<string>(_fixture.Create<string>());
                 var valueInt = new DataStreamTypValue<int>(_fixture.Create<int>());
                 var valuebyte = new DataStreamTypValue<byte>(_fixture.Create<byte>());
+                var valuesbyte = new DataStreamTypValue<sbyte>(_fixture.Create<sbyte>());
                 var valuefloat = new DataStreamTypValue<float>(_fixture.Create<float>());
                 var valuelong = new DataStreamTypValue<long>(_fixture.Create<long>());
                 var valuedouble = new DataStreamTypValue<double>(_fixture.Create<double>());
@@ -74,6 +75,7 @@ namespace SageKing.IceRPC.Test
                 sageKingMessage.AddOrUpdate($"{attributename}_{step}", valuestring);
                 sageKingMessage.AddOrUpdate($"{attributename}_{step + 1}", valueInt);
                 sageKingMessage.AddOrUpdate($"{attributename}_{step + 2}", valuebyte);
+                sageKingMessage.AddOrUpdate($"{attributename}_s_{step + 2}", valuesbyte);
                 sageKingMessage.AddOrUpdate($"{attributename}_{step + 3}", valuefloat);
                 sageKingMessage.AddOrUpdate($"{attributename}_{step + 4}", valuelong);
                 sageKingMessage.AddOrUpdate($"{attributename}_{step + 5}", valuedouble);
@@ -98,8 +100,8 @@ namespace SageKing.IceRPC.Test
             var getLoaddata = sageKingMessageLoad.Get(attributenameLoad);
 
             //Assert
-            Assert.Equal(result.RowType?.Length, 6);
-            Assert.Equal(result.DataBody?.Length, 6);
+            Assert.Equal(result.RowType?.Length, 7);
+            Assert.Equal(result.DataBody?.Length, 7);
 
             Assert.Equal(getLoaddata, attributenameLoad);
 
