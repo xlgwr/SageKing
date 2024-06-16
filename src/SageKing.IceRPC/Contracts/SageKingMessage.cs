@@ -48,7 +48,7 @@ namespace SageKing.IceRPC.Contracts
 
         public string Id { get; set; }
 
-        public string Varsion { get; set; }
+        public int Varsion { get; set; }
 
         public string Name { get; set; }
 

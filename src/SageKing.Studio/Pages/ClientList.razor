@@ -3,14 +3,13 @@
 <PageTitle>客户端管理中心</PageTitle>
 
 @inject PackagesDataService dataService
-@inject NotificationService _notice
 
 <h2>客户端管理</h2>
 <br />
 <Form @ref="form"
       Model="@model"
       ValidateOnChange="true"
-      LabelColSpan="2">
+      LabelColSpan="3">
 
     <FormItem Label="推送内容">
         <TextArea ShowCount MaxLength="200" Placeholder="输入推送内容" @ref="inputMessageRef" @bind-Value="@context.Message"></TextArea>

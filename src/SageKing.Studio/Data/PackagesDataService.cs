@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using SageKing.Core.Contracts;
 using SageKing.IceRPC.Client.Options;
+using SageKing.IceRPC.Contracts;
 using SageKing.IceRPC.Extensions;
 using SageKingIceRpc;
 
@@ -14,6 +15,11 @@ public class PackagesDataService
     public readonly ClientTypeDicOptions ClientTypeDic;
     public ConcurrentDictionary<string, List<StreamPackage[]>> DataDic;
     public ConcurrentDictionary<string, ClientConnectionInfo<IConnectionContext>> DataClientDic;
+
+    /// <summary>
+    /// 消息结构定义
+    /// </summary>
+    public ConcurrentDictionary<string, SageKingMessage> sageKingMessageDic;
 
     /// <summary>
     /// messsage,desc,type
@@ -29,6 +35,7 @@ public class PackagesDataService
         this.DataDic = new ConcurrentDictionary<string, List<StreamPackage[]>>();
         this.DataClientDic = new ConcurrentDictionary<string, ClientConnectionInfo<IConnectionContext>>();
         this.ClientConnectionProvider = clientConnectionProvider;
+        this.sageKingMessageDic = new ConcurrentDictionary<string, SageKingMessage>();
     }
 
     public async Task<int> SendMsg(string msg, string serverName = "server1")

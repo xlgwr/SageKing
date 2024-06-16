@@ -9,11 +9,7 @@
 			提供SageKingUI客户端
 		</Description>
 		<PackageTags>SageKing module</PackageTags>
-	</PropertyGroup>
-
-	<ItemGroup>
-	  <Content Remove="Pages\MessageDefine.razor" />
-	</ItemGroup>
+	</PropertyGroup> 
 
 	<ItemGroup>
 	  <ProjectReference Include="..\SageKing\SageKing.csproj" />
@@ -23,18 +19,6 @@
 
 	<ItemGroup>
 	  <PackageReference Include="AntDesign" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <UpToDateCheckInput Remove="Pages\MessageDefine.razor" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <_ContentIncludedByDefault Remove="Pages\MessageDefine.razor" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <None Include="Pages\MessageDefine.razor" />
-	</ItemGroup>
+	</ItemGroup> 
 
 </Project>
