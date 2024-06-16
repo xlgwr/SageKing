@@ -22,16 +22,21 @@
 </div>
 
 @code {
+    private bool isLoadNoticeAction = false;
     protected override void OnInitialized()
     {
-        _package.NoticeAction += (msg, desc, type) =>
+        if (!isLoadNoticeAction)
         {
-            _notice.Open(new NotificationConfig()
-                {
-                    Message = msg,
-                    Description = desc
-                });
-        };
+            _package.NoticeAction += (msg, desc, type) =>
+            {
+                _notice.Open(new NotificationConfig()
+                    {
+                        Message = msg,
+                        Description = desc
+                    });
+            };
+            isLoadNoticeAction = true;
+        }
 
         base.OnInitialized();
     }
