@@ -94,7 +94,7 @@ public interface ISageKingMessage
     /// 转换数据 用于 发送
     /// </summary>
     /// <returns></returns>
-    public StreamPackageData ToData();
+    public StreamPackageData ToData(bool force = false);
 
     /// <summary>
     /// 清理数据,不清理位置信息

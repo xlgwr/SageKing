@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualBasic;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -11,7 +12,7 @@ namespace SageKing.IceRPC.Extensions
 {
     public static class SageKingMessageExts
     {
-        public static bool AddOrUpdatePost<T>(this ConcurrentDictionary<string, T> dic, string attributeName, DataStreamTypValue<T> value, ConcurrentDictionary<DataStreamTypeEnum, ConcurrentDictionary<string, int>> posDic)
+        public static bool AddOrUpdatePost<T>(this Dictionary<string, T> dic, string attributeName, DataStreamTypValue<T> value, Dictionary<DataStreamTypeEnum, Dictionary<string, int>> posDic)
             where T : struct
         {
             if (dic == null)
@@ -36,7 +37,7 @@ namespace SageKing.IceRPC.Extensions
             dic[attributeName] = value.Value;
             return true;
         }
-        public static bool AddOrUpdatePost(this ConcurrentDictionary<string, string> dic, string attributeName, DataStreamTypValue<string> value, ConcurrentDictionary<DataStreamTypeEnum, ConcurrentDictionary<string, int>> posDic)
+        public static bool AddOrUpdatePost(this Dictionary<string, string> dic, string attributeName, DataStreamTypValue<string> value, Dictionary<DataStreamTypeEnum, Dictionary<string, int>> posDic)
         {
 
 
@@ -59,30 +60,30 @@ namespace SageKing.IceRPC.Extensions
         }
 
 
-        public static bool RemovePost<T>(this ConcurrentDictionary<string, T> dic, string attributeName, DataStreamTypeEnum type, ConcurrentDictionary<DataStreamTypeEnum, ConcurrentDictionary<string, int>> posDic, ref bool isChange)
+        public static bool RemovePost<T>(this Dictionary<string, T> dic, string attributeName, DataStreamTypeEnum type, Dictionary<DataStreamTypeEnum, Dictionary<string, int>> posDic, ref bool isChange)
         {
-            if (dic.TryRemove(attributeName, out _))
+            if (dic.Remove(attributeName, out _))
             {
                 if (posDic.TryGetValue(type, out var pos))
                 {
-                    pos.TryRemove(attributeName, out _);
+                    pos.Remove(attributeName, out _);
                 }
                 isChange = true;
             };
             return true;
         }
 
-        public static void GetPostData<T>(this DataStreamTypValue<T[]> value, ConcurrentDictionary<string, T> dic, ConcurrentDictionary<DataStreamTypeEnum, ConcurrentDictionary<string, int>> posDic)
+        public static void GetPostData<T>(this DataStreamTypValue<T[]> value, Dictionary<string, T> dic, Dictionary<DataStreamTypeEnum, Dictionary<string, int>> posDic)
         {
 
-            var getPost = posDic[value.DataStreamType]; 
+            var getPost = posDic[value.DataStreamType];
             foreach (var item in getPost)
             {
                 dic[item.Key] = value.Value[item.Value];
             }
 
         }
-        public static T[] GetArray<T>(this List<string> sortAttribute, ConcurrentDictionary<string, T> dataDic)
+        public static T[] GetArray<T>(this List<string> sortAttribute, Dictionary<string, T> dataDic)
             where T : struct
         {
 
@@ -94,7 +95,7 @@ namespace SageKing.IceRPC.Extensions
             return lst.ToArray();
         }
 
-        public static string[] GetArray(this List<string> sortAttribute, ConcurrentDictionary<string, string> dataDic)
+        public static string[] GetArray(this List<string> sortAttribute, Dictionary<string, string> dataDic)
         {
             List<string> lst = new();
             foreach (var item in sortAttribute)
@@ -104,7 +105,7 @@ namespace SageKing.IceRPC.Extensions
             return lst.ToArray();
         }
 
-        public static T GetDefault<T>(this IDictionary<string, T> dic, string key, T defaultValue = default(T))
+        public static T GetDefault<T>(this Dictionary<string, T> dic, string key, T defaultValue = default(T))
         {
             if (dic.TryGetValue(key, out var value))
             {
@@ -122,7 +123,7 @@ namespace SageKing.IceRPC.Extensions
         /// <param name="d"></param>
         /// <param name="targetDic"></param>
         /// <returns></returns>
-        public static bool InitConcurrentDictionary<A, B, C>(this Dictionary<A, Dictionary<B, C>> d, ConcurrentDictionary<A, ConcurrentDictionary<B, C>> targetDic)
+        public static bool InitDictionary<A, B, C>(this Dictionary<A, Dictionary<B, C>> d, Dictionary<A, Dictionary<B, C>> targetDic)
         {
             if (!d.Any())
             {
@@ -131,7 +132,7 @@ namespace SageKing.IceRPC.Extensions
             targetDic.Clear();
             foreach (var item in d)
             {
-                var posItem = new ConcurrentDictionary<B, C>();
+                var posItem = new Dictionary<B, C>();
 
                 foreach (var child in item.Value)
                 {
@@ -142,7 +143,7 @@ namespace SageKing.IceRPC.Extensions
             return true;
         }
 
-        public static Dictionary<A, Dictionary<B, C>> GetDictionary<A, B, C>(this ConcurrentDictionary<A, ConcurrentDictionary<B, C>> d)
+        public static Dictionary<A, Dictionary<B, C>> GetDictionary<A, B, C>(this Dictionary<A, Dictionary<B, C>> d)
         {
             if (!d.Any())
             {

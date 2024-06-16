@@ -21,24 +21,24 @@ namespace SageKing.IceRPC.Contracts
         /// <summary>
         /// 属性值 
         /// </summary>
-        private ConcurrentDictionary<string, string> _string0;
-        private ConcurrentDictionary<string, sbyte> _int8Arr_sbyte1;
-        private ConcurrentDictionary<string, byte> _uint8Arr_byte2;
-        private ConcurrentDictionary<string, short> _int16_short3;
-        private ConcurrentDictionary<string, ushort> _uint16_ushort4;
-        private ConcurrentDictionary<string, int> _int32_int5;
-        private ConcurrentDictionary<string, uint> _uint32_uint6;
-        private ConcurrentDictionary<string, long> _int64_long7;
-        private ConcurrentDictionary<string, ulong> _uint64_ulong8;
-        private ConcurrentDictionary<string, float> _float32_float9;
-        private ConcurrentDictionary<string, double> _float64_double10;
+        private Dictionary<string, string> _string0;
+        private Dictionary<string, sbyte> _int8Arr_sbyte1;
+        private Dictionary<string, byte> _uint8Arr_byte2;
+        private Dictionary<string, short> _int16_short3;
+        private Dictionary<string, ushort> _uint16_ushort4;
+        private Dictionary<string, int> _int32_int5;
+        private Dictionary<string, uint> _uint32_uint6;
+        private Dictionary<string, long> _int64_long7;
+        private Dictionary<string, ulong> _uint64_ulong8;
+        private Dictionary<string, float> _float32_float9;
+        private Dictionary<string, double> _float64_double10;
         #endregion
 
         /// <summary>
         /// 属性位置
         /// 用于解包定位
         /// </summary>
-        private readonly ConcurrentDictionary<DataStreamTypeEnum, ConcurrentDictionary<string, int>> _attributePosition;
+        private readonly Dictionary<DataStreamTypeEnum, Dictionary<string, int>> _attributePosition;
 
         public SageKingMessage()
         {
@@ -323,9 +323,9 @@ namespace SageKing.IceRPC.Contracts
         /// 生成ICE数据流包
         /// </summary>
         /// <returns></returns>
-        public StreamPackageData ToData()
+        public StreamPackageData ToData(bool force = false)
         {
-            if (!_isChange)
+            if (!force && !_isChange)
             {
                 return _packageData;
             }
@@ -388,7 +388,7 @@ namespace SageKing.IceRPC.Contracts
 
         public bool InitAttribytePos(Dictionary<DataStreamTypeEnum, Dictionary<string, int>> posDic)
         {
-            return posDic.InitConcurrentDictionary(_attributePosition);
+            return posDic.InitDictionary(_attributePosition);
         }
         public Dictionary<DataStreamTypeEnum, Dictionary<string, int>> GetPosData()
         {

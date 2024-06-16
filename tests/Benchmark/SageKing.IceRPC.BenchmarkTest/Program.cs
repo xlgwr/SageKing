@@ -11,5 +11,3 @@ Console.WriteLine("Hello, World! SageKing.IceRPC.BenchmarkTest");
 var config = DefaultConfig.Instance;
 
 BenchmarkSwitcher.FromAssembly(typeof(Tests).Assembly).Run(args, config);
-
-BenchmarkSwitcher.FromAssembly(typeof(Tests2).Assembly).Run(args, config);
