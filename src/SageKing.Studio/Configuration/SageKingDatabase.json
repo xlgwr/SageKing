@@ -1,0 +1,19 @@
+{
+  //
+  // 数据库相关配置
+  //
+  "SageKingDatabase": {
+    //雪花ID
+    "SnowId": {
+      "WorkerId": 1, // 机器码 全局唯一
+      "WorkerIdBitLength": 6, // 机器码位长 默认值6，取值范围 [1, 19]
+      "SeqBitLength": 6, // 序列数位长 默认值6，取值范围 [3, 21]（建议不小于4，值越大性能越高、Id位数也更长）
+      "WorkerPrefix": "sageking_" // 缓存前缀
+    },
+    //数据库连接
+    "Connections": {
+      "1700000000001": "Data Source=mydb.db;Version=3;",
+      "1700000000002": "Data Source=mydb2.db;Version=3;"
+    }
+  }
+}

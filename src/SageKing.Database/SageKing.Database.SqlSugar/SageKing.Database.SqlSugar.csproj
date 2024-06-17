@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<RootNamespace>SageKing.Database.SqlSugar</RootNamespace>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<Description>
+			提供SageKing.Database.SqlSugar核心功能
+		</Description>
+		<PackageTags>SageKing module Core</PackageTags>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="SqlSugarCore" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\SageKing.Database.Cache\SageKing.Cache.csproj" />
+	  <ProjectReference Include="..\SageKing.Database\SageKing.Database.csproj" />
+	</ItemGroup> 
+
+</Project>

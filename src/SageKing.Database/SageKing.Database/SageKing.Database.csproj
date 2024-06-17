@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<RootNamespace>SageKing.Database</RootNamespace>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<Description>
+			提供SageKing.Database核心功能
+		</Description>
+		<PackageTags>SageKing module Core</PackageTags>
+	</PropertyGroup>
+	
+  <ItemGroup>
+    <ProjectReference Include="..\..\SageKing.Core\SageKing.Core.csproj" />
+  </ItemGroup>
+
+</Project>
