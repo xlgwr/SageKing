@@ -1,5 +1,6 @@
 ﻿global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Hosting;
+global using System.Collections;
 global using System.Collections.Concurrent;
 
 global using Microsoft.Extensions.Logging;
@@ -24,3 +25,4 @@ global using SqlSugar;
 global using NewLife.Caching;
 global using NewLife.Caching.Models;
 global using CacheDefault = NewLife.Caching.Cache;
+global using SageKing.Cache.Service;

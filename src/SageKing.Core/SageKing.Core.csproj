@@ -12,6 +12,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Mapster" />
 		<PackageReference Include="NewId" />
 		<PackageReference Include="ShortGuid" />
 		<PackageReference Include="Humanizer.Core" />

@@ -18,18 +18,5 @@ namespace SageKing.Database
         /// </summary>
         public SnowIdOptions SnowId { get; set; }
 
-        /// <summary>
-        /// 数据库相关
-        /// </summary>
-        public ConcurrentDictionary<string, string> Connections = new ConcurrentDictionary<string, string>();
-
-        public string GetConnection(string id)
-        {
-            if (Connections.TryGetValue(id, out var value))
-            {
-                return value;
-            }
-            return $"未知类型{id}";
-        }
     }
 }
