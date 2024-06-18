@@ -1,14 +1,24 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+	
+	<PropertyGroup>
+		<RootNamespace>SageKing.Studio</RootNamespace>
+	</PropertyGroup>
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
+	<PropertyGroup>
+		<Description>
+			提供SageKingUI客户端
+		</Description>
+		<PackageTags>SageKing module</PackageTags>
+	</PropertyGroup> 
 
-  <ItemGroup>
-    <ProjectReference Include="..\SageKing.Core\SageKing.Core.csproj" />
-    <ProjectReference Include="..\SageKing.Services\SageKing.Services.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\SageKing\SageKing.csproj" />
+	  <ProjectReference Include="..\SageKing.IceRPC.Client\SageKing.IceRPC.Client.csproj" />
+	  <ProjectReference Include="..\SageKing.IceRPC.Server\SageKing.IceRPC.Server.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="AntDesign" />
+	</ItemGroup> 
 
 </Project>

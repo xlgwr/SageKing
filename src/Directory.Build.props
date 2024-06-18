@@ -1,13 +1,25 @@
 <Project>
 
-  <PropertyGroup>
-    <LangVersion>preview</LangVersion>
-    <WarnOnPackingNonPackableProject>false</WarnOnPackingNonPackableProject>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
-    <DebugType>embedded</DebugType>
-    <DebugSymbols>true</DebugSymbols>
-    <ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>net8.0</TargetFrameworks>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<!-- Copy the PDBs from the NuGet packages to get file names and line numbers in stack traces. -->
+		<CopyDebugSymbolFilesFromPackages>true</CopyDebugSymbolFilesFromPackages>
+		<EnablePreviewFeatures>True</EnablePreviewFeatures>
+		<!-- Missing XML comment for publicly visible type or member. -->
+		<NoWarn>CS1591;CS8618;SA1028;SA1503;SA1600;SA1614;SA1616;SA1627;SA1629;SA1124</NoWarn>
+		<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+	</PropertyGroup>
 
+	<PropertyGroup>
+		<Version>1.0.1</Version>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="ConfigureAwait.Fody" PrivateAssets="All" />
+		<PackageReference Include="Fody" PrivateAssets="All" />
+		<PackageReference Include="JetBrains.Annotations" PrivateAssets="All" />
+		<PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
+	</ItemGroup>
 </Project>

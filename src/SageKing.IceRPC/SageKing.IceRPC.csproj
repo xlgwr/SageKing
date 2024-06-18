@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<RootNamespace>SageKing.IceRPC</RootNamespace>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<Description>
+			提供IceRPC核心功能
+		</Description>
+		<PackageTags>IceRPC module Core</PackageTags>
+	</PropertyGroup>
+
+	<ItemGroup>
+
+		<!--IceRpc-->
+		<PackageReference Include="IceRpc" />
+		<PackageReference Include="IceRpc.Slice" />
+		<PackageReference Include="IceRpc.Slice.Tools" PrivateAssets="All" />
+		<PackageReference Include="IceRpc.Retry" />
+		<PackageReference Include="IceRpc.Logger" />
+		<PackageReference Include="IceRpc.Locator" />
+		<PackageReference Include="IceRpc.Metrics" />
+		<PackageReference Include="IceRpc.Deadline" />
+		<PackageReference Include="IceRpc.Compressor" />
+		<PackageReference Include="IceRpc.RequestContext" />
+		<PackageReference Include="IceRpc.Transports.Quic" />
+		<PackageReference Include="IceRpc.Transports.Coloc" />
+		<PackageReference Include="IceRpc.Extensions.DependencyInjection" />
+
+
+		<!-- The 1.2 beta version is required for supporting the latest language features.
+         See: https://github.com/DotNetAnalyzers/StyleCopAnalyzers/pull/3187 -->
+		<PackageReference Include="StyleCop.Analyzers">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<GlobalAnalyzerConfigFiles Include="$(MSBuildThisFileDirectory)CodeAnalysis.globalconfig" />
+
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\SageKing.Core\SageKing.Core.csproj" />
+	</ItemGroup>
+</Project>

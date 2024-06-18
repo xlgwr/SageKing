@@ -1,0 +1,38 @@
+{
+  //
+  // 缓存相关配置
+  //
+  "SageKingCache": {
+    "Cache": {
+      "Prefix": "sageking_", // 全局缓存前缀
+      "CacheType": "Memory", // Memory、Redis
+      "Redis": {
+        "Configuration": "server=127.0.0.1:6379;password=;db=0;", // Redis连接字符串,推荐 https://microsoft.github.io/garnet/
+        "Prefix": "sageking_", // Redis前缀（目前没用）
+        "MaxMessageSize": "1048576" // 最大消息大小 默认1024 * 1024
+      }
+    },
+    "Cluster": { // 集群配置
+      "Enabled": false, // 启用集群：前提开启Redis缓存模式
+      "ServerId": "sageking", // 服务器标识
+      "ServerIp": "", // 服务器IP
+      "SignalR": {
+        "RedisConfiguration": "127.0.0.1:6379,ssl=false,password=,defaultDatabase=0",
+        "ChannelPrefix": "signalrPrefix_"
+      },
+      "DataProtecteKey": "sageking:DataProtection-Keys",
+      "IsSentinel": false, // 是否哨兵模式
+      "SentinelConfig": {
+        "DefaultDb": "4",
+        "EndPoints": [ // 哨兵端口
+          // "10.10.0.124:26380"
+        ],
+        "MainPrefix": "sageking:",
+        "Password": "123456",
+        "SentinelPassword": "sageking",
+        "ServiceName": "sageking",
+        "SignalRChannelPrefix": "signalR:"
+      }
+    }
+  }
+}

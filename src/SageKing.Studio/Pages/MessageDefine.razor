@@ -1,0 +1,318 @@
+﻿@page "/MessageDefine"
+@using SageKing.IceRPC.Contracts
+
+<PageTitle>消息结构定义</PageTitle>
+
+@inject PackagesDataService dataService
+
+<h2>消息结构定义</h2>
+<br />
+<div>
+    <GridRow Justify="center">
+        <GridCol Span="16">
+            <Form @ref="form"
+                  Model="@model"
+                  ValidateOnChange="true"
+                  LabelColSpan="4" WrapperColSpan="18">
+
+                <FormItem Label="名称">
+                    <Input ShowCount MaxLength="64" @bind-Value="@context.Name" />
+                </FormItem>
+                <FormItem Label="类型">
+                    <Select @bind-Value="@context.Type"
+                            DefaultValue="@(0)"
+                            Style="width: 120px;"
+                            TItemValue="int"
+                            TItem="string">
+                        <SelectOptions>
+                            <SelectOption Value="@(0)" Label="DB表类" />
+                            <SelectOption Value="@(1)" Label="业务类" />
+                            <SelectOption Value="@(2)" Label="通知类" />
+                            <SelectOption Value="@(3)" Label="行情类" />
+                        </SelectOptions>
+                    </Select>
+                </FormItem>
+                <FormItem Label="版本号">
+                    <Input @bind-Value="@context.Varsion" />
+                </FormItem>
+                <FormItem Label="描述信息">
+                    <TextArea ShowCount MaxLength="200" Placeholder="描述信息" @ref="inputMessageRef" @bind-Value="@context.Description"></TextArea>
+                </FormItem>
+
+                <FormItem WrapperColOffset="6">
+                    <Button Type="@ButtonType.Primary" @onclick="Save" Loading="@loading">保存</Button>
+                    <label class="validation-message">@Notice</label>
+                </FormItem>
+
+            </Form>
+        </GridCol>
+        <GridCol Span="8">
+            <Form @ref="form2"
+                  Model="@model2"
+                  ValidateOnChange="true"
+                  LabelColSpan="6" WrapperColSpan="12">
+                <FormItem Label="属性名称">
+                    <Input ShowCount MaxLength="64" @bind-Value="@model2.Name" />
+                </FormItem>
+                <FormItem Label="属性类型">
+                    <Select @bind-Value="@model2.Type"
+                            DefaultValue="@(DataStreamTypeEnum.String)"
+                            Style="width: 120px;"
+                            TItemValue="DataStreamTypeEnum"
+                            TItem="string">
+                        <SelectOptions>
+                            <SelectOption Value="@(DataStreamTypeEnum.String)" Label="String" />
+                            <SelectOption Value="@(DataStreamTypeEnum.Int8)" Label="sbyte" />
+                            <SelectOption Value="@(DataStreamTypeEnum.Int32)" Label="int" />
+                            <SelectOption Value="@(DataStreamTypeEnum.Int64)" Label="long" />
+                            <SelectOption Value="@(DataStreamTypeEnum.Float32)" Label="float" />
+                        </SelectOptions>
+                    </Select>
+                </FormItem>
+                <FormItem WrapperColOffset="6">
+                    <Button Type="@ButtonType.Primary" @onclick="SaveAtt" Loading="@loading">新增属性</Button>
+                </FormItem>
+            </Form>
+        </GridCol>
+
+    </GridRow>
+</div>
+@if (dic == null)
+{
+    <Spin size="large" Tip="Loading..." />
+}
+else
+{
+    <div>
+        <GridRow>
+            <GridCol Span="8">
+                <label>请选择服务端:</label>
+                <Select DataSource="@serverNamelst"
+                        Mode="multiple"
+                        Placeholder="请选择服务端"
+                        @bind-Values="@modelSelect.ServerIds"
+                        TItemValue="string"
+                        TItem="string"
+                        Style="width: 100%; margin-bottom: 8px;"
+                        EnableSearch
+                        AllowClear>
+                </Select>
+            </GridCol>
+            <GridCol Span="8">col-8</GridCol>
+            <GridCol Span="8">col-8</GridCol>
+        </GridRow>
+
+
+    </div>
+    <Table @ref="table" TItem="KeyValuePair<string, SageKingMessage>" DataSource="@dic"
+           @bind-SelectedRows="@selectedRows" RowKey="a=>a.Key" OnRowClick="OnRowClick">
+
+        <Selection Key="@context.Key" Type="@selectionType"></Selection>
+        <PropertyColumn Property="c=>c.Key" Title="Name"></PropertyColumn>
+        <PropertyColumn Property="c=>c.Value.GetPosData().Count" Title="Count"></PropertyColumn>
+        <Column TData="KeyValuePair<string, ISageKingMessage>" Title="属性明细">
+            <ul>
+                @foreach (var item in context.Value.GetPosData())
+                {
+                    <li>@item.Key</li>
+                    <ul>
+                        @foreach (var item2 in item.Value.Keys)
+                        {
+                            <li>@item2</li>
+                        }
+                    </ul>
+                }
+            </ul>
+        </Column>
+    </Table>
+
+}
+
+@code {
+
+    class Model
+    {
+        public string Id { get; set; }
+
+        [Required]
+        public string Name { get; set; }
+
+        [Required]
+        public int Type { get; set; }
+
+        public string Description { get; set; }
+
+        public int Varsion { get; set; }
+
+        /// <summary>
+        /// 属性
+        /// </summary>
+        public Dictionary<DataStreamTypeEnum, List<string>> AttributeList { get; set; }
+
+    }
+
+    class ModelAttribute
+    {
+        [Required]
+        public string Name { get; set; }
+
+        [Required]
+        public DataStreamTypeEnum Type { get; set; }
+
+    }
+
+    class selectModel
+    {
+
+        [RequiredList]
+        public IEnumerable<string> ServerIds { get; set; }
+    }
+}
+
+@code {
+
+    bool loading;
+
+    Model model = new Model();
+    ModelAttribute model2 = new ModelAttribute();
+    selectModel modelSelect = new selectModel();
+
+    AntDesign.Form<Model> form;
+    AntDesign.Form<ModelAttribute> form2;
+
+    string Notice = string.Empty;
+    AntDesign.Input<string> inputMessageRef;
+
+    ITable table;
+    ITable tableAttlist;
+    string selectionType = "checkbox";
+
+    List<string> serverNamelst = new List<string>();
+    ConcurrentDictionary<string, SageKingMessage> dic;
+    IEnumerable<KeyValuePair<string, SageKingMessage>> selectedRows;
+    IEnumerable<KeyValuePair<DataStreamTypeEnum, List<string>>> selectedAttrRows;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        dic = dataService.sageKingMessageDic;
+        serverNamelst = dataService.ClientConnectionProvider.GetServerNames().ToList();
+        await base.OnInitializedAsync();
+    }
+    private void OnRowClick(RowData<KeyValuePair<string, SageKingMessage>> data)
+    {
+        var row = data.Data.Value;
+        model.Name = row.Name;
+        model.Description = row.Description;
+        model.Type = row.Type;
+        model.Varsion = row.Varsion;
+    }
+    private async void Send()
+    {
+        if (!modelSelect.ServerIds.Any())
+        {
+            Notice = $"请选择服务端发送";
+            return;
+        }
+
+        Notice = $"开始向【{modelSelect.ServerIds.Count()}】服务端发送";
+
+        loading = true;
+
+        foreach (var item in modelSelect.ServerIds)
+        {
+            var result = await dataService.SendMsg(model.Description, item);
+        }
+
+        loading = false;
+
+        model.Description = string.Empty;
+        Notice = $"完成发送【{modelSelect.ServerIds.Count()}】服务端";
+
+        await inputMessageRef.Focus();
+
+        StateHasChanged();
+    }
+
+    private async void Save()
+    {
+        if (!form.Validate())
+        {
+            return;
+        };
+        if (!dataService.sageKingMessageDic.TryGetValue(model.Name, out var data))
+        {
+
+            data = new SageKingMessage()
+                {
+                    Name = model.Name,
+                    Description = model.Description,
+                    Id = Guid.NewGuid().ToString(),
+                    Type = model.Type,
+                    Varsion = model.Varsion
+                };
+            model = new Model();
+            Notice = $"新增成功【{data.Name}】";
+            await inputMessageRef.Focus();
+        }
+        else
+        {
+            data.Name = model.Name;
+            data.Description = model.Description;
+            data.Type = model.Type;
+            data.Varsion = model.Varsion;
+
+            Notice = $"保存成功【{model.Name}】";
+            await inputMessageRef.Focus();
+        }
+        dataService.sageKingMessageDic[data.Name] = data;
+
+        StateHasChanged();
+    }
+
+    private async void SaveAtt()
+    {
+        if (!form2.Validate())
+        {
+            return;
+        };
+        if (model.Name.IsNullOrEmpty() || !dataService.sageKingMessageDic.TryGetValue(model.Name, out var data))
+        {
+
+            Notice = $"请选择一个消息定义";
+            await inputMessageRef.Focus();
+            return;
+        }
+        else
+        {
+            switch (model2.Type)
+            {
+                case DataStreamTypeEnum.String:
+                    data.AddOrUpdate(model2.Name, new DataStreamTypValue<string>("dddd"));
+                    break;
+                case DataStreamTypeEnum.Int8:
+                    data.AddOrUpdate(model2.Name, new DataStreamTypValue<sbyte>(1));
+                    break;
+                case DataStreamTypeEnum.Uint8:
+                    data.AddOrUpdate(model2.Name, new DataStreamTypValue<byte>(1));
+                    break;
+                case DataStreamTypeEnum.Int32:
+                    data.AddOrUpdate(model2.Name, new DataStreamTypValue<int>(1));
+                    break;
+                case DataStreamTypeEnum.Int64:
+                    data.AddOrUpdate(model2.Name, new DataStreamTypValue<long>(1));
+                    break;
+                case DataStreamTypeEnum.Float32:
+                    data.AddOrUpdate(model2.Name, new DataStreamTypValue<float>(1));
+                    break;
+                default:
+                    break;
+            }
+
+            Notice = $"保存成功【{model.Name}】";
+            await inputMessageRef.Focus();
+        }
+
+        StateHasChanged();
+    }
+}

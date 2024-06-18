@@ -1,0 +1,133 @@
+﻿@page "/PackageList"
+
+<PageTitle>消息管理中心</PageTitle>
+
+@inject PackagesDataService dataService
+
+<h2>消息管理中心</h2>
+<br/>
+<Form @ref="form"
+      Model="@model"
+      ValidateOnChange="true"
+      LabelColSpan="3">
+
+    <FormItem Label="发送内容">
+        <TextArea ShowCount MaxLength="200" Placeholder="输入发送内容" @ref="inputMessageRef" @bind-Value="@context.Message"></TextArea>
+    </FormItem>
+
+    <FormItem Label="服务端" HasFeedback>
+        <Select DataSource="@serverNamelst"
+                Mode="multiple"
+                Placeholder="请选择服务端"
+                @bind-Values="@context.ServerIds"
+                TItemValue="string"
+                TItem="string"
+                Style="width: 100%; margin-bottom: 8px;"
+                EnableSearch
+                AllowClear>
+        </Select>
+    </FormItem>
+
+    <FormItem WrapperColOffset="1">
+        <Button Type="@ButtonType.Primary" @onclick="Send" Loading="@loading">发送</Button>
+        <label class="validation-message">@Notice</label>
+    </FormItem>
+
+</Form>
+
+@if (dic == null)
+{
+    <Spin size="large" Tip="Loading..." />
+}
+else
+{
+    <Table @ref="table" TItem="KeyValuePair<string, List<StreamPackage[]>>" DataSource="@dic"
+           @bind-SelectedRows="@selectedRows" RowKey="a=>a.Key">
+
+        <Selection Key="@context.Key" Type="@selectionType"></Selection>
+        <PropertyColumn Property="c=>c.Key" Title="MsgType"></PropertyColumn>
+        <PropertyColumn Property="c=>c.Value.Count" Title="Count"></PropertyColumn> 
+        <Column TData="KeyValuePair<string, List<StreamPackage[]>>" Title="Message">
+            <ul>
+                @foreach (var item in context.Value)
+                {
+                    <li>@item.GetString().FirstOrDefault()</li>
+                }
+            </ul> 
+        </Column>
+    </Table>
+
+}
+
+@code {
+
+    class Model
+    {
+        [Required]
+        public string Message { get; set; }
+
+        [RequiredList]
+        public IEnumerable<string> ServerIds { get; set; }
+    }
+}
+
+@code {
+
+    bool loading;
+
+    Model model = new Model();
+    AntDesign.Form<Model> form;
+
+    string Notice = string.Empty;
+    AntDesign.Input<string> inputMessageRef;
+
+    ITable table;
+    string selectionType = "checkbox";
+
+    List<string> serverNamelst = new List<string>();
+    ConcurrentDictionary<string, List<StreamPackage[]>>? dic;
+    IEnumerable<KeyValuePair<string, List<StreamPackage[]>>> selectedRows;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        dic = dataService.DataDic;
+        serverNamelst = dataService.ClientConnectionProvider.GetServerNames().ToList();
+        await base.OnInitializedAsync();
+    }
+    private async void Send()
+    {
+        if (!form.Validate())
+        {
+            return;
+        };
+
+        Notice = $"开始向【{model.ServerIds.Count()}】服务端发送";
+
+        loading = true;
+
+        foreach (var item in model.ServerIds)
+        {
+            var result = await dataService.SendMsg(model.Message, item);
+        }
+
+        loading = false;
+
+        model.Message = string.Empty;
+        Notice = $"完成发送【{model.ServerIds.Count()}】服务端";
+
+        await inputMessageRef.Focus();
+
+        StateHasChanged();
+    }
+
+    async Task OnRowExpand(RowData<KeyValuePair<string, List<StreamPackage[]>>> rowData)
+    {
+        if (rowData.Data.Value != null)
+        {
+            return;
+        }
+        await Task.CompletedTask;
+        StateHasChanged();
+    }
+}

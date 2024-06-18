@@ -6,7 +6,7 @@
 
 #### 软件架构
 
-![image](./image/软件架构.svg)
+![image](./image/软件架构.png)
 
 #### 安装教程
 
@@ -27,5 +27,24 @@
 3.  提交代码
 4.  新建 Pull Request
 
+#### 提交规范
+格式
+> type: description
+
+1. type 类型
+> type 是 commit 的类别，只允许如下几种标识：
+
+	* fix: 修复bug
+	* add: 新功能
+	* update: 更新
+	* docs: 文档改变
+	* test: 增加测试
+	* style: 代码格式改变
+	* revert: 撤销上一次的commit
+	* build: 构建工具或构建过程等的变动，如：gulp 换成了 webpack，webpack 升级等
+	* scope（可选） :用于说明 commit 影响的范围，比如数据层、控制层、视图层等等，视项目不同而不同。
+2. description
+> description 是对本次提交的简短描述。
+不超过50个字符。
 
 #### 特技

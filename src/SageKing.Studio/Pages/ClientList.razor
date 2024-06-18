@@ -1,0 +1,156 @@
+﻿@page "/ClientList"
+
+<PageTitle>客户端管理中心</PageTitle>
+
+@inject PackagesDataService dataService
+
+<h2>客户端管理</h2>
+<br />
+<Form @ref="form"
+      Model="@model"
+      ValidateOnChange="true"
+      LabelColSpan="3">
+
+    <FormItem Label="推送内容">
+        <TextArea ShowCount MaxLength="200" Placeholder="输入推送内容" @ref="inputMessageRef" @bind-Value="@context.Message"></TextArea>
+    </FormItem>
+
+    <FormItem Label="客户端" HasFeedback>
+        <Select Mode="multiple"
+                Placeholder="请选择客户端"
+                @bind-Values="@context.ConnectIds"
+                TItemValue="string"
+                TItem="string"
+                OnSelectedItemsChanged="OnSelectedItemsChangedHandler"
+                Style="width: 100%; margin-bottom: 8px;"
+                EnableSearch
+                AllowClear>
+            <SelectOptions>
+                @foreach (var item in dic)
+                {
+                    <SelectOption TItemValue="string" TItem="string" Value=@item.Key Label=@($"{item.Value.ClientId}:{item.Value.ClientTypeDesc}") />
+                }
+            </SelectOptions>
+        </Select>
+    </FormItem>
+
+    <FormItem WrapperColOffset="1">
+        <Button Type="@ButtonType.Primary" @onclick="Push" Loading="@loading">推送</Button>
+        <label class="validation-message">@Notice</label>
+    </FormItem>
+
+</Form>
+
+@if (dic == null)
+{
+    <Spin size="large" Tip="Loading..." />
+}
+else
+{
+    <Table @ref="table" TItem="KeyValuePair<string, ClientConnectionInfo<IConnectionContext>>" DataSource="@dic"
+           @bind-SelectedRows="@selectedRows" RowKey="a=>a.Key" OnRowClick="OnRowClick">
+
+        <Selection Key="@context.Key" Type="@selectionType"></Selection>
+
+        <PropertyColumn Property="c=>c.Key" Title="ConnectId"></PropertyColumn>
+        <PropertyColumn Property="c=>c.Value.ToString()" Title="Details"></PropertyColumn>
+    </Table>
+}
+
+@code {
+    class Model
+    {
+        [Required]
+        public string Message { get; set; }
+
+        [RequiredList]
+        public IEnumerable<string> ConnectIds { get; set; }
+    }
+}
+
+@code {
+
+    bool loading;
+
+    Model model = new Model();
+    AntDesign.Form<Model> form;
+
+    string Notice = string.Empty;
+    AntDesign.Input<string> inputMessageRef;
+
+    ITable table;
+    string selectionType = "checkbox";
+    ConcurrentDictionary<string, ClientConnectionInfo<IConnectionContext>>? dic;
+    IEnumerable<KeyValuePair<string, ClientConnectionInfo<IConnectionContext>>> selectedRows;
+
+    protected override async Task OnInitializedAsync()
+    {
+        dic = dataService.DataClientDic;
+        selectedRows = new List<KeyValuePair<string, ClientConnectionInfo<IConnectionContext>>>();
+        await base.OnInitializedAsync();
+    }
+
+    private void OnSelectedItemsChangedHandler(IEnumerable<string> values)
+    {
+        if (values != null)
+        {
+            table.SetSelection(values.Distinct().ToArray());
+        }
+        else
+        {
+            table.SetSelection(null);
+        }
+    }
+
+    private async void Push()
+    {
+
+        if (!form.Validate())
+        {
+            return;
+        };
+
+        Notice = $"开始推送:{selectedRows.Count()}个客户端";
+
+        loading = true;
+
+        foreach (var item in selectedRows)
+        {
+            var result = await dataService.PushMsg(model.Message, item.Key);
+        }
+
+        loading = false;
+
+        model.Message = string.Empty;
+        Notice = $"推送完成:{selectedRows.Count()}个。{DateTime.Now}";
+
+        await inputMessageRef.Focus();
+
+        StateHasChanged(); 
+    } 
+
+    public void OnRowClick(RowData<KeyValuePair<string, ClientConnectionInfo<IConnectionContext>>> row)
+    {
+        if (selectedRows.Where(a => a.Key == row.Data.Key).Any())
+        {
+            RemoveSelection(row.Data.Key);
+        }
+        else
+        {
+            AddSelection(row.Data.Key);
+        }
+    }
+
+    public void RemoveSelection(string key)
+    {
+        var selected = selectedRows.Where(x => x.Key != key).ToList();
+        table.SetSelection(selected.Select(x => x.Key).ToArray());
+    }
+
+    public void AddSelection(string key)
+    {
+        var currlist = selectedRows.Select(a => a.Key).ToList();
+        currlist.Add(key);
+        table.SetSelection(currlist.ToArray());
+    }
+}

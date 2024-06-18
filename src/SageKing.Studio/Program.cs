@@ -1,13 +1,53 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Options;
 using SageKing.Studio.Data;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
+
+//配置 本地 Configuration 目录下json文件
+builder.Configuration.AddConfigurationJsonFiles(builder.Environment);
+
+var configuration = builder.Configuration;
+
+//add SageKing
+builder.Services.AddSageKing(sk =>
+{
+    sk.UseIceMediatR(o => o.MediatRServiceConfiguration += a =>
+    {
+        a.RegisterServicesFromAssemblies(typeof(Program).Assembly);
+    });
+
+    sk.UseIceRPC(o => o.ClientTypeDicOptions += options =>
+    {
+        configuration.GetSection(ClientTypeDicOptions.SectionName).Bind(options);
+    });
+
+    sk.UseIceRPCServer(o => o.IceRPCServerOptions += options =>
+    {
+
+        configuration.GetSection(IceRPCServerOption.SectionName).Bind(options);
+    });
+
+    sk.UseIceRPCClient(o => o.IceRPCClientOptions += options =>
+    {
+
+        configuration.GetSection(IceRPCClientOption.SectionName).Bind(options);
+    });
+
+});
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+
+//other services
+builder.Services.AddSingleton<PackagesDataService>();
 builder.Services.AddSingleton<WeatherForecastService>();
+
+builder.Services.AddAntDesign();
 
 var app = builder.Build();
 
