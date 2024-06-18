@@ -6,7 +6,7 @@
 
 #### 软件架构
 
-![image](./image/软件架构.svg)
+![image](./image/软件架构.png)
 
 #### 安装教程
 
