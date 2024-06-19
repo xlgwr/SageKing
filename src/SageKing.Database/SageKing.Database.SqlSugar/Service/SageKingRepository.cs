@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Extensions.Options;
+using SageKing.Database.SqlSugar.Options;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,7 +15,7 @@ namespace SageKing.Database.SqlSugar.Service
     public class SageKingSqlSplitRepository<T> : SqlSugarRepository<T>, ISageKingSqlSplitRepository<T>
         where T : class, new()
     {
-        public SageKingSqlSplitRepository(ITenant iTenant) : base(iTenant)
+        public SageKingSqlSplitRepository(ITenant iTenant, IOptions<SageKingDatabaseSqlSugarOptions> options) : base(iTenant, options)
         {
         }
     }
@@ -25,7 +27,7 @@ namespace SageKing.Database.SqlSugar.Service
     public class SageKingRepository<T> : SqlSugarRepository<T>, ISageKingRepository<T>
         where T : class, new()
     {
-        public SageKingRepository(ITenant iTenant) : base(iTenant)
+        public SageKingRepository(ITenant iTenant, IOptions<SageKingDatabaseSqlSugarOptions> options) : base(iTenant, options)
         {
         }
     }

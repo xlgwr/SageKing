@@ -47,11 +47,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SageKing.IceRPC.Test", "..\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{98E3FEC3-BE54-4733-A227-0FD06C16422D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SageKing.Database", "SageKing.Database\SageKing.Database\SageKing.Database.csproj", "{55EAC394-17F6-447C-B720-D4D003BE283E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SageKing.Database", "SageKing.Database\SageKing.Database\SageKing.Database.csproj", "{55EAC394-17F6-447C-B720-D4D003BE283E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SageKing.Database.SqlSugar", "SageKing.Database\SageKing.Database.SqlSugar\SageKing.Database.SqlSugar.csproj", "{57613154-3C69-42DA-A3B2-48E79EFED799}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SageKing.Database.SqlSugar", "SageKing.Database\SageKing.Database.SqlSugar\SageKing.Database.SqlSugar.csproj", "{57613154-3C69-42DA-A3B2-48E79EFED799}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SageKing.Cache", "SageKing.Database\SageKing.Database.Cache\SageKing.Cache.csproj", "{0009D192-7639-4519-A98D-B441282E0A65}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SageKing.Cache", "SageKing.Database\SageKing.Database.Cache\SageKing.Cache.csproj", "{0009D192-7639-4519-A98D-B441282E0A65}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SageKing.Database.SqlSugar.AspNetCore", "SageKing.Database\SageKing.Database.SqlSugar.ASPNETCore\SageKing.Database.SqlSugar.AspNetCore.csproj", "{E470A0C2-2569-40B3-9369-423D6C161FE4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -115,6 +117,10 @@ Global
 		{0009D192-7639-4519-A98D-B441282E0A65}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0009D192-7639-4519-A98D-B441282E0A65}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0009D192-7639-4519-A98D-B441282E0A65}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E470A0C2-2569-40B3-9369-423D6C161FE4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E470A0C2-2569-40B3-9369-423D6C161FE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E470A0C2-2569-40B3-9369-423D6C161FE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E470A0C2-2569-40B3-9369-423D6C161FE4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -137,6 +143,7 @@ Global
 		{55EAC394-17F6-447C-B720-D4D003BE283E} = {98E3FEC3-BE54-4733-A227-0FD06C16422D}
 		{57613154-3C69-42DA-A3B2-48E79EFED799} = {98E3FEC3-BE54-4733-A227-0FD06C16422D}
 		{0009D192-7639-4519-A98D-B441282E0A65} = {98E3FEC3-BE54-4733-A227-0FD06C16422D}
+		{E470A0C2-2569-40B3-9369-423D6C161FE4} = {98E3FEC3-BE54-4733-A227-0FD06C16422D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2F631A7F-D4DD-4C8D-A8B9-47797DD7B86A}

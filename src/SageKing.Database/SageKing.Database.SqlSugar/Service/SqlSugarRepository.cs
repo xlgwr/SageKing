@@ -1,3 +1,6 @@
+using Microsoft.Extensions.Options;
+using SageKing.Database.SqlSugar.Options;
+
 namespace SageKing.Database.SqlSugar.Service;
 
 /// <summary>
@@ -6,9 +9,14 @@ namespace SageKing.Database.SqlSugar.Service;
 /// <typeparam name="T"></typeparam>
 public class SqlSugarRepository<T> : SimpleClient<T>, ISqlSugarRepository<T> where T : class, new()
 {
-    public SqlSugarRepository(ITenant iTenant)
+    private SageKingDatabaseSqlSugarOptions _options;
+
+    public SqlSugarRepository(ITenant iTenant, IOptions<SageKingDatabaseSqlSugarOptions> options)
     {
-        base.Context = iTenant.GetConnectionScope(SqlSugarConst.MainConfigId);
+        this._options = options.Value;
+        var sqlSugarConst = this._options.SqlSugarDefault;
+
+        base.Context = iTenant.GetConnectionScope(sqlSugarConst.MainConfigId);
 
         // 若实体贴有多库特性，则返回指定库连接
         if (typeof(T).IsDefined(typeof(TenantAttribute), false))
@@ -20,14 +28,17 @@ public class SqlSugarRepository<T> : SimpleClient<T>, ISqlSugarRepository<T> whe
         // 若实体贴有日志表特性，则返回日志库连接
         if (typeof(T).IsDefined(typeof(LogTableAttribute), false))
         {
-            if (iTenant.IsAnyConnection(SqlSugarConst.LogConfigId))
-                base.Context = iTenant.GetConnectionScope(SqlSugarConst.LogConfigId);
+            if (iTenant.IsAnyConnection(sqlSugarConst.LogConfigId))
+                base.Context = iTenant.GetConnectionScope(sqlSugarConst.LogConfigId);
             return;
         }
 
         // 若实体贴有系统表特性，则返回默认库连接
         if (typeof(T).IsDefined(typeof(SysTableAttribute), false))
             return;
+
+        //其实切换，在应用中自定吧
+        this._options.ConnectionScopeAction?.Invoke(base.Context, typeof(T));
 
         //// 若未贴任何表特性或当前未登录或是默认租户Id，则返回默认库连接
         //var tenantId = App.User?.FindFirst(ClaimConst.TenantId)?.Value;
@@ -37,7 +48,7 @@ public class SqlSugarRepository<T> : SimpleClient<T>, ISqlSugarRepository<T> whe
         //var sqlSugarScopeProviderTenant = App.GetRequiredService<SysTenantService>().GetTenantDbConnectionScope(long.Parse(tenantId));
         //if (sqlSugarScopeProviderTenant == null) return;
         //base.Context = sqlSugarScopeProviderTenant;
-    }
+    } 
 
     #region 分表操作
 

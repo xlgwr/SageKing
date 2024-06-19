@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<RootNamespace>SageKing.Database.SqlSugar.AspNetCore</RootNamespace>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<Description>
+			提供SageKing.Database.SqlSugar.AspNetCore核心功能
+		</Description>
+		<PackageTags>SageKing module Core</PackageTags>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="MiniProfiler.AspNetCore.Mvc" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\SageKing.Database.SqlSugar\SageKing.Database.SqlSugar.csproj" />
+	</ItemGroup>
+
+</Project>

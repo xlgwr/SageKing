@@ -22,12 +22,12 @@ public sealed class DbConnectionOptions
     /// </summary>
     public List<DbConnectionConfig> ConnectionConfigs { get; set; }
 
-    public void PostConfigure(DbConnectionOptions options, IConfiguration configuration)
+    public void PostConfigure(DbConnectionOptions options, IConfiguration configuration,object MainConfigId)
     {
         foreach (var dbConfig in options.ConnectionConfigs)
         {
             if (dbConfig.ConfigId == null || string.IsNullOrWhiteSpace(dbConfig.ConfigId.ToString()))
-                dbConfig.ConfigId = SqlSugarConst.MainConfigId;
+                dbConfig.ConfigId = MainConfigId;
         }
     }
 }

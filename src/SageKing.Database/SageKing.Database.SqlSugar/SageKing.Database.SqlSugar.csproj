@@ -16,8 +16,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\SageKing.Database.Cache\SageKing.Cache.csproj" />
 	  <ProjectReference Include="..\SageKing.Database\SageKing.Database.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Contracts\Const\" />
 	</ItemGroup> 
 
 </Project>
