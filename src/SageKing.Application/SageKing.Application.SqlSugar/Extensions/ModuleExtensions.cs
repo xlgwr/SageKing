@@ -1,5 +1,9 @@
-﻿using NewLife.Configuration;
-using SageKing.Application.SqlSugar.Features;
+﻿using Microsoft.AspNetCore.Http;
+using NewLife.Configuration;
+using SageKing.Application.AspNetCore.SqlSugar.Features;
+using SageKing.Application.AspNetCore.SqlSugar.Service;
+using SageKing.Database.SqlSugar.Options;
+using StackExchange.Profiling;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,12 +16,12 @@ namespace SageKing.Extensions;
 
 public static class ModuleExtensions
 {
-    public static IModule UseSageKingApplicationSqlSugar(this IModule module, Action<SageKingApplicationSqlSugarFeature>? configure = default)
+    public static IModule UseSageKingApplicationAspNetCoreSqlSugar(this IModule module, Action<SageKingApplicationAspNetCoreSqlSugarFeature>? configure = default)
     {
         //当前程序集
-        var currAssembly = typeof(SageKingApplicationSqlSugarFeature).Assembly;
+        var currAssembly = typeof(SageKingApplicationAspNetCoreSqlSugarFeature).Assembly;
 
-        module.Configure<SageKingApplicationSqlSugarFeature>(feature =>
+        module.Configure<SageKingApplicationAspNetCoreSqlSugarFeature>(feature =>
         {
             configure?.Invoke(feature);
         });
@@ -29,7 +33,28 @@ public static class ModuleExtensions
 
         module.UseSageKingDatabaseSqlSugar(o => o.ClientTypeDicOptions += a =>
         {
+            a.ServiceProvider = o.Services.BuildServiceProvider();
+
+            foreach (var item in a.DBConnection.ConnectionConfigs)
+            {
+                SetDbConfig(item, a.ServiceProvider);
+            };
+
             var SqlSugarConst = a.SqlSugarDefault;
+
+
+            a.SqlSugarClientConfigAction += (db) =>
+            {
+                var idGenerator = a.ServiceProvider.GetService<IIdGenerator>()!;
+                var sqlSugarFilter = a.ServiceProvider.GetService<ISqlSugarFilter>()!;
+
+                foreach (var config in a.DBConnection.ConnectionConfigs)
+                {
+                    var dbProvider = db.GetConnectionScope(config.ConfigId);
+                    SetDbAop(dbProvider, a.DBConnection.EnableConsoleSql, idGenerator, sqlSugarFilter);
+                }
+            };
+
             a.InitDatabaseAction += (db, config) =>
             {
                 SqlSugarScopeProvider dbProvider = db.GetConnectionScope(config.ConfigId);
@@ -40,8 +65,8 @@ public static class ModuleExtensions
                     if (config.DbType != SqlSugar.DbType.Oracle)
                         dbProvider.DbMaintenance.CreateDatabase();
                 }
-                IEnumerable<Type> currAss = null;
 
+                IEnumerable<Type> currAss = null;
 
                 // 初始化表结构
                 if (config.TableSettings.EnableInitTable)
@@ -120,4 +145,202 @@ public static class ModuleExtensions
         });
         return module;
     }
+
+    #region MyRegion
+    /// <summary>
+    /// 配置连接属性
+    /// </summary>
+    /// <param name="config"></param>
+    public static void SetDbConfig(DbConnectionConfig config, IServiceProvider ServiceProvider)
+    {
+        var configureExternalServices = new ConfigureExternalServices
+        {
+            EntityNameService = (type, entity) => // 处理表
+            {
+                entity.IsDisabledDelete = true; // 禁止删除非 sqlsugar 创建的列
+                // 只处理贴了特性[SugarTable]表
+                if (!type.GetCustomAttributes<SugarTable>().Any())
+                    return;
+                if (config.DbSettings.EnableUnderLine && !entity.DbTableName.Contains('_'))
+                    entity.DbTableName = UtilMethods.ToUnderLine(entity.DbTableName); // 驼峰转下划线
+            },
+            EntityService = (type, column) => // 处理列
+            {
+                // 只处理贴了特性[SugarColumn]列
+                if (!type.GetCustomAttributes<SugarColumn>().Any())
+                    return;
+                if (new NullabilityInfoContext().Create(type).WriteState is NullabilityState.Nullable)
+                    column.IsNullable = true;
+                if (config.DbSettings.EnableUnderLine && !column.IsIgnore && !column.DbColumnName.Contains('_'))
+                    column.DbColumnName = UtilMethods.ToUnderLine(column.DbColumnName); // 驼峰转下划线
+            },
+            DataInfoCacheService = ServiceProvider.GetRequiredService<SqlSugarCache>()
+        };
+        config.ConfigureExternalServices = configureExternalServices;
+        config.InitKeyType = InitKeyType.Attribute;
+        config.IsAutoCloseConnection = true;
+        config.MoreSettings = new ConnMoreSettings
+        {
+            IsAutoRemoveDataCache = true, // 启用自动删除缓存，所有增删改会自动调用.RemoveDataCache()
+            IsAutoDeleteQueryFilter = true, // 启用删除查询过滤器
+            IsAutoUpdateQueryFilter = true, // 启用更新查询过滤器
+            SqlServerCodeFirstNvarchar = true // 采用Nvarchar
+        };
+    }
+
+    /// <summary>
+    /// 配置Aop
+    /// </summary>
+    /// <param name="db"></param>
+    /// <param name="enableConsoleSql"></param>
+    public static void SetDbAop(SqlSugarScopeProvider db, bool enableConsoleSql, IIdGenerator idGenerator, ISqlSugarFilter sqlSugarFilter)
+    {
+        // 设置超时时间
+        db.Ado.CommandTimeOut = 30;
+
+        // 打印SQL语句
+        if (enableConsoleSql)
+        {
+            db.Aop.OnLogExecuting = (sql, pars) =>
+            {
+                //// 若参数值超过100个字符则进行截取
+                //foreach (var par in pars)
+                //{
+                //    if (par.DbType != System.Data.DbType.String || par.Value == null) continue;
+                //    if (par.Value.ToString().Length > 100)
+                //        par.Value = string.Concat(par.Value.ToString()[..100], "......");
+                //}
+
+                var log = $"【{DateTime.Now}——执行SQL】\r\n{UtilMethods.GetNativeSql(sql, pars)}\r\n";
+                var originColor = Console.ForegroundColor;
+                if (sql.StartsWith("SELECT", StringComparison.OrdinalIgnoreCase))
+                    Console.ForegroundColor = ConsoleColor.Green;
+                if (sql.StartsWith("UPDATE", StringComparison.OrdinalIgnoreCase) || sql.StartsWith("INSERT", StringComparison.OrdinalIgnoreCase))
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                if (sql.StartsWith("DELETE", StringComparison.OrdinalIgnoreCase))
+                    Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(log);
+                Console.ForegroundColor = originColor;
+                "SqlSugar".PrintToMiniProfiler("Info", log);
+            };
+            db.Aop.OnError = ex =>
+            {
+                if (ex.Parametres == null) return;
+                var log = $"【{DateTime.Now}——错误SQL】\r\n{UtilMethods.GetNativeSql(ex.Sql, (SugarParameter[])ex.Parametres)}\r\n";
+                var originColor = Console.ForegroundColor;
+                Console.ForegroundColor = ConsoleColor.DarkRed;
+                Console.WriteLine(log);
+                Console.ForegroundColor = originColor;
+                "SqlSugar".PrintToMiniProfiler("Error", log);
+            };
+            db.Aop.OnLogExecuted = (sql, pars) =>
+            {
+                //// 若参数值超过100个字符则进行截取
+                //foreach (var par in pars)
+                //{
+                //    if (par.DbType != System.Data.DbType.String || par.Value == null) continue;
+                //    if (par.Value.ToString().Length > 100)
+                //        par.Value = string.Concat(par.Value.ToString()[..100], "......");
+                //}
+
+                // 执行时间超过5秒时
+                if (db.Ado.SqlExecutionTime.TotalSeconds > 5)
+                {
+                    var fileName = db.Ado.SqlStackTrace.FirstFileName; // 文件名
+                    var fileLine = db.Ado.SqlStackTrace.FirstLine; // 行号
+                    var firstMethodName = db.Ado.SqlStackTrace.FirstMethodName; // 方法名
+                    var log = $"【{DateTime.Now}——超时SQL】\r\n【所在文件名】：{fileName}\r\n【代码行数】：{fileLine}\r\n【方法名】：{firstMethodName}\r\n" + $"【SQL语句】：{UtilMethods.GetNativeSql(sql, pars)}";
+                    var originColor = Console.ForegroundColor;
+                    Console.ForegroundColor = ConsoleColor.DarkYellow;
+                    Console.WriteLine(log);
+                    Console.ForegroundColor = originColor;
+                    "SqlSugar".PrintToMiniProfiler("Slow", log);
+                }
+            };
+        }
+        // 数据审计
+        db.Aop.DataExecuting = (oldValue, entityInfo) =>
+        {
+            // 新增/插入
+            if (entityInfo.OperationType == DataFilterType.InsertByObject)
+            {
+                // 若主键是长整型且空则赋值雪花Id
+                if (entityInfo.EntityColumnInfo.IsPrimarykey && entityInfo.EntityColumnInfo.PropertyInfo.PropertyType == typeof(long))
+                {
+                    var id = entityInfo.EntityColumnInfo.PropertyInfo.GetValue(entityInfo.EntityValue);
+                    if (id == null || (long)id == 0)
+                        entityInfo.SetValue(idGenerator.NextId());
+                }
+                // 若创建时间为空则赋值当前时间
+                else if (entityInfo.PropertyName == nameof(EntityBase.CreateTime) && entityInfo.EntityColumnInfo.PropertyInfo.GetValue(entityInfo.EntityValue) == null)
+                {
+                    entityInfo.SetValue(DateTime.Now);
+                }
+                // 若当前用户非空（web线程时）
+                if (App.User != null)
+                {
+                    if (entityInfo.PropertyName == nameof(EntityTenantId.TenantId))
+                    {
+                        var tenantId = ((dynamic)entityInfo.EntityValue).TenantId;
+                        if (tenantId == null || tenantId == 0)
+                            entityInfo.SetValue(App.User.FindFirst(ClaimConst.TenantId)?.Value);
+                    }
+                    else if (entityInfo.PropertyName == nameof(EntityBase.CreateUserId))
+                    {
+                        var createUserId = ((dynamic)entityInfo.EntityValue).CreateUserId;
+                        if (createUserId == 0 || createUserId == null)
+                            entityInfo.SetValue(App.User.FindFirst(ClaimConst.UserId)?.Value);
+                    }
+                    else if (entityInfo.PropertyName == nameof(EntityBase.CreateUserName))
+                    {
+                        var createUserName = ((dynamic)entityInfo.EntityValue).CreateUserName;
+                        if (string.IsNullOrEmpty(createUserName))
+                            entityInfo.SetValue(App.User.FindFirst(ClaimConst.RealName)?.Value);
+                    }
+                    else if (entityInfo.PropertyName == nameof(EntityBaseData.CreateOrgId))
+                    {
+                        var createOrgId = ((dynamic)entityInfo.EntityValue).CreateOrgId;
+                        if (createOrgId == 0 || createOrgId == null)
+                            entityInfo.SetValue(App.User.FindFirst(ClaimConst.OrgId)?.Value);
+                    }
+                    else if (entityInfo.PropertyName == nameof(EntityBaseData.CreateOrgName))
+                    {
+                        var createOrgName = ((dynamic)entityInfo.EntityValue).CreateOrgName;
+                        if (string.IsNullOrEmpty(createOrgName))
+                            entityInfo.SetValue(App.User.FindFirst(ClaimConst.OrgName)?.Value);
+                    }
+                }
+            }
+            // 编辑/更新
+            else if (entityInfo.OperationType == DataFilterType.UpdateByObject)
+            {
+                if (entityInfo.PropertyName == nameof(EntityBase.UpdateTime))
+                    entityInfo.SetValue(DateTime.Now);
+                else if (entityInfo.PropertyName == nameof(EntityBase.UpdateUserId))
+                    entityInfo.SetValue(App.User?.FindFirst(ClaimConst.UserId)?.Value);
+                else if (entityInfo.PropertyName == nameof(EntityBase.UpdateUserName))
+                    entityInfo.SetValue(App.User?.FindFirst(ClaimConst.RealName)?.Value);
+            }
+        };
+
+        // 超管排除其他过滤器
+        if (App.User?.FindFirst(ClaimConst.AccountType)?.Value == ((int)AccountTypeEnum.SuperAdmin).ToString())
+            return;
+
+        // 配置假删除过滤器
+        db.QueryFilter.AddTableFilter<IDeletedFilter>(u => u.IsDelete == false);
+
+        // 配置租户过滤器
+        var tenantId = App.User?.FindFirst(ClaimConst.TenantId)?.Value;
+        if (!string.IsNullOrWhiteSpace(tenantId))
+            db.QueryFilter.AddTableFilter<ITenantIdFilter>(u => u.TenantId == long.Parse(tenantId));
+
+        // 配置用户机构（数据范围）过滤器
+        sqlSugarFilter.SetOrgEntityFilter(db);
+
+        // 配置自定义过滤器
+        sqlSugarFilter.SetCustomEntityFilter(db);
+    }
+
+    #endregion
 }

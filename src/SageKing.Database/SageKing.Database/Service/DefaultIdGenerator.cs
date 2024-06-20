@@ -107,4 +107,9 @@ public class DefaultIdGenerator : IIdGenerator
     {
         return _SnowWorker.NextId();
     }
+
+    public long NextId()
+    {
+        return _SnowWorker.NextId();
+    }
 }

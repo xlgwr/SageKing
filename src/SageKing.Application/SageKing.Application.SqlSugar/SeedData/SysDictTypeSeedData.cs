@@ -1,4 +1,4 @@
-﻿namespace SageKing.Application.SqlSugar.SeedData;
+﻿namespace SageKing.Application.AspNetCore.SqlSugar.SeedData;
 /// <summary>
 /// 系统字典类型表种子数据
 /// </summary>

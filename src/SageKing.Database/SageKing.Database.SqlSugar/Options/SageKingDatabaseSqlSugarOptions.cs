@@ -14,6 +14,11 @@ public class SageKingDatabaseSqlSugarOptions
     public const string SectionName = "SageKingDatabaseSqlSugar";
 
     /// <summary>
+    /// Gets the <see cref="IServiceProvider"/>.
+    /// </summary>
+    public IServiceProvider ServiceProvider { get; set; }
+
+    /// <summary>
     /// 默认参数设置相关
     /// </summary>
     public SqlSugarDefaultSet SqlSugarDefault { get; set; }
@@ -22,6 +27,7 @@ public class SageKingDatabaseSqlSugarOptions
 
     /// <summary>
     /// SqlSugarScope ConfigAction and TenantScope
+    /// SetDbAop,SetDbDiffLog
     /// </summary>
     public Action<SqlSugarClient> SqlSugarClientConfigAction { get; set; } = _ => { };
 

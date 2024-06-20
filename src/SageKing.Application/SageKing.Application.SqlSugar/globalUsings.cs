@@ -23,10 +23,16 @@ global using System.Collections.Concurrent;
 global using SqlSugar;
 global using MediatR;
 
+global using NewLife.Caching;
+global using NewLife.Caching.Models;
+global using CacheDefault = NewLife.Caching.Cache;
+
 global using SageKing.Database;
 global using SageKing.Database.Contracts;
 global using SageKing.Database.SqlSugar.Contracts;
 global using SageKing.Database.SqlSugar.Service;
 
-global using SageKing.Application.SqlSugar.Contracts;
-global using SageKing.Application.SqlSugar.Contracts.Entity;
+global using SageKing.Application.AspNetCore.SqlSugar.Contracts;
+global using SageKing.Application.AspNetCore.SqlSugar.Contracts.Entity;
+
+global using SageKing.Database.SqlSugar.AspNetCore.Extensions;

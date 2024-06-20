@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<RootNamespace>SageKing.Application.SqlSugar</RootNamespace>
+		<RootNamespace>SageKing.Application.AspNetCore.SqlSugar</RootNamespace>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -10,10 +10,6 @@
 		</Description>
 		<PackageTags>SageKing module Core</PackageTags>
 	</PropertyGroup>
-	
-	<ItemGroup>
-	  <Folder Include="Service\" />
-	</ItemGroup>
 
 	<ItemGroup>
 	  <ProjectReference Include="..\..\SageKing.Database\SageKing.Database.Cache\SageKing.Cache.csproj" />

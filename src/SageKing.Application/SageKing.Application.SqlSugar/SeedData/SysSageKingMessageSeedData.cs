@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SageKing.Application.SqlSugar.SeedData;
+namespace SageKing.Application.AspNetCore.SqlSugar.SeedData;
 
 public class SysSageKingMessageSeedData : ISqlSugarEntitySeedData<SysSageKingMessage>
 {

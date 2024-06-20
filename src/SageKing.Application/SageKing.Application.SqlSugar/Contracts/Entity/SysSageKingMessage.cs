@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SageKing.Application.SqlSugar.Contracts.Entity;
+namespace SageKing.Application.AspNetCore.SqlSugar.Contracts.Entity;
 
 /// <summary>
 /// SageKing消息结构表

@@ -1,4 +1,4 @@
-namespace SageKing.Application.SqlSugar.Contracts.Entity;
+namespace SageKing.Application.AspNetCore.SqlSugar.Contracts.Entity;
 
 /// <summary>
 /// 系统参数配置表

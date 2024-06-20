@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using SageKing.Database.SqlSugar.AspNetCore.Extensions;
 using StackExchange.Profiling;
 using System.Reflection;
 using System.Transactions;
@@ -100,7 +101,7 @@ public sealed class UnitOfWorkAttribute : Attribute, IAsyncActionFilter, IAsyncP
         {
 
             // 打印工作单元开始消息
-            if (UseAmbientTransaction) PrintToMiniProfiler(context.HttpContext, MiniProfilerCategory, "Beginning (Ambient)");
+            if (UseAmbientTransaction) context.HttpContext.PrintToMiniProfiler(MiniProfilerCategory, "Beginning (Ambient)");
 
             logger.LogWarning("[Database Transaction] Starting a new transaction.");
 
@@ -121,12 +122,12 @@ public sealed class UnitOfWorkAttribute : Attribute, IAsyncActionFilter, IAsyncP
                 logger.LogWarning("[Database Transaction] Transaction committed successfully.");
 
                 // 打印事务提交消息
-                if (UseAmbientTransaction) PrintToMiniProfiler(context.HttpContext, MiniProfilerCategory, "Completed (Ambient)");
+                if (UseAmbientTransaction) context.HttpContext.PrintToMiniProfiler(MiniProfilerCategory, "Completed (Ambient)");
             }
             else
             {
                 // 打印事务回滚消息
-                if (UseAmbientTransaction) PrintToMiniProfiler(context.HttpContext, MiniProfilerCategory, "Rollback (Ambient)", isError: true);
+                if (UseAmbientTransaction) context.HttpContext.PrintToMiniProfiler(MiniProfilerCategory, "Rollback (Ambient)", isError: true);
 
                 logger.LogError(resultContext.Exception, "[Database Transaction] Transaction rolled back due to an error.");
             }
@@ -136,7 +137,7 @@ public sealed class UnitOfWorkAttribute : Attribute, IAsyncActionFilter, IAsyncP
             logger.LogError(ex, "[Database Transaction] Transaction rolled back due to an error.");
 
             // 打印事务回滚消息
-            if (UseAmbientTransaction) PrintToMiniProfiler(context.HttpContext, MiniProfilerCategory, "Rollback (Ambient)", isError: true);
+            if (UseAmbientTransaction) context.HttpContext.PrintToMiniProfiler(MiniProfilerCategory, "Rollback (Ambient)", isError: true);
 
             throw;
         }
@@ -179,7 +180,7 @@ public sealed class UnitOfWorkAttribute : Attribute, IAsyncActionFilter, IAsyncP
         try
         {
             // 打印工作单元开始消息
-            if (UseAmbientTransaction) PrintToMiniProfiler(context.HttpContext, MiniProfilerCategory, "Beginning (Ambient)");
+            if (UseAmbientTransaction) context.HttpContext.PrintToMiniProfiler(MiniProfilerCategory, "Beginning (Ambient)");
 
             // 开始事务
             BeginTransaction(context, method, out var _unitOfWork, out var unitOfWorkAttribute);
@@ -196,12 +197,12 @@ public sealed class UnitOfWorkAttribute : Attribute, IAsyncActionFilter, IAsyncP
                 transactionScope?.Complete();
 
                 // 打印事务提交消息
-                if (UseAmbientTransaction) PrintToMiniProfiler(context.HttpContext, MiniProfilerCategory, "Completed (Ambient)");
+                if (UseAmbientTransaction) context.HttpContext.PrintToMiniProfiler(MiniProfilerCategory, "Completed (Ambient)");
             }
             else
             {
                 // 打印事务回滚消息
-                if (UseAmbientTransaction) PrintToMiniProfiler(context.HttpContext, MiniProfilerCategory, "Rollback (Ambient)", isError: true);
+                if (UseAmbientTransaction) context.HttpContext.PrintToMiniProfiler(MiniProfilerCategory, "Rollback (Ambient)", isError: true);
 
                 logger.LogError(resultContext.Exception, "Transaction Failed.");
             }
@@ -211,7 +212,7 @@ public sealed class UnitOfWorkAttribute : Attribute, IAsyncActionFilter, IAsyncP
             logger.LogError(ex, "Transaction Failed.");
 
             // 打印事务回滚消息
-            if (UseAmbientTransaction) PrintToMiniProfiler(context.HttpContext, MiniProfilerCategory, "Rollback (Ambient)", isError: true);
+            if (UseAmbientTransaction) context.HttpContext.PrintToMiniProfiler(MiniProfilerCategory, "Rollback (Ambient)", isError: true);
 
             throw;
         }
@@ -260,7 +261,7 @@ public sealed class UnitOfWorkAttribute : Attribute, IAsyncActionFilter, IAsyncP
         _unitOfWork.BeginTransaction(context, unitOfWorkAttribute);
 
         // 打印工作单元开始消息
-        if (!unitOfWorkAttribute.UseAmbientTransaction) PrintToMiniProfiler(context.HttpContext, MiniProfilerCategory, "Beginning");
+        if (!unitOfWorkAttribute.UseAmbientTransaction) context.HttpContext.PrintToMiniProfiler(MiniProfilerCategory, "Beginning");
     }
 
     /// <summary>
@@ -290,41 +291,10 @@ public sealed class UnitOfWorkAttribute : Attribute, IAsyncActionFilter, IAsyncP
         _unitOfWork.OnCompleted(context, resultContext);
 
         // 打印工作单元结束消息
-        if (!unitOfWorkAttribute.UseAmbientTransaction) PrintToMiniProfiler(context.HttpContext, MiniProfilerCategory, "Ending");
+        if (!unitOfWorkAttribute.UseAmbientTransaction) context.HttpContext.PrintToMiniProfiler(MiniProfilerCategory, "Ending");
     }
 
-    /// <summary>
-    /// 打印验证信息到 MiniProfiler
-    /// </summary>
-    /// <param name="category">分类</param>
-    /// <param name="state">状态</param>
-    /// <param name="message">消息</param>
-    /// <param name="isError">是否为警告消息</param>
-    public void PrintToMiniProfiler(HttpContext httpContext, string category, string state, string message = null, bool isError = false)
-    {
-        if (!CanBeMiniProfiler(httpContext)) return;
 
-        // 打印消息
-        var titleCaseCategory = Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(category);
-        var customTiming = MiniProfiler.Current?.CustomTiming(category, string.IsNullOrWhiteSpace(message) ? $"{titleCaseCategory} {state}" : message, state);
-        if (customTiming == null) return;
-
-        // 判断是否是警告消息
-        if (isError) customTiming.Errored = true;
-    } 
-
-    /// <summary>
-    /// 判断是否启用 MiniProfiler
-    /// </summary>
-    /// <returns></returns>
-    public bool CanBeMiniProfiler(HttpContext httpContext)
-    {
-        // 减少不必要的监听
-        if (httpContext == null
-            || !(httpContext.Request.Headers.TryGetValue("request-from", out var value) && value == "swagger")) return false;
-
-        return true;
-    }
 }
 internal sealed class UnitOfWork
 {

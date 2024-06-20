@@ -11,5 +11,7 @@ namespace SageKing.Core.Contracts
         Action<OverCostActionArg> GenIdActionAsync { get; set; }
 
         long NewLong();
+
+        long NextId();
     }
 }

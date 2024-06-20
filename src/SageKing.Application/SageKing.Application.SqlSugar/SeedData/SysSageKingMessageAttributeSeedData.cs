@@ -1,11 +1,11 @@
-﻿using SageKing.Application.SqlSugar.Contracts.Entity;
+﻿using SageKing.Application.AspNetCore.SqlSugar.Contracts.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SageKing.Application.SqlSugar.SeedData;
+namespace SageKing.Application.AspNetCore.SqlSugar.SeedData;
 
 public class SysSageKingMessageAttributeSeedData : ISqlSugarEntitySeedData<SysSageKingMessageAttribute>
 {
