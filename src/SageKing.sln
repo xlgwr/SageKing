@@ -53,7 +53,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SageKing.Database.SqlSugar"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SageKing.Cache", "SageKing.Database\SageKing.Database.Cache\SageKing.Cache.csproj", "{0009D192-7639-4519-A98D-B441282E0A65}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SageKing.Database.SqlSugar.AspNetCore", "SageKing.Database\SageKing.Database.SqlSugar.ASPNETCore\SageKing.Database.SqlSugar.AspNetCore.csproj", "{E470A0C2-2569-40B3-9369-423D6C161FE4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SageKing.Database.SqlSugar.AspNetCore", "SageKing.Database\SageKing.Database.SqlSugar.ASPNETCore\SageKing.Database.SqlSugar.AspNetCore.csproj", "{E470A0C2-2569-40B3-9369-423D6C161FE4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Application", "Application", "{7421FFFA-FAE1-460B-A799-35E19E82A8A2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SageKing.Application.SqlSugar", "SageKing.Application\SageKing.Application.SqlSugar\SageKing.Application.SqlSugar.csproj", "{9896BD98-2E4C-4D60-8E3D-603B8160DD18}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -121,6 +125,10 @@ Global
 		{E470A0C2-2569-40B3-9369-423D6C161FE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E470A0C2-2569-40B3-9369-423D6C161FE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E470A0C2-2569-40B3-9369-423D6C161FE4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9896BD98-2E4C-4D60-8E3D-603B8160DD18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9896BD98-2E4C-4D60-8E3D-603B8160DD18}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9896BD98-2E4C-4D60-8E3D-603B8160DD18}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9896BD98-2E4C-4D60-8E3D-603B8160DD18}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -144,6 +152,8 @@ Global
 		{57613154-3C69-42DA-A3B2-48E79EFED799} = {98E3FEC3-BE54-4733-A227-0FD06C16422D}
 		{0009D192-7639-4519-A98D-B441282E0A65} = {98E3FEC3-BE54-4733-A227-0FD06C16422D}
 		{E470A0C2-2569-40B3-9369-423D6C161FE4} = {98E3FEC3-BE54-4733-A227-0FD06C16422D}
+		{7421FFFA-FAE1-460B-A799-35E19E82A8A2} = {774DF78A-4363-44EB-9518-565BE31486E2}
+		{9896BD98-2E4C-4D60-8E3D-603B8160DD18} = {7421FFFA-FAE1-460B-A799-35E19E82A8A2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2F631A7F-D4DD-4C8D-A8B9-47797DD7B86A}
