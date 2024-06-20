@@ -25,10 +25,10 @@
                             TItemValue="int"
                             TItem="string">
                         <SelectOptions>
-                            <SelectOption Value="@(0)" Label="DB表类" />
-                            <SelectOption Value="@(1)" Label="业务类" />
-                            <SelectOption Value="@(2)" Label="通知类" />
-                            <SelectOption Value="@(3)" Label="行情类" />
+                            <SelectOption Value="@(1)" Label="DB表类" />
+                            <SelectOption Value="@(2)" Label="业务类" />
+                            <SelectOption Value="@(3)" Label="通知类" />
+                            <SelectOption Value="@(4)" Label="行情类" />
                         </SelectOptions>
                     </Select>
                 </FormItem>
@@ -205,7 +205,7 @@ else
         model.Name = row.Name;
         model.Description = row.Description;
         model.Type = row.Type;
-        model.Varsion = row.Varsion;
+        model.Varsion = row.Version;
     }
     private async void Send()
     {
@@ -249,7 +249,7 @@ else
                     Description = model.Description,
                     Id = Guid.NewGuid().ToString(),
                     Type = model.Type,
-                    Varsion = model.Varsion
+                    Version = model.Varsion
                 };
             model = new Model();
             Notice = $"新增成功【{data.Name}】";
@@ -260,7 +260,7 @@ else
             data.Name = model.Name;
             data.Description = model.Description;
             data.Type = model.Type;
-            data.Varsion = model.Varsion;
+            data.Version = model.Varsion;
 
             Notice = $"保存成功【{model.Name}】";
             await inputMessageRef.Focus();

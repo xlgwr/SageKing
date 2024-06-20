@@ -18,6 +18,7 @@ global using SageKing.Features.Abstractions;
 global using SageKing.Core.Contracts;
 global using SageKing.Database.Contracts;
 global using SageKing.Database.SqlSugar.Contracts;
+global using SageKing.Database.SqlSugar.Options;
 
 
 global using MediatR;

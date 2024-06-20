@@ -16,4 +16,6 @@ global using SageKing.Core.Options;
 
 global using System.Collections.Concurrent;
 
+global using SageKing.Database.Contracts;
+
 global using MediatR;

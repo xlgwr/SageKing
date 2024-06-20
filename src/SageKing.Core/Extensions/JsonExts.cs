@@ -13,7 +13,8 @@ public static class JsonExts
     {
         return JsonConvert.SerializeObject(obj);
 
-    }
+    } 
+
     public static bool HasItem<TSource>(this IEnumerable<TSource> source)
     {
 
