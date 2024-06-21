@@ -6,6 +6,7 @@ global using Microsoft.Extensions.Logging;
 global using Microsoft.Extensions.Options;
 
 global using Microsoft.AspNetCore.Mvc.Filters;
+global using Microsoft.AspNetCore.Http;
 
 global using JetBrains.Annotations;
 global using SageKing.Extensions;

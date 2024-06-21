@@ -2,6 +2,7 @@
 global using Microsoft.Extensions.Hosting;
 
 global using Microsoft.Extensions.Logging;
+global using System.ComponentModel;
 
 global using JetBrains.Annotations;
 global using SageKing.Extensions;

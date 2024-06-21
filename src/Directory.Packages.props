@@ -99,6 +99,7 @@
     <PackageVersion Include="Polly.Core" Version="8.4.0" />
     <PackageVersion Include="SqlSugarCore" Version="5.1.4.158" />
     <PackageVersion Include="Swashbuckle.AspNetCore" Version="6.6.1" />
+    <PackageVersion Include="System.Linq.Dynamic.Core" Version="1.4.1" />
     <PackageVersion Include="System.Reflection.TypeExtensions" Version="4.7.0" />
     <PackageVersion Include="System.Text.RegularExpressions" Version="4.3.1" />
     <PackageVersion Include="xunit" Version="2.8.0" />

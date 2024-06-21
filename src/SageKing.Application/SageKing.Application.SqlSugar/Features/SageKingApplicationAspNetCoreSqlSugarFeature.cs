@@ -1,5 +1,6 @@
 ﻿using SageKing.Application.AspNetCore.SqlSugar.Service;
 using SageKing.Cache.Features;
+using SageKing.Database.SqlSugar.AspNetCore;
 using SageKing.Database.SqlSugar.AspNetCore.Features;
 using SageKing.Database.SqlSugar.Features;
 
@@ -23,6 +24,6 @@ public class SageKingApplicationAspNetCoreSqlSugarFeature : FeatureBase
     public override void Apply()
     {
         Services.Configure(DatabaseOptions)
-            .AddSingleton<ISqlSugarFilter, SqlSugarFilter>();
+            .AddSingleton<ISqlSugarAspNetCoreFilter, SqlSugarAspNetCoreFilter>();
     }
 }

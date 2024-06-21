@@ -2,6 +2,7 @@
 using NewLife.Configuration;
 using SageKing.Application.AspNetCore.SqlSugar.Features;
 using SageKing.Application.AspNetCore.SqlSugar.Service;
+using SageKing.Database.SqlSugar.AspNetCore;
 using SageKing.Database.SqlSugar.Options;
 using StackExchange.Profiling;
 using System;
@@ -46,12 +47,13 @@ public static class ModuleExtensions
             a.SqlSugarClientConfigAction += (db) =>
             {
                 var idGenerator = a.ServiceProvider.GetService<IIdGenerator>()!;
-                var sqlSugarFilter = a.ServiceProvider.GetService<ISqlSugarFilter>()!;
+                var sqlSugarFilter = a.ServiceProvider.GetService<ISqlSugarAspNetCoreFilter>()!;
+                var httpContext = a.ServiceProvider.GetService<IHttpContextAccessor>()?.HttpContext;
 
                 foreach (var config in a.DBConnection.ConnectionConfigs)
                 {
                     var dbProvider = db.GetConnectionScope(config.ConfigId);
-                    SetDbAop(dbProvider, a.DBConnection.EnableConsoleSql, idGenerator, sqlSugarFilter);
+                    SetDbAop(dbProvider, a.DBConnection.EnableConsoleSql, idGenerator, sqlSugarFilter, httpContext, SqlSugarConst);
                 }
             };
 
@@ -193,7 +195,7 @@ public static class ModuleExtensions
     /// </summary>
     /// <param name="db"></param>
     /// <param name="enableConsoleSql"></param>
-    public static void SetDbAop(SqlSugarScopeProvider db, bool enableConsoleSql, IIdGenerator idGenerator, ISqlSugarFilter sqlSugarFilter)
+    public static void SetDbAop(SqlSugarScopeProvider db, bool enableConsoleSql, IIdGenerator idGenerator, ISqlSugarAspNetCoreFilter sqlSugarFilter, HttpContext httpContext, SqlSugarDefaultSet SqlSugarConst)
     {
         // 设置超时时间
         db.Ado.CommandTimeOut = 30;
@@ -276,38 +278,39 @@ public static class ModuleExtensions
                 {
                     entityInfo.SetValue(DateTime.Now);
                 }
+
                 // 若当前用户非空（web线程时）
-                if (App.User != null)
+                if (httpContext != null && httpContext.User != null)
                 {
                     if (entityInfo.PropertyName == nameof(EntityTenantId.TenantId))
                     {
                         var tenantId = ((dynamic)entityInfo.EntityValue).TenantId;
                         if (tenantId == null || tenantId == 0)
-                            entityInfo.SetValue(App.User.FindFirst(ClaimConst.TenantId)?.Value);
+                            entityInfo.SetValue(httpContext.User.FindFirst(ClaimConst.TenantId)?.Value);
                     }
                     else if (entityInfo.PropertyName == nameof(EntityBase.CreateUserId))
                     {
                         var createUserId = ((dynamic)entityInfo.EntityValue).CreateUserId;
                         if (createUserId == 0 || createUserId == null)
-                            entityInfo.SetValue(App.User.FindFirst(ClaimConst.UserId)?.Value);
+                            entityInfo.SetValue(httpContext.User.FindFirst(ClaimConst.UserId)?.Value);
                     }
                     else if (entityInfo.PropertyName == nameof(EntityBase.CreateUserName))
                     {
                         var createUserName = ((dynamic)entityInfo.EntityValue).CreateUserName;
                         if (string.IsNullOrEmpty(createUserName))
-                            entityInfo.SetValue(App.User.FindFirst(ClaimConst.RealName)?.Value);
+                            entityInfo.SetValue(httpContext.User.FindFirst(ClaimConst.RealName)?.Value);
                     }
                     else if (entityInfo.PropertyName == nameof(EntityBaseData.CreateOrgId))
                     {
                         var createOrgId = ((dynamic)entityInfo.EntityValue).CreateOrgId;
                         if (createOrgId == 0 || createOrgId == null)
-                            entityInfo.SetValue(App.User.FindFirst(ClaimConst.OrgId)?.Value);
+                            entityInfo.SetValue(httpContext.User.FindFirst(ClaimConst.OrgId)?.Value);
                     }
                     else if (entityInfo.PropertyName == nameof(EntityBaseData.CreateOrgName))
                     {
                         var createOrgName = ((dynamic)entityInfo.EntityValue).CreateOrgName;
                         if (string.IsNullOrEmpty(createOrgName))
-                            entityInfo.SetValue(App.User.FindFirst(ClaimConst.OrgName)?.Value);
+                            entityInfo.SetValue(httpContext.User.FindFirst(ClaimConst.OrgName)?.Value);
                     }
                 }
             }
@@ -316,30 +319,30 @@ public static class ModuleExtensions
             {
                 if (entityInfo.PropertyName == nameof(EntityBase.UpdateTime))
                     entityInfo.SetValue(DateTime.Now);
-                else if (entityInfo.PropertyName == nameof(EntityBase.UpdateUserId))
-                    entityInfo.SetValue(App.User?.FindFirst(ClaimConst.UserId)?.Value);
-                else if (entityInfo.PropertyName == nameof(EntityBase.UpdateUserName))
-                    entityInfo.SetValue(App.User?.FindFirst(ClaimConst.RealName)?.Value);
+                else if (httpContext != null && entityInfo.PropertyName == nameof(EntityBase.UpdateUserId))
+                    entityInfo.SetValue(httpContext.User?.FindFirst(ClaimConst.UserId)?.Value);
+                else if (httpContext != null && entityInfo.PropertyName == nameof(EntityBase.UpdateUserName))
+                    entityInfo.SetValue(httpContext.User?.FindFirst(ClaimConst.RealName)?.Value);
             }
         };
 
         // 超管排除其他过滤器
-        if (App.User?.FindFirst(ClaimConst.AccountType)?.Value == ((int)AccountTypeEnum.SuperAdmin).ToString())
+        if (httpContext != null && httpContext.User?.FindFirst(ClaimConst.AccountType)?.Value == ((int)AccountTypeEnum.SuperAdmin).ToString())
             return;
 
         // 配置假删除过滤器
         db.QueryFilter.AddTableFilter<IDeletedFilter>(u => u.IsDelete == false);
 
         // 配置租户过滤器
-        var tenantId = App.User?.FindFirst(ClaimConst.TenantId)?.Value;
+        var tenantId = httpContext?.User?.FindFirst(ClaimConst.TenantId)?.Value;
         if (!string.IsNullOrWhiteSpace(tenantId))
             db.QueryFilter.AddTableFilter<ITenantIdFilter>(u => u.TenantId == long.Parse(tenantId));
 
         // 配置用户机构（数据范围）过滤器
-        sqlSugarFilter.SetOrgEntityFilter(db);
+        sqlSugarFilter.SetOrgEntityFilter(db, httpContext);
 
         // 配置自定义过滤器
-        sqlSugarFilter.SetCustomEntityFilter(db);
+        sqlSugarFilter.SetCustomEntityFilter(db, httpContext, SqlSugarConst.MainConfigId);
     }
 
     #endregion

@@ -25,7 +25,10 @@ public static class ModuleExtensions
     public static IModule AddUnitOfWork<TUnitOfWork>(this IModule module)
         where TUnitOfWork : class, IUnitOfWork
     {
-        module.Services.AddTransient<IUnitOfWork, TUnitOfWork>();        
+       
+        module.Services
+            .AddHttpContextAccessor()
+            .AddTransient<IUnitOfWork, TUnitOfWork>();        
         return module;
     }
 }
