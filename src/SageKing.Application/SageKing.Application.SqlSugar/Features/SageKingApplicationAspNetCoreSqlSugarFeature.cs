@@ -18,12 +18,12 @@ public class SageKingApplicationAspNetCoreSqlSugarFeature : FeatureBase
     /// <summary>
     /// Represents the options for SageKingApplicationAspNetCoreSqlSugars feature.
     /// </summary>
-    public Action<SageKingApplicationAspNetCoreSqlSugarOptions> DatabaseOptions { get; set; } = _ => { };
+    public Action<SageKingApplicationAspNetCoreSqlSugarOptions> ApplicationAspNetCoreSqlSugarOptions { get; set; } = _ => { };
 
     /// <inheritdoc />
     public override void Apply()
     {
-        Services.Configure(DatabaseOptions)
+        Services.Configure(ApplicationAspNetCoreSqlSugarOptions)
             .AddSingleton<ISqlSugarAspNetCoreFilter, SqlSugarAspNetCoreFilter>();
     }
 }

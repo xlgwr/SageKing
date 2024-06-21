@@ -22,7 +22,7 @@ public class IceRPCClientHostedService : IHostedService, IDisposable
     private readonly IServiceProvider _serviceProvider;
     private readonly Dictionary<string, IClientConnection<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage, Pipeline, Identity>> _clientDic;
 
-    public IceRPCClientHostedService(IServiceProvider serviceProvider, ILoggerFactory loggerFactory, IOptions<List<IceRPCClientOption>> options)
+    public IceRPCClientHostedService(IServiceProvider serviceProvider, ILoggerFactory loggerFactory, IOptions<IceRPCClientListOption> options)
     {
         _serviceProvider = serviceProvider;
         _logger = loggerFactory.CreateLogger<IceRPCClientHostedService>();

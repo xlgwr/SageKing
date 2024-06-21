@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using SageKing.Core.Abstractions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,9 +11,14 @@ namespace SageKing.IceRPC
     /// <summary>
     /// 客户端类型字典
     /// </summary>
-    public class ClientTypeDicOptions : ConcurrentDictionary<int, string>
+    public class ClientTypeDicOptions : ConcurrentDictionary<int, string>, IOptionsBase
     {
-        public const string SectionName = "ClientTypeDic";
+        public string SectionName => "ClientTypeDic";
+
+        public void BindFromConfig(IConfigurationManager configurationManager)
+        {
+            configurationManager.GetSection(SectionName).Bind(this);
+        }
 
         public string GetDesc(int id)
         {

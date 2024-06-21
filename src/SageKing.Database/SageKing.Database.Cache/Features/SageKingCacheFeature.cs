@@ -11,12 +11,13 @@ public class SageKingCacheFeature : FeatureBase
     /// <summary>
     /// Represents the options for SageKingCaches feature.
     /// </summary>
-    public Action<SageKingCacheOptions> DatabaseOptions { get; set; } = _ => { };
+    public Action<SageKingCacheOptions> SageKingCacheOptions { get; set; } = _ => { };
 
     /// <inheritdoc />
     public override void Apply()
     {
-        Services.Configure(DatabaseOptions)
+        Services.Configure(SageKingCacheOptions)
+            .AddSingleton<ICache, SageKingRedisCache>()
             .AddSingleton<SageKingCacheService>();
     }
 }

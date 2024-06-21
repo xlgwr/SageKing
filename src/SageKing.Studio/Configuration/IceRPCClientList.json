@@ -2,7 +2,7 @@
   //
   // 客户端配置，需要连接的服务端参数
   //
-  "IceRPCClients": [
+  "IceRPCClientList": [
     {
       "ClientId": "clientTest1", // 客户端id
       "ClientType": 1, // 客户端类型 see ClientTypeDic

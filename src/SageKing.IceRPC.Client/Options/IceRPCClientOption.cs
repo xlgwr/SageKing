@@ -1,4 +1,6 @@
-﻿using SageKing.Core.Options;
+﻿using Microsoft.Extensions.Configuration;
+using SageKing.Core.Abstractions;
+using SageKing.Core.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +11,6 @@ namespace SageKing.IceRPC.Client.Options;
 
 public record class IceRPCClientOption : IceBaseOptions
 {
-    public const string SectionName = "IceRPCClients";
-
     public IceRPCClientOption()
     {
         this.ServerAddress = "icerpc://localhost";
@@ -29,4 +29,14 @@ public record class IceRPCClientOption : IceBaseOptions
     /// UseDeadline Timeout
     /// </summary>
     public int Timeout { get; set; } = 33;
+}
+
+public class IceRPCClientListOption : List<IceRPCClientOption>, IOptionsBase
+{ 
+    public string SectionName => "IceRPCClientList";
+
+    public void BindFromConfig(IConfigurationManager configurationManager)
+    {
+        configurationManager.GetSection(SectionName).Bind(this);
+    }
 }

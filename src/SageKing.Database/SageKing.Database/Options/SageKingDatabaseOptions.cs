@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using SageKing.Core.Abstractions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,14 +11,18 @@ namespace SageKing.Database
     /// <summary>
     /// 数据库连接配置字典
     /// </summary>
-    public class SageKingDatabaseOptions
+    public class SageKingDatabaseOptions : IOptionsBase
     {
-        public const string SectionName = "SageKingDatabase";
-
         /// <summary>
         /// 雪花ID配置
         /// </summary>
         public SnowIdOptions SnowId { get; set; }
 
+        public string SectionName => "SageKingDatabase";
+
+        public void BindFromConfig(IConfigurationManager configurationManager)
+        {
+            configurationManager.GetSection(SectionName).Bind(this);
+        }
     }
 }

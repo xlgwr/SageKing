@@ -1,22 +1,28 @@
-﻿namespace SageKing.Cache;
+﻿using SageKing.Core.Abstractions;
+
+namespace SageKing.Cache;
 
 /// <summary>
 /// 缓存配置
 /// </summary>
-public sealed class SageKingCacheOptions
+public sealed class SageKingCacheOptions : IOptionsBase
 {
-    public const string SectionName = "SageKingCache";
-
     public CacheOptions Cache { get; set; }
 
     public ClusterOptions Cluster { get; set; }
 
+    public string SectionName => "SageKingCache";
+
+    public void BindFromConfig(IConfigurationManager configurationManager)
+    {
+        configurationManager.GetSection(SectionName).Bind(this);
+    }
 }
 
 /// <summary>
 /// 缓存配置选项
 /// </summary>
-public sealed class CacheOptions 
+public sealed class CacheOptions
 {
     /// <summary>
     /// 缓存前缀
@@ -54,7 +60,7 @@ public sealed class RedisOption : RedisOptions
 /// <summary>
 /// 集群配置选项
 /// </summary>
-public sealed class ClusterOptions 
+public sealed class ClusterOptions
 {
     /// <summary>
     /// 是否启用

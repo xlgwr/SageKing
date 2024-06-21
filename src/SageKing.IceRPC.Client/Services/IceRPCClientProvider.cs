@@ -13,7 +13,7 @@ namespace SageKing.IceRPC.Client.Services
     {
         private IDictionary<string, IClientConnection<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage, Pipeline, Identity>> _dics;
 
-        public IceRPCClientProvider(IServiceProvider serviceProvider, IOptions<List<IceRPCClientOption>> options)
+        public IceRPCClientProvider(IServiceProvider serviceProvider, IOptions<IceRPCClientListOption> options)
         {
             _dics = new Dictionary<string, IClientConnection<IceRpc.ClientConnection, IceRPCClientOption, StreamPackage, Pipeline, Identity>>();
             if (options == null || options.Value.Count <= 0)

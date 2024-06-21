@@ -22,20 +22,21 @@ builder.Services.AddSageKing(sk =>
 
     sk.UseIceRPC(o => o.ClientTypeDicOptions += options =>
     {
-        configuration.GetSection(ClientTypeDicOptions.SectionName).Bind(options);
+        options.BindFromConfig(configuration);
     });
 
     sk.UseIceRPCServer(o => o.IceRPCServerOptions += options =>
     {
-
-        configuration.GetSection(IceRPCServerOption.SectionName).Bind(options);
+        options.BindFromConfig(configuration);
     });
 
-    sk.UseIceRPCClient(o => o.IceRPCClientOptions += options =>
+    sk.UseIceRPCClient(o => o.IceRPCClientListOptions += options =>
     {
-
-        configuration.GetSection(IceRPCClientOption.SectionName).Bind(options);
+        options.BindFromConfig(configuration);
     });
+
+    //add sqlsugar and database base
+    sk.UseSageKingApplicationAspNetCoreSqlSugar(configuration);
 
 });
 

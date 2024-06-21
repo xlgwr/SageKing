@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using NewLife.Configuration;
 using SageKing.Application.AspNetCore.SqlSugar.Features;
 using SageKing.Application.AspNetCore.SqlSugar.Service;
@@ -8,6 +9,7 @@ using StackExchange.Profiling;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -17,23 +19,35 @@ namespace SageKing.Extensions;
 
 public static class ModuleExtensions
 {
-    public static IModule UseSageKingApplicationAspNetCoreSqlSugar(this IModule module, Action<SageKingApplicationAspNetCoreSqlSugarFeature>? configure = default)
+    public static IModule UseSageKingApplicationAspNetCoreSqlSugar(this IModule module, IConfigurationManager configuration, Action<SageKingApplicationAspNetCoreSqlSugarFeature>? configure = default)
     {
         //当前程序集
         var currAssembly = typeof(SageKingApplicationAspNetCoreSqlSugarFeature).Assembly;
-
-        module.Configure<SageKingApplicationAspNetCoreSqlSugarFeature>(feature =>
-        {
-            configure?.Invoke(feature);
-        });
 
         module.UseIceMediatR(o => o.MediatRServiceConfiguration += a =>
         {
             a.RegisterServicesFromAssembly(currAssembly);
         });
 
+        module.UseSageKingCache(o => o.SageKingCacheOptions += a => {
+            a.BindFromConfig(configuration);
+        });
+
+        module.Configure<SageKingApplicationAspNetCoreSqlSugarFeature>(feature =>
+        {
+            configure?.Invoke(feature);
+        });
+
+        module.UseSageKingDatabase(o => o.DatabaseOptions += a => {
+            a.BindFromConfig(configuration);
+        }); 
+
+        module.UseSageKingSqlSugarAspNetCore(); 
+
         module.UseSageKingDatabaseSqlSugar(o => o.ClientTypeDicOptions += a =>
         {
+            a.BindFromConfig(configuration);
+
             a.ServiceProvider = o.Services.BuildServiceProvider();
 
             foreach (var item in a.DBConnection.ConnectionConfigs)
@@ -145,6 +159,7 @@ public static class ModuleExtensions
                 }
             };
         });
+
         return module;
     }
 

@@ -28,7 +28,7 @@ public class IceRPCClientFeature : FeatureBase
     /// <summary>
     /// Represents the options for IceRPCClients feature.
     /// </summary>
-    public Action<List<IceRPCClientOption>> IceRPCClientOptions { get; set; } = _ => { };
+    public Action<IceRPCClientListOption> IceRPCClientListOptions { get; set; } = _ => { };
 
     /// <inheritdoc />
     public override void ConfigureHostedServices()
@@ -39,7 +39,7 @@ public class IceRPCClientFeature : FeatureBase
     /// <inheritdoc />
     public override void Apply()
     {
-        Services.Configure(IceRPCClientOptions)
+        Services.Configure(IceRPCClientListOptions)
             .AddSingleton(InstanceClientProvider)
             .AddTransient<ClientReceiver>()
             .AddTransient<IceRPCClient>();

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using SageKing.Core.Abstractions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,10 +11,8 @@ namespace SageKing.Database.SqlSugar.Options;
 /// <summary>
 /// 配置字典
 /// </summary>
-public class SageKingDatabaseSqlSugarOptions
-{
-    public const string SectionName = "SageKingDatabaseSqlSugar";
-
+public class SageKingDatabaseSqlSugarOptions:IOptionsBase
+{ 
     /// <summary>
     /// Gets the <see cref="IServiceProvider"/>.
     /// </summary>
@@ -47,4 +47,11 @@ public class SageKingDatabaseSqlSugarOptions
     /// SqlSugarRepository<T> is T
     /// </summary>
     public Action<ISqlSugarClient, Type> ConnectionScopeAction { get; set; } = (_, _) => { };
+
+    public string SectionName => "SageKingDatabaseSqlSugar";
+
+    public void BindFromConfig(IConfigurationManager configurationManager)
+    {
+        configurationManager.GetSection(SectionName).Bind(this);
+    }
 }
