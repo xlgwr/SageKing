@@ -15,7 +15,7 @@ public class BaseService<TEntity> : IBaseService<TEntity>
     }
 
     /// <summary>
-    /// 获取详情 🔖
+    /// 获取详情
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
@@ -26,7 +26,7 @@ public class BaseService<TEntity> : IBaseService<TEntity>
     }
 
     /// <summary>
-    /// 获取集合 🔖
+    /// 获取集合
     /// </summary>
     /// <returns></returns>
     [DisplayName("获取集合")]
@@ -36,7 +36,7 @@ public class BaseService<TEntity> : IBaseService<TEntity>
     }
 
     /// <summary>
-    /// 获取实体分页 🔖
+    /// 获取实体分页
     /// </summary>
     /// <param name="input"></param>
     /// <returns></returns>
@@ -47,7 +47,7 @@ public class BaseService<TEntity> : IBaseService<TEntity>
     }
 
     /// <summary>
-    /// 增加 🔖
+    /// 增加
     /// </summary>
     /// <param name="entity"></param>
     /// <returns></returns>
@@ -58,7 +58,7 @@ public class BaseService<TEntity> : IBaseService<TEntity>
     }
 
     /// <summary>
-    /// 更新 🔖
+    /// 更新
     /// </summary>
     /// <param name="entity"></param>
     /// <returns></returns>
@@ -69,7 +69,7 @@ public class BaseService<TEntity> : IBaseService<TEntity>
     }
 
     /// <summary>
-    /// 删除 🔖
+    /// 删除
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>

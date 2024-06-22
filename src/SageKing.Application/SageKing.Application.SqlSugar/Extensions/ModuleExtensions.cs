@@ -29,7 +29,8 @@ public static class ModuleExtensions
             a.RegisterServicesFromAssembly(currAssembly);
         });
 
-        module.UseSageKingCache(o => o.SageKingCacheOptions += a => {
+        module.UseSageKingCache(o => o.SageKingCacheOptions += a =>
+        {
             a.BindFromConfig(configuration);
         });
 
@@ -38,24 +39,27 @@ public static class ModuleExtensions
             configure?.Invoke(feature);
         });
 
-        module.UseSageKingDatabase(o => o.DatabaseOptions += a => {
+        module.UseSageKingDatabase(o => o.DatabaseOptions += a =>
+        {
             a.BindFromConfig(configuration);
-        }); 
+        });
 
-        module.UseSageKingSqlSugarAspNetCore(); 
+        module.UseSageKingSqlSugarAspNetCore();
 
         module.UseSageKingDatabaseSqlSugar(o => o.ClientTypeDicOptions += a =>
         {
+            var SqlSugarConst = a.SqlSugarDefault = new SqlSugarDefaultSet();
+
             a.BindFromConfig(configuration);
 
             a.ServiceProvider = o.Services.BuildServiceProvider();
 
             foreach (var item in a.DBConnection.ConnectionConfigs)
             {
+                item.ConfigId ??= SqlSugarConst.MainConfigId;
                 SetDbConfig(item, a.ServiceProvider);
             };
 
-            var SqlSugarConst = a.SqlSugarDefault;
 
 
             a.SqlSugarClientConfigAction += (db) =>
@@ -169,7 +173,7 @@ public static class ModuleExtensions
     /// </summary>
     /// <param name="config"></param>
     public static void SetDbConfig(DbConnectionConfig config, IServiceProvider ServiceProvider)
-    {
+    { 
         var configureExternalServices = new ConfigureExternalServices
         {
             EntityNameService = (type, entity) => // 处理表
@@ -191,7 +195,7 @@ public static class ModuleExtensions
                 if (config.DbSettings.EnableUnderLine && !column.IsIgnore && !column.DbColumnName.Contains('_'))
                     column.DbColumnName = UtilMethods.ToUnderLine(column.DbColumnName); // 驼峰转下划线
             },
-            DataInfoCacheService = ServiceProvider.GetRequiredService<SqlSugarCache>()
+            DataInfoCacheService = ServiceProvider.GetRequiredService<ICacheService>()
         };
         config.ConfigureExternalServices = configureExternalServices;
         config.InitKeyType = InitKeyType.Attribute;

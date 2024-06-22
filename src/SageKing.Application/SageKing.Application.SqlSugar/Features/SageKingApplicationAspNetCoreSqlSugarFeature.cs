@@ -24,6 +24,12 @@ public class SageKingApplicationAspNetCoreSqlSugarFeature : FeatureBase
     public override void Apply()
     {
         Services.Configure(ApplicationAspNetCoreSqlSugarOptions)
+            .AddTransient<ICacheService, SqlSugarCache>()
+            .AddTransient<SysConfigService>()
+            .AddTransient<SysDictDataService>()
+            .AddTransient<SysDictTypeService>()
+            .AddTransient<SysSageKingMessageService>()
+            .AddTransient<SysSageKingMessageAttributeService>()
             .AddSingleton<ISqlSugarAspNetCoreFilter, SqlSugarAspNetCoreFilter>();
     }
 

@@ -7,7 +7,7 @@
       "Prefix": "sageking_", // 全局缓存前缀
       "CacheType": "Memory", // Memory、Redis
       "Redis": {
-        "Configuration": "server=127.0.0.1:6379;password=;db=0;", // Redis连接字符串,推荐 https://microsoft.github.io/garnet/
+        "Configuration": "server=127.0.0.1:3278;password=1234567;db=0;", // Redis连接字符串,推荐 https://microsoft.github.io/garnet/
         "Prefix": "sageking_", // Redis前缀（目前没用）
         "MaxMessageSize": "1048576" // 最大消息大小 默认1024 * 1024
       }
@@ -17,7 +17,7 @@
       "ServerId": "sageking", // 服务器标识
       "ServerIp": "", // 服务器IP
       "SignalR": {
-        "RedisConfiguration": "127.0.0.1:6379,ssl=false,password=,defaultDatabase=0",
+        "RedisConfiguration": "127.0.0.1:3278,ssl=false,password=1234567,defaultDatabase=0",
         "ChannelPrefix": "signalrPrefix_"
       },
       "DataProtecteKey": "sageking:DataProtection-Keys",
