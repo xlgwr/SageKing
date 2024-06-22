@@ -120,6 +120,18 @@ public class Module : IModule
         Services.AddSingleton<IInstalledFeatureRegistry>(registry);
     }
 
+
+    public void Init()
+    {
+        var featureTypes = GetFeatureTypes();
+        _features = featureTypes.ToDictionary(featureType => featureType, featureType => _features.TryGetValue(featureType, out var existingFeature) ? existingFeature : (IFeature)Activator.CreateInstance(featureType, this)!);
+
+        // Make sure to use the complete list of features when applying them.
+        foreach (var feature in _features.Values)
+            feature.Init();
+
+    }
+
     private IEnumerable<IFeature> ExcludeFeaturesWithMissingDependencies(IEnumerable<IFeature> features)
     {
         return

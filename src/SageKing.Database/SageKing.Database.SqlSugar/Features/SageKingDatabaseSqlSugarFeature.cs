@@ -27,10 +27,6 @@ public class SageKingDatabaseSqlSugarFeature : FeatureBase
         Services.Configure(ClientTypeDicOptions)
             .AddScoped(typeof(SageKingRepository<>))
             .AddScoped(typeof(SageKingSqlSplitRepository<>))
-            .AddSingleton<ITenant, TenantScope>()
-            .AddSingleton<ISqlSugarClient, TenantScope>()
-            ;
-
-
+            .AddSingleton<ISqlSugarClient, TenantScope>();
     }
 }

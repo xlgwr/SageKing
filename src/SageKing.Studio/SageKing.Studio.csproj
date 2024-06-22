@@ -13,7 +13,7 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\SageKing.Application\SageKing.Application.SqlSugar\SageKing.Application.AspNetCore.SqlSugar.csproj" />
-	  <ProjectReference Include="..\SageKing\SageKing.csproj" />
+	  <ProjectReference Include="..\SageKing.AspNetCore\SageKing.AspNetCore.csproj" />
 	  <ProjectReference Include="..\SageKing.IceRPC.Client\SageKing.IceRPC.Client.csproj" />
 	  <ProjectReference Include="..\SageKing.IceRPC.Server\SageKing.IceRPC.Server.csproj" />
 	</ItemGroup>

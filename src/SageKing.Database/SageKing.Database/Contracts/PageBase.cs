@@ -4,14 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SageKing.Database.SqlSugar.Contracts;
+namespace SageKing.Database.Contracts;
 
 
 /// <summary>
 /// 分页泛型集合
 /// </summary>
 /// <typeparam name="TEntity"></typeparam>
-public class SqlSugarPagedList<TEntity>
+public class PageBase<TEntity>
 {
     /// <summary>
     /// 页码

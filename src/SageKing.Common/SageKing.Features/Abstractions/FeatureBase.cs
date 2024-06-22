@@ -44,6 +44,9 @@ public abstract class FeatureBase : IFeature
     {
     }
 
+    public virtual void Init()
+    {
+    }
     /// <summary>
     /// 使用可选优先级配置指定的托管服务，以控制其在服务容器中注册的顺序。
     /// </summary>

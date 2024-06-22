@@ -28,4 +28,9 @@ public interface IFeature
     /// </summary>
     void Apply();
 
+    /// <summary>
+    /// 初始化类，Use init
+    /// </summary>
+    void Init();
+
 }

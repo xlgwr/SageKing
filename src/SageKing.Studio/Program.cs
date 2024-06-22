@@ -52,6 +52,8 @@ builder.Services.AddAntDesign();
 
 var app = builder.Build();
 
+app.UseSageKing();
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {

@@ -49,4 +49,9 @@ public interface IModule
     /// 将应用所有配置的功能，导致填充 <see cref="Services"/> 集合
     /// </summary>
     void Apply();
+
+    /// <summary>
+    /// 初始化类，Use init
+    /// </summary>
+    void Init();
 }

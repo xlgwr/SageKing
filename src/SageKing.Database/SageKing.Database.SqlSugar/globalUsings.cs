@@ -19,7 +19,10 @@ global using SageKing.Core.Contracts;
 global using SageKing.Database.Contracts;
 global using SageKing.Database.SqlSugar.Contracts;
 global using SageKing.Database.SqlSugar.Options;
+global using SageKing.Database.SqlSugar.Extensions;
 
+global using System.ComponentModel;
+global using System.ComponentModel.DataAnnotations;
 
 global using MediatR;
 global using SqlSugar;

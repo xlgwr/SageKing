@@ -16,6 +16,13 @@ public class TenantScope : SqlSugarScope
     public TenantScope(IOptions<SageKingDatabaseSqlSugarOptions> options) : base(options.Value.DBConnection.ConnectionConfigs.Adapt<List<ConnectionConfig>>(), options.Value.SqlSugarClientConfigAction)
     {
         _options = options.Value;
+        InitDB();
+    } 
+    /// <summary>
+    /// 初始化DB
+    /// </summary>
+    public void InitDB()
+    {
         _options.DBConnection.ConnectionConfigs.ForEach(config =>
         {
             _options.InitDatabaseAction?.Invoke(this, config);

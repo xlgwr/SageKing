@@ -6,9 +6,9 @@ namespace SageKing.Extensions;
 /// <summary>
 /// Provides extension methods to <see cref="IServiceCollection"/>. 
 /// </summary>
-public static class ModuleExtensions
+public static class SageKingModuleExtensions
 {
-    private static readonly IDictionary<IServiceCollection, IModule> Modules = new ConcurrentDictionary<IServiceCollection, IModule>();
+    public static readonly IDictionary<IServiceCollection, IModule> Modules = new ConcurrentDictionary<IServiceCollection, IModule>();
     
     /// <summary>
     /// Creates a new SageKing module and adds the <see cref="SageKingFeature"/> to it.
@@ -21,7 +21,7 @@ public static class ModuleExtensions
         
         return module;
     }
-    
+
     /// <summary>
     /// Configures the SageKing module.
     /// </summary>

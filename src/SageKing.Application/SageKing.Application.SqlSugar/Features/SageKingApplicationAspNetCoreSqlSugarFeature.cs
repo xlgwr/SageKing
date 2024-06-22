@@ -26,4 +26,11 @@ public class SageKingApplicationAspNetCoreSqlSugarFeature : FeatureBase
         Services.Configure(ApplicationAspNetCoreSqlSugarOptions)
             .AddSingleton<ISqlSugarAspNetCoreFilter, SqlSugarAspNetCoreFilter>();
     }
+
+    public override void Init()
+    {
+        //默认调用InitDB
+        var sqlSugar = Services.BuildServiceProvider().GetService<ISqlSugarClient>(); 
+
+    }
 }
