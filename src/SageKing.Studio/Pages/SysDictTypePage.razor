@@ -1,0 +1,68 @@
+﻿@page "/System/SysDictType"
+
+<PageTitle>字典类型配置</PageTitle>
+
+@inject SysDictTypeService dataService
+
+<h2>字典类型配置</h2>
+<br />
+
+@if (data == null)
+{
+    <Spin size="large" Tip="Loading..." />
+}
+else
+{
+    <Table @ref="table" TItem="SysDictType" DataSource="@data"
+           @bind-SelectedRows="@selectedRows" RowKey="a=>a.Id" OnRowClick="OnRowClick">
+
+        <Selection Key="@context.Id.ToString()" Type="@selectionType"></Selection>
+
+        <PropertyColumn Property="c=>c.Id" Title="Id"></PropertyColumn>
+        <PropertyColumn Property="c=>c.Name" Title="Name"></PropertyColumn>
+    </Table>
+}
+
+
+@code {
+
+    bool loading;
+
+    ITable table;
+    string selectionType = "checkbox";
+    IEnumerable<SysDictType>? data;
+    IEnumerable<SysDictType> selectedRows;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await dataService.GetPage(new Database.Contracts.PageBaseInput() { Page = 1, PageSize = 20 });
+        data = result.Items;
+        selectedRows = new List<SysDictType>();
+        await base.OnInitializedAsync();
+    }
+
+    public void OnRowClick(RowData<SysDictType> row)
+    {
+        if (selectedRows.Where(a => a.Id == row.Data.Id).Any())
+        {
+            RemoveSelection(row.Data.Id);
+        }
+        else
+        {
+            AddSelection(row.Data.Id);
+        }
+    }
+
+    public void RemoveSelection(long id)
+    {
+        var selected = selectedRows.Where(x => x.Id != id).ToList();
+        table.SetSelection(selected.Select(x => x.Id.ToString()).ToArray());
+    }
+
+    public void AddSelection(long id)
+    {
+        var currlist = selectedRows.Select(a => a.Id.ToString()).ToList();
+        currlist.Add(id.ToString());
+        table.SetSelection(currlist.ToArray());
+    }
+}

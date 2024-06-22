@@ -59,7 +59,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Application", "Application"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SageKing.Application.AspNetCore.SqlSugar", "SageKing.Application\SageKing.Application.SqlSugar\SageKing.Application.AspNetCore.SqlSugar.csproj", "{9896BD98-2E4C-4D60-8E3D-603B8160DD18}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SageKing.AspNetCore", "SageKing.AspNetCore\SageKing.AspNetCore.csproj", "{7995D9BD-BE75-4D7E-9026-1076D5874AD3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SageKing.AspNetCore", "SageKing.AspNetCore\SageKing.AspNetCore.csproj", "{7995D9BD-BE75-4D7E-9026-1076D5874AD3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -34,10 +34,6 @@ public static class ModuleExtensions
             a.BindFromConfig(configuration);
         });
 
-        module.Configure<SageKingApplicationAspNetCoreSqlSugarFeature>(feature =>
-        {
-            configure?.Invoke(feature);
-        });
 
         module.UseSageKingDatabase(o => o.DatabaseOptions += a =>
         {
@@ -162,6 +158,11 @@ public static class ModuleExtensions
                     }
                 }
             };
+        });
+
+        module.Configure<SageKingApplicationAspNetCoreSqlSugarFeature>(feature =>
+        {
+            configure?.Invoke(feature);
         });
 
         return module;

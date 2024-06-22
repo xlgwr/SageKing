@@ -13,19 +13,26 @@ namespace SageKing.Database.SqlSugar.Service;
 public class TenantScope : SqlSugarScope
 {
     private SageKingDatabaseSqlSugarOptions _options;
+    private static bool IsInitDB = false;
     public TenantScope(IOptions<SageKingDatabaseSqlSugarOptions> options) : base(options.Value.DBConnection.ConnectionConfigs.Adapt<List<ConnectionConfig>>(), options.Value.SqlSugarClientConfigAction)
     {
         _options = options.Value;
         InitDB();
-    } 
+    }
+
     /// <summary>
     /// 初始化DB
     /// </summary>
-    public void InitDB()
+    private void InitDB()
     {
-        _options.DBConnection.ConnectionConfigs.ForEach(config =>
+        if (!IsInitDB)
         {
-            _options.InitDatabaseAction?.Invoke(this, config);
-        });
+            IsInitDB = true;
+
+            _options.DBConnection.ConnectionConfigs.ForEach(config =>
+            {
+                _options.InitDatabaseAction?.Invoke(this, config);
+            });
+        }
     }
 }
