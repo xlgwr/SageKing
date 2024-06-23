@@ -19,12 +19,12 @@ public class SysMenuSeedData : ISqlSugarEntitySeedData<SysMenu>
              new SysMenu{ Id=SeedDataConst.DefaultMenuId, Pid=0, Title="工作台", Path="/dashboard", Name="dashboard", Component="Layout", Icon="home", Type=MenuTypeEnum.Dir, OrderNo=0 },
             //menu
             new SysMenu{ Id=defaultStartId, Pid=SeedDataConst.DefaultMenuId, Title="消息中心", Path="/PackageList", Name="PackageList", Component="/PackageList/index",  Icon="home", Type=MenuTypeEnum.Menu,  OrderNo=sept },
-
+            new SysMenu{ Id=defaultStartId+1, Pid=SeedDataConst.DefaultMenuId, Title="客户端管理", Path="/ClientList", Name="ClientList", Component="/ClientList/index",  Icon="message", Type=MenuTypeEnum.Menu,  OrderNo=sept+1 },
+            
             //Dir
              new SysMenu{ Id=defaultStartId+septDir, Pid=0, Title="消息定义", Path="/message", Name="message", Component="Layout", Icon="message", Type=MenuTypeEnum.Dir, OrderNo=sept*10 },
             //menu
-             new SysMenu{ Id=defaultStartId+septDir+sept+2, Pid=defaultStartId+septDir, Title="客户端管理", Path="/ClientList", Name="ClientList", Component="/ClientList/index",  Icon="message", Type=MenuTypeEnum.Menu,  OrderNo=sept*10+2 },
-             new SysMenu{ Id=defaultStartId+septDir+sept+3, Pid=defaultStartId+septDir, Title="消息结构定义", Path="/MessageDefine", Name="MessageDefine", Component="/MessageDefine/index",  Icon="message", Type=MenuTypeEnum.Menu,  OrderNo=sept*10+3 },
+            new SysMenu{ Id=defaultStartId+septDir+sept+1, Pid=defaultStartId+septDir, Title="消息结构", Path="/MessageDefine", Name="MessageDefine", Component="/MessageDefine/index",  Icon="message", Type=MenuTypeEnum.Menu,  OrderNo=sept*10+1 },
 
              //Dir
              new SysMenu{ Id=defaultStartId+septDir*2, Pid=0, Title="系统管理", Path="/system", Name="system", Component="system", Icon="setting", Type=MenuTypeEnum.Dir, OrderNo=sept*10*2 },

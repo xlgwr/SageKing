@@ -4,58 +4,62 @@
 <PageTitle>消息管理中心</PageTitle>
 
 @inject PackagesDataService dataService
+<Card Title="消息发送">
 
-<Form @ref="form"
-      Model="@model"
-      ValidateOnChange="true"
-      LabelColSpan="3">
+    <Form @ref="form"
+          Model="@model"
+          ValidateOnChange="true"
+          LabelColSpan="3">
 
-    <FormItem Label="发送内容">
-        <TextArea ShowCount MaxLength="200" Placeholder="输入发送内容" @ref="inputMessageRef" @bind-Value="@context.Message"></TextArea>
-    </FormItem>
+        <FormItem Label="发送内容">
+            <TextArea ShowCount MaxLength="200" Placeholder="输入发送内容" @ref="inputMessageRef" @bind-Value="@context.Message"></TextArea>
+        </FormItem>
 
-    <FormItem Label="服务端" HasFeedback>
-        <Select DataSource="@serverNamelst"
-                Mode="multiple"
-                Placeholder="请选择服务端"
-                @bind-Values="@context.ServerIds"
-                TItemValue="string"
-                TItem="string"
-                Style="width: 100%; margin-bottom: 8px;"
-                EnableSearch
-                AllowClear>
-        </Select>
-    </FormItem>
+        <FormItem Label="服务端" HasFeedback>
+            <Select DataSource="@serverNamelst"
+                    Mode="multiple"
+                    Placeholder="请选择服务端"
+                    @bind-Values="@context.ServerIds"
+                    TItemValue="string"
+                    TItem="string"
+                    Style="width: 100%; margin-bottom: 8px;"
+                    EnableSearch
+                    AllowClear>
+            </Select>
+        </FormItem>
 
-    <FormItem WrapperColOffset="1">
-        <Button Type="@ButtonType.Primary" @onclick="Send" Loading="@loading">发送</Button>
-        <label class="validation-message">@Notice</label>
-    </FormItem>
+        <FormItem WrapperColOffset="1">
+            <Button Type="@ButtonType.Primary" @onclick="Send" Loading="@loading">发送</Button>
+            <label class="validation-message">@Notice</label>
+        </FormItem>
 
-</Form>
+    </Form>
 
+</Card>
 @if (dic == null)
 {
     <Spin size="large" Tip="Loading..." />
 }
 else
 {
-    <Table @ref="table" TItem="KeyValuePair<string, List<StreamPackage[]>>" DataSource="@dic"
-           @bind-SelectedRows="@selectedRows" RowKey="a=>a.Key">
+    <Card Title="消息列表">
 
-        <Selection Key="@context.Key" Type="@selectionType"></Selection>
-        <PropertyColumn Property="c=>c.Key" Title="MsgType"></PropertyColumn>
-        <PropertyColumn Property="c=>c.Value.Count" Title="Count"></PropertyColumn> 
-        <Column TData="KeyValuePair<string, List<StreamPackage[]>>" Title="Message">
-            <ul>
-                @foreach (var item in context.Value)
-                {
-                    <li>@item.GetString().FirstOrDefault()</li>
-                }
-            </ul> 
-        </Column>
-    </Table>
+        <Table @ref="table" TItem="KeyValuePair<string, List<StreamPackage[]>>" DataSource="@dic"
+               @bind-SelectedRows="@selectedRows" RowKey="a=>a.Key">
 
+            <Selection Key="@context.Key" Type="@selectionType"></Selection>
+            <PropertyColumn Property="c=>c.Key" Title="MsgType"></PropertyColumn>
+            <PropertyColumn Property="c=>c.Value.Count" Title="Count"></PropertyColumn>
+            <Column TData="KeyValuePair<string, List<StreamPackage[]>>" Title="Message">
+                <ul>
+                    @foreach (var item in context.Value)
+                    {
+                        <li>@item.GetString().FirstOrDefault()</li>
+                    }
+                </ul>
+            </Column>
+        </Table>
+    </Card>
 }
 
 @code {

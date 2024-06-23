@@ -4,56 +4,60 @@
 
 @inject PackagesDataService dataService
 
+<Card Title="消息推送">
 
-<Form @ref="form"
-      Model="@model"
-      ValidateOnChange="true"
-      LabelColSpan="3">
+    <Form @ref="form"
+          Model="@model"
+          ValidateOnChange="true"
+          LabelColSpan="3">
 
-    <FormItem Label="推送内容">
-        <TextArea ShowCount MaxLength="200" Placeholder="输入推送内容" @ref="inputMessageRef" @bind-Value="@context.Message"></TextArea>
-    </FormItem>
+        <FormItem Label="推送内容">
+            <TextArea ShowCount MaxLength="200" Placeholder="输入推送内容" @ref="inputMessageRef" @bind-Value="@context.Message"></TextArea>
+        </FormItem>
 
-    <FormItem Label="客户端" HasFeedback>
-        <Select Mode="multiple"
-                Placeholder="请选择客户端"
-                @bind-Values="@context.ConnectIds"
-                TItemValue="string"
-                TItem="string"
-                OnSelectedItemsChanged="OnSelectedItemsChangedHandler"
-                Style="width: 100%; margin-bottom: 8px;"
-                EnableSearch
-                AllowClear>
-            <SelectOptions>
-                @foreach (var item in dic)
-                {
-                    <SelectOption TItemValue="string" TItem="string" Value=@item.Key Label=@($"{item.Value.ClientId}:{item.Value.ClientTypeDesc}") />
-                }
-            </SelectOptions>
-        </Select>
-    </FormItem>
+        <FormItem Label="客户端" HasFeedback>
+            <Select Mode="multiple"
+                    Placeholder="请选择客户端"
+                    @bind-Values="@context.ConnectIds"
+                    TItemValue="string"
+                    TItem="string"
+                    OnSelectedItemsChanged="OnSelectedItemsChangedHandler"
+                    Style="width: 100%; margin-bottom: 8px;"
+                    EnableSearch
+                    AllowClear>
+                <SelectOptions>
+                    @foreach (var item in dic)
+                    {
+                        <SelectOption TItemValue="string" TItem="string" Value=@item.Key Label=@($"{item.Value.ClientId}:{item.Value.ClientTypeDesc}") />
+                    }
+                </SelectOptions>
+            </Select>
+        </FormItem>
 
-    <FormItem WrapperColOffset="1">
-        <Button Type="@ButtonType.Primary" @onclick="Push" Loading="@loading">推送</Button>
-        <label class="validation-message">@Notice</label>
-    </FormItem>
+        <FormItem WrapperColOffset="1">
+            <Button Type="@ButtonType.Primary" @onclick="Push" Loading="@loading">推送</Button>
+            <label class="validation-message">@Notice</label>
+        </FormItem>
 
-</Form>
+    </Form>
 
+</Card>
 @if (dic == null)
 {
     <Spin size="large" Tip="Loading..." />
 }
 else
 {
-    <Table @ref="table" TItem="KeyValuePair<string, ClientConnectionInfo<IConnectionContext>>" DataSource="@dic"
-           @bind-SelectedRows="@selectedRows" RowKey="a=>a.Key" OnRowClick="OnRowClick">
+    <Card Title="客户端列表">
+        <Table @ref="table" TItem="KeyValuePair<string, ClientConnectionInfo<IConnectionContext>>" DataSource="@dic"
+               @bind-SelectedRows="@selectedRows" RowKey="a=>a.Key" OnRowClick="OnRowClick">
 
-        <Selection Key="@context.Key" Type="@selectionType"></Selection>
+            <Selection Key="@context.Key" Type="@selectionType"></Selection>
 
-        <PropertyColumn Property="c=>c.Key" Title="ConnectId"></PropertyColumn>
-        <PropertyColumn Property="c=>c.Value.ToString()" Title="Details"></PropertyColumn>
-    </Table>
+            <PropertyColumn Property="c=>c.Key" Title="ConnectId"></PropertyColumn>
+            <PropertyColumn Property="c=>c.Value.ToString()" Title="Details"></PropertyColumn>
+        </Table>
+    </Card>
 }
 
 @code {
@@ -125,8 +129,8 @@ else
 
         await inputMessageRef.Focus();
 
-        StateHasChanged(); 
-    } 
+        StateHasChanged();
+    }
 
     public void OnRowClick(RowData<KeyValuePair<string, ClientConnectionInfo<IConnectionContext>>> row)
     {

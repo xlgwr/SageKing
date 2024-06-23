@@ -12,28 +12,18 @@
             <div class="title">
                 <b>SageKing.Studio</b>
             </div>
-            <Menu Theme="MenuTheme.Dark" Mode="MenuMode.Horizontal" DefaultSelectedKeys=@(new []{"1"}) Style="height:64px;position:fixed; right:0px;">
+@*             <Menu Theme="MenuTheme.Dark" Mode="MenuMode.Horizontal" DefaultSelectedKeys=@(new []{"1"}) Style="height:64px;position:fixed; right:0px;">
                 <MenuItem Key="1">
-                    <NavLink href="PackageList">
-                        <span class="oi oi-home" aria-hidden="true"></span> 消息中心
+                    <NavLink href="#">
+                        <span class="oi oi-home" aria-hidden="true"></span> 个人中心
                     </NavLink>
                 </MenuItem>
                 <MenuItem Key="2">
-                    <NavLink href="ClientList">
-                        <span class="oi oi-list-rich" aria-hidden="true"></span> 客户端管理
+                    <NavLink href="#">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> 系统设置
                     </NavLink>
                 </MenuItem>
-                <MenuItem Key="3">
-                    <NavLink href="MessageDefine">
-                        <span class="oi oi-list-rich" aria-hidden="true"></span> 结构定义
-                    </NavLink>
-                </MenuItem>
-                <MenuItem Key="4">
-                    <NavLink href="System/SysConfigPage">
-                        <span class="oi oi-list-rich" aria-hidden="true"></span> 配置中心
-                    </NavLink>
-                </MenuItem>
-            </Menu>
+            </Menu> *@
         </Flex>
     </Header>
     <Layout Class="site-layout" Style="padding:0; margin-top: 64px; ">
@@ -95,11 +85,6 @@
         background: #fff;
     }
 </style>
-
-@code {
-
-
-}
 
 @code {
     bool collapsed;

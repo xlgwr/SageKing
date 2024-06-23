@@ -5,21 +5,26 @@
 
 @inject PackagesDataService dataService
 
-<div>
-    <GridRow Justify="center">
-        <GridCol Span="16">
-            <Form @ref="form"
-                  Model="@model"
-                  ValidateOnChange="true"
-                  LabelColSpan="4" WrapperColSpan="18">
+<Row Gutter="24">
+    <Col Span="12">
+    <Card Title="消息编辑" Style="height:100%; min-height:600px">
 
+        <Form @ref="form"
+              Model="@model"
+              ValidateOnChange="true"
+              LabelColSpan="8" WrapperColSpan="20">
+
+            <Row Gutter="24">
+                <Col Span="12">
                 <FormItem Label="名称">
                     <Input ShowCount MaxLength="64" @bind-Value="@context.Name" />
                 </FormItem>
+                </Col>
+                <Col Span="12">
                 <FormItem Label="类型">
                     <Select @bind-Value="@context.Type"
                             DefaultValue="@(0)"
-                            Style="width: 120px;"
+                            Style="width: 100%;"
                             TItemValue="int"
                             TItem="string">
                         <SelectOptions>
@@ -30,32 +35,46 @@
                         </SelectOptions>
                     </Select>
                 </FormItem>
-                <FormItem Label="版本号">
-                    <Input @bind-Value="@context.Varsion" />
-                </FormItem>
+                </Col>
+            </Row>
+            <Row Gutter="24">
+                <Col Span="12">
                 <FormItem Label="描述信息">
                     <TextArea ShowCount MaxLength="200" Placeholder="描述信息" @ref="inputMessageRef" @bind-Value="@context.Description"></TextArea>
                 </FormItem>
-
-                <FormItem WrapperColOffset="6">
+                </Col>
+                <Col Span="12">
+                <FormItem Label="版本号">
+                    <Input @bind-Value="@context.Varsion" />
+                </FormItem>
+                </Col>
+            </Row>
+            <Row Gutter="24">
+                <Col Span="24" Offset="10">
+                <FormItem>
                     <Button Type="@ButtonType.Primary" @onclick="Save" Loading="@loading">保存</Button>
                     <label class="validation-message">@Notice</label>
                 </FormItem>
+                </Col>
+            </Row>
+        </Form>
 
-            </Form>
-        </GridCol>
-        <GridCol Span="8">
-            <Form @ref="form2"
-                  Model="@model2"
-                  ValidateOnChange="true"
-                  LabelColSpan="6" WrapperColSpan="12">
+        <Form @ref="form2"
+              Model="@model2"
+              ValidateOnChange="true"
+              Layout="@FormLayout.Horizontal"
+              LabelColSpan="8" WrapperColSpan="20">
+            <Row Gutter="24">
+                <Col Span="12">
                 <FormItem Label="属性名称">
                     <Input ShowCount MaxLength="64" @bind-Value="@model2.Name" />
                 </FormItem>
+                </Col>
+                <Col Span="12">
                 <FormItem Label="属性类型">
                     <Select @bind-Value="@model2.Type"
                             DefaultValue="@(DataStreamTypeEnum.String)"
-                            Style="width: 120px;"
+                            Style="width: 100%;"
                             TItemValue="DataStreamTypeEnum"
                             TItem="string">
                         <SelectOptions>
@@ -67,64 +86,58 @@
                         </SelectOptions>
                     </Select>
                 </FormItem>
-                <FormItem WrapperColOffset="6">
+
+                </Col>
+            </Row>
+            <Row>
+                <Col Span="24">
+                <FormItem WrapperColOffset="10">
                     <Button Type="@ButtonType.Primary" @onclick="SaveAtt" Loading="@loading">新增属性</Button>
                 </FormItem>
-            </Form>
-        </GridCol>
+                </Col>
 
-    </GridRow>
-</div>
-@if (dic == null)
-{
-    <Spin size="large" Tip="Loading..." />
-}
-else
-{
-    <div>
-        <GridRow>
-            <GridCol Span="8">
-                <label>请选择服务端:</label>
-                <Select DataSource="@serverNamelst"
-                        Mode="multiple"
-                        Placeholder="请选择服务端"
-                        @bind-Values="@modelSelect.ServerIds"
-                        TItemValue="string"
-                        TItem="string"
-                        Style="width: 100%; margin-bottom: 8px;"
-                        EnableSearch
-                        AllowClear>
-                </Select>
-            </GridCol>
-            <GridCol Span="8">col-8</GridCol>
-            <GridCol Span="8">col-8</GridCol>
-        </GridRow>
+            </Row>
+        </Form>
 
-
-    </div>
-    <Table @ref="table" TItem="KeyValuePair<string, SageKingMessage>" DataSource="@dic"
-           @bind-SelectedRows="@selectedRows" RowKey="a=>a.Key" OnRowClick="OnRowClick">
-
-        <Selection Key="@context.Key" Type="@selectionType"></Selection>
-        <PropertyColumn Property="c=>c.Key" Title="Name"></PropertyColumn>
-        <PropertyColumn Property="c=>c.Value.GetPosData().Count" Title="Count"></PropertyColumn>
-        <Column TData="KeyValuePair<string, ISageKingMessage>" Title="属性明细">
-            <ul>
-                @foreach (var item in context.Value.GetPosData())
-                {
-                    <li>@item.Key</li>
+    </Card>
+    </Col>
+    <Col Span="12">
+        @if (dic == null)
+        {
+        <Spin size="large" Tip="Loading..." />
+        }
+        else
+        {
+        <Card Title="消息结构列表" Style="height:100%; min-height:600px">
+            <Table @ref="table" TItem="KeyValuePair<string, SageKingMessage>" DataSource="@dic"
+                   @bind-SelectedRows="@selectedRows" RowKey="a=>a.Key" OnRowClick="OnRowClick">
+                <Selection Key="@context.Key" Type="@selectionType"></Selection>
+                <PropertyColumn Property="c=>c.Key" Title="Name"></PropertyColumn>
+                <PropertyColumn Property="c=>c.Value.GetPosData().Count" Title="Count"></PropertyColumn>
+                <Column TData="KeyValuePair<string, ISageKingMessage>" Title="属性明细">
                     <ul>
-                        @foreach (var item2 in item.Value.Keys)
-                        {
-                            <li>@item2</li>
-                        }
+                            @foreach (var item in context.Value.GetPosData())
+                            {
+                            <li>@item.Key</li>
+                            <ul>
+                                    @foreach (var item2 in item.Value.Keys)
+                                    {
+                                    <li>@item2</li>
+                                    }
+                            </ul>
+                            }
                     </ul>
-                }
-            </ul>
-        </Column>
-    </Table>
+                </Column>
+            </Table>
 
-}
+        </Card>
+
+        }
+    </Col>
+</Row>
+
+
+
 
 @code {
 
