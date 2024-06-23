@@ -35,8 +35,5 @@ public class IceRPCClientListOption : List<IceRPCClientOption>, IOptionsBase
 { 
     public string SectionName => "IceRPCClientList";
 
-    public void BindFromConfig(IConfigurationManager configurationManager)
-    {
-        configurationManager.GetSection(SectionName).Bind(this);
-    }
+   
 }

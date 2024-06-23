@@ -13,12 +13,7 @@ namespace SageKing.IceRPC
     /// </summary>
     public class ClientTypeDicOptions : ConcurrentDictionary<int, string>, IOptionsBase
     {
-        public string SectionName => "ClientTypeDic";
-
-        public void BindFromConfig(IConfigurationManager configurationManager)
-        {
-            configurationManager.GetSection(SectionName).Bind(this);
-        }
+        public string SectionName => "ClientTypeDic"; 
 
         public string GetDesc(int id)
         {

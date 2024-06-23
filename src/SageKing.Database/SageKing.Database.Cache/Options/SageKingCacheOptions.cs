@@ -11,12 +11,7 @@ public sealed class SageKingCacheOptions : IOptionsBase
 
     public ClusterOptions Cluster { get; set; }
 
-    public string SectionName => "SageKingCache";
-
-    public void BindFromConfig(IConfigurationManager configurationManager)
-    {
-        configurationManager.GetSection(SectionName).Bind(this);
-    }
+    public string SectionName => "SageKingCache"; 
 }
 
 /// <summary>

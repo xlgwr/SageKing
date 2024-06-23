@@ -9,9 +9,4 @@ public sealed class SageKingApplicationAspNetCoreSqlSugarOptions : IOptionsBase
 {
 
     public string SectionName => "SageKingApplicationAspNetCoreSqlSugar";
-
-    public void BindFromConfig(IConfigurationManager configurationManager)
-    {
-        configurationManager.GetSection(SectionName).Bind(this);
-    }
 }

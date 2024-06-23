@@ -19,10 +19,5 @@ namespace SageKing.Database
         public SnowIdOptions SnowId { get; set; }
 
         public string SectionName => "SageKingDatabase";
-
-        public void BindFromConfig(IConfigurationManager configurationManager)
-        {
-            configurationManager.GetSection(SectionName).Bind(this);
-        }
     }
 }

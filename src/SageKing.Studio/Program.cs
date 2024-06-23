@@ -22,17 +22,17 @@ builder.Services.AddSageKing(sk =>
 
     sk.UseIceRPC(o => o.ClientTypeDicOptions += options =>
     {
-        options.BindFromConfig(configuration);
+        configuration.Bind(options);
     });
 
     sk.UseIceRPCServer(o => o.IceRPCServerOptions += options =>
     {
-        options.BindFromConfig(configuration);
+        configuration.Bind(options);
     });
 
     sk.UseIceRPCClient(o => o.IceRPCClientListOptions += options =>
     {
-        options.BindFromConfig(configuration);
+        configuration.Bind(options);
     });
 
     //add sqlsugar and database base

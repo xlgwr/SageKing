@@ -22,10 +22,5 @@ public record class IceRPCServerOption : IceBaseOptions, IOptionsBase
     /// </summary>
     public int ServerType { get; set; }
 
-   public string SectionName => "IceRPCServer";
-
-    public void BindFromConfig(IConfigurationManager configurationManager)
-    {
-        configurationManager.GetSection(SectionName).Bind(this);
-    }
+   public string SectionName => "IceRPCServer"; 
 }

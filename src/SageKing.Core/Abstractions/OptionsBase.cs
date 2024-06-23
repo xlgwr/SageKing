@@ -11,9 +11,4 @@ public interface IOptionsBase
 {
     public string SectionName { get; }
 
-    /// <summary>
-    ///  configurationManager.GetSection(SectionName).Bind(this);
-    /// </summary>
-    /// <param name="configurationManager"></param>
-    public void BindFromConfig(IConfigurationManager configurationManager);
 }

@@ -31,13 +31,13 @@ public static class ModuleExtensions
 
         module.UseSageKingCache(o => o.SageKingCacheOptions += a =>
         {
-            a.BindFromConfig(configuration);
+            configuration.Bind(a);
         });
 
 
         module.UseSageKingDatabase(o => o.DatabaseOptions += a =>
         {
-            a.BindFromConfig(configuration);
+            configuration.Bind(a);
         });
 
         module.UseSageKingSqlSugarAspNetCore();
@@ -46,7 +46,7 @@ public static class ModuleExtensions
         {
             var SqlSugarConst = a.SqlSugarDefault = new SqlSugarDefaultSet();
 
-            a.BindFromConfig(configuration);
+            configuration.Bind(a);
 
             a.ServiceProvider = o.Services.BuildServiceProvider();
 

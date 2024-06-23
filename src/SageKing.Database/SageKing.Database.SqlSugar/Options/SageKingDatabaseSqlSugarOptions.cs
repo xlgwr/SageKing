@@ -50,8 +50,4 @@ public class SageKingDatabaseSqlSugarOptions:IOptionsBase
 
     public string SectionName => "SageKingDatabaseSqlSugar";
 
-    public void BindFromConfig(IConfigurationManager configurationManager)
-    {
-        configurationManager.GetSection(SectionName).Bind(this);
-    }
 }
