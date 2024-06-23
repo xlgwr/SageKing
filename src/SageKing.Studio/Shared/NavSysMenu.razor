@@ -1,0 +1,67 @@
+﻿@if (menuListAll == null)
+{
+    <Spin size="large" Tip="Loading..." />
+}
+else
+{
+
+    <Menu DefaultSelectedKeys=@(new[] { defaultSelectedKeys })
+          DefaultOpenKeys=@(new[] { defaultOpenKeys })
+          Mode=MenuMode.Inline
+          Theme=MenuTheme.Dark
+          InlineCollapsed=collapsed>
+
+        @foreach (var item in menuListAll)
+        {
+            @if (item.Children.Count >= 0)
+            {
+                <SubMenu Key="@item.Name" TitleTemplate=@GetRenderFragment(item.Title,item.Icon)>
+                    @foreach (var item2 in item.Children)
+                    {
+                        <MenuItem Key="@item2.Id.ToString()" Icon="@item2.Icon">
+                            <NavLink href="@item2.Path"> @item2.Title </NavLink>
+                        </MenuItem>
+                    }
+                </SubMenu>
+            }
+            else
+            {
+                <MenuItem Key="@item.Name" Title="@item.Title" Icon="@item.Icon">
+                    <NavLink href="@item.Path"> @item.Title </NavLink>
+                </MenuItem>
+            }
+        }
+    </Menu>
+}
+
+@inject SysMenuService dataService
+
+@code {
+
+    RenderFragment GetRenderFragment(string title, string iceType = "setting")
+    {
+        return
+    @<span>
+        <Icon Type=@iceType Theme="outline"></Icon>
+        <span>@title</span>
+    </span>
+    ;
+    }
+
+    [Parameter]
+    public bool collapsed { get; set; }
+
+    string defaultSelectedKeys = "";
+    string defaultOpenKeys = "";
+    List<SysMenu> menuListAll;
+
+    protected override async Task OnInitializedAsync()
+    {
+        menuListAll ??= await dataService.GetToTreeAsync();
+        defaultSelectedKeys = menuListAll.FirstOrDefault()?.Id.ToString();
+        defaultOpenKeys = menuListAll.Where(a => a.Children.Any()).FirstOrDefault()?.Name;
+
+        await base.OnInitializedAsync();
+    }
+
+}

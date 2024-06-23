@@ -26,6 +26,7 @@ public class SageKingApplicationAspNetCoreSqlSugarFeature : FeatureBase
         Services.Configure(ApplicationAspNetCoreSqlSugarOptions)
             .AddTransient<ICacheService, SqlSugarCache>()
             .AddTransient<SysConfigService>()
+            .AddTransient<SysMenuService>()
             .AddTransient<SysDictDataService>()
             .AddTransient<SysDictTypeService>()
             .AddTransient<SysSageKingMessageService>()

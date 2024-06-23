@@ -6,23 +6,27 @@ using System.Threading.Tasks;
 
 namespace SageKing.Application.AspNetCore.SqlSugar.Contracts;
 
-public sealed class SeedDataConst
+/// <summary>
+/// 系统菜单类型枚举
+/// </summary>
+[Description("系统菜单类型枚举")]
+public enum MenuTypeEnum
 {
     /// <summary>
-    /// 默认系统字典类型Id
+    /// 目录
     /// </summary>
-    public const long DefaultSysDictTypeId = 1300000000001;
+    [Description("目录")]
+    Dir = 1,
 
     /// <summary>
-    /// 默认菜单Id
+    /// 菜单
     /// </summary>
-    public const long DefaultMenuId = 1500000000001;
+    [Description("菜单")]
+    Menu = 2,
 
     /// <summary>
-    /// 默认消息Id
+    /// 按钮
     /// </summary>
-    public const long DefaultMessageId = 1700000000001;
-
-
-
+    [Description("按钮")]
+    Btn = 3
 }

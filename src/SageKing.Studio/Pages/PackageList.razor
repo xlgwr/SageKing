@@ -1,11 +1,10 @@
-﻿@page "/PackageList"
+﻿@page "/"
+@page "/PackageList"
 
 <PageTitle>消息管理中心</PageTitle>
 
 @inject PackagesDataService dataService
 
-<h2>消息管理中心</h2>
-<br/>
 <Form @ref="form"
       Model="@model"
       ValidateOnChange="true"
