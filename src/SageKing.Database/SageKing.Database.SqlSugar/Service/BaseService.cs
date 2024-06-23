@@ -36,6 +36,16 @@ public class BaseService<TEntity> : IBaseService<TEntity>
     }
 
     /// <summary>
+    /// 获取集合
+    /// </summary>
+    /// <returns></returns>
+    [DisplayName("获取集合")]
+    public virtual async Task<List<TEntity>> GetList(Expression<Func<TEntity, bool>> func)
+    {
+        return await _rep.AsQueryable().Where(func).ToListAsync();
+    }
+
+    /// <summary>
     /// 获取实体分页
     /// </summary>
     /// <param name="input"></param>
@@ -78,4 +88,6 @@ public class BaseService<TEntity> : IBaseService<TEntity>
     {
         return await _rep.DeleteByIdAsync(id);
     }
+
+
 }

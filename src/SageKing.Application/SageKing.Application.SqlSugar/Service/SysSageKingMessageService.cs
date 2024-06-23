@@ -7,4 +7,5 @@
 public class SysSageKingMessageService(SageKingRepository<SysSageKingMessage> repository)
     : BaseService<SysSageKingMessage>(repository)
 {
+
 }

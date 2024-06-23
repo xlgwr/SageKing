@@ -1,9 +1,9 @@
 ﻿@page "/MessageDefine"
-@using SageKing.IceRPC.Contracts
 
 <PageTitle>消息结构定义</PageTitle>
 
-@inject PackagesDataService dataService
+@inject SysSageKingMessageService dataService
+@inject SysSageKingMessageAttributeService dataDetailService
 
 <Row Gutter="24">
     <Col Span="12">
@@ -45,7 +45,7 @@
                 </Col>
                 <Col Span="12">
                 <FormItem Label="版本号">
-                    <Input @bind-Value="@context.Varsion" />
+                    <Input @bind-Value="@context.Version" />
                 </FormItem>
                 </Col>
             </Row>
@@ -53,6 +53,7 @@
                 <Col Span="24" Offset="10">
                 <FormItem>
                     <Button Type="@ButtonType.Primary" @onclick="Save" Loading="@loading">保存</Button>
+                    <Button Type="@ButtonType.Primary" @onclick="Reset">重置</Button>
                     <label class="validation-message">@Notice</label>
                 </FormItem>
                 </Col>
@@ -93,6 +94,7 @@
                 <Col Span="24">
                 <FormItem WrapperColOffset="10">
                     <Button Type="@ButtonType.Primary" @onclick="SaveAtt" Loading="@loading">新增属性</Button>
+                    <Button Type="@ButtonType.Primary" @onclick="ResetAtt">重置</Button>
                 </FormItem>
                 </Col>
 
@@ -102,33 +104,36 @@
     </Card>
     </Col>
     <Col Span="12">
-        @if (dic == null)
+        @if (dataList == null)
         {
         <Spin size="large" Tip="Loading..." />
         }
         else
         {
         <Card Title="消息结构列表" Style="height:100%; min-height:600px">
-            <Table @ref="table" TItem="KeyValuePair<string, SageKingMessage>" DataSource="@dic"
-                   @bind-SelectedRows="@selectedRows" RowKey="a=>a.Key" OnRowClick="OnRowClick">
-                <Selection Key="@context.Key" Type="@selectionType"></Selection>
-                <PropertyColumn Property="c=>c.Key" Title="Name"></PropertyColumn>
-                <PropertyColumn Property="c=>c.Value.GetPosData().Count" Title="Count"></PropertyColumn>
-                <Column TData="KeyValuePair<string, ISageKingMessage>" Title="属性明细">
-                    <ul>
-                            @foreach (var item in context.Value.GetPosData())
-                            {
-                            <li>@item.Key</li>
-                            <ul>
-                                    @foreach (var item2 in item.Value.Keys)
-                                    {
-                                    <li>@item2</li>
-                                    }
-                            </ul>
-                            }
-                    </ul>
-                </Column>
-            </Table>
+            <Row>
+                <Table @ref="table" TItem="SysSageKingMessage" DataSource="@dataList"
+                       @bind-SelectedRows="@selectedRows" RowKey="a=>a.Id.ToString()" OnRowClick="OnRowClick">
+                    <Selection Key="@context.Id.ToString()" Type="@selectionType"></Selection>
+                    <PropertyColumn Property="c=>c.Id" Title="Id"></PropertyColumn>
+                    <PropertyColumn Property="c=>c.Name" Title="Name"></PropertyColumn>
+                    <PropertyColumn Property="c=>c.Type" Title="Type"></PropertyColumn>
+                    <PropertyColumn Property="c=>c.Status" Title="Status"></PropertyColumn>
+                    <PropertyColumn Property="c=>c.Version" Title="Version"></PropertyColumn>
+                    <PropertyColumn Property="c=>c.Description" Title="Description"></PropertyColumn>
+                </Table>
+            </Row>
+            <Row>
+                <Table @ref="tableDetail" TItem="SysSageKingMessageAttribute" DataSource="@dataListAttr"
+                       @bind-SelectedRows="@selectedRowsAttr" RowKey="a=>a.Id.ToString()" OnRowClick="OnRowAttrClick">
+                    <Selection Key="@context.Id.ToString()" Type="@selectionType"></Selection>
+                    <PropertyColumn Property="c=>c.Id" Title="Id"></PropertyColumn>
+                    <PropertyColumn Property="c=>c.MessageId" Title="MessageId"></PropertyColumn>
+                    <PropertyColumn Property="c=>c.Name" Title="Name"></PropertyColumn>
+                    <PropertyColumn Property="c=>c.Type" Title="Type"></PropertyColumn>
+                    <PropertyColumn Property="c=>c.Status" Title="Status"></PropertyColumn>
+                </Table>
+            </Row>
 
         </Card>
 
@@ -136,113 +141,65 @@
     </Col>
 </Row>
 
-
-
-
-@code {
-
-    class Model
-    {
-        public string Id { get; set; }
-
-        [Required]
-        public string Name { get; set; }
-
-        [Required]
-        public int Type { get; set; }
-
-        public string Description { get; set; }
-
-        public int Varsion { get; set; }
-
-        /// <summary>
-        /// 属性
-        /// </summary>
-        public Dictionary<DataStreamTypeEnum, List<string>> AttributeList { get; set; }
-
-    }
-
-    class ModelAttribute
-    {
-        [Required]
-        public string Name { get; set; }
-
-        [Required]
-        public DataStreamTypeEnum Type { get; set; }
-
-    }
-
-    class selectModel
-    {
-
-        [RequiredList]
-        public IEnumerable<string> ServerIds { get; set; }
-    }
-}
-
 @code {
 
     bool loading;
 
-    Model model = new Model();
-    ModelAttribute model2 = new ModelAttribute();
-    selectModel modelSelect = new selectModel();
+    SysSageKingMessage model = new SysSageKingMessage();
+    SysSageKingMessageAttribute model2 = new SysSageKingMessageAttribute();
 
-    AntDesign.Form<Model> form;
-    AntDesign.Form<ModelAttribute> form2;
+    AntDesign.Form<SysSageKingMessage> form;
+    AntDesign.Form<SysSageKingMessageAttribute> form2;
 
     string Notice = string.Empty;
     AntDesign.Input<string> inputMessageRef;
 
     ITable table;
-    ITable tableAttlist;
+    ITable tableDetail;
     string selectionType = "checkbox";
 
-    List<string> serverNamelst = new List<string>();
-    ConcurrentDictionary<string, SageKingMessage> dic;
-    IEnumerable<KeyValuePair<string, SageKingMessage>> selectedRows;
-    IEnumerable<KeyValuePair<DataStreamTypeEnum, List<string>>> selectedAttrRows;
 
+    IEnumerable<SysSageKingMessage> dataList;
+    IEnumerable<SysSageKingMessage> selectedRows;
+
+    IEnumerable<SysSageKingMessageAttribute> dataListAttr;
+    IEnumerable<SysSageKingMessageAttribute> selectedRowsAttr;
 
     protected override async Task OnInitializedAsync()
     {
-        dic = dataService.sageKingMessageDic;
-        serverNamelst = dataService.ClientConnectionProvider.GetServerNames().ToList();
+        await QueryList();
         await base.OnInitializedAsync();
     }
-    private void OnRowClick(RowData<KeyValuePair<string, SageKingMessage>> data)
+
+    public async Task QueryList()
     {
-        var row = data.Data.Value;
+        var getPage = await dataService.GetPage(new PageBaseInput() { Page = 1, PageSize = 20 });
+        dataList = getPage.Items;
+    }
+    public async Task QueryDetailList(long ParentId)
+    {
+        Expression<Func<SysSageKingMessageAttribute, bool>> func = a => a.MessageId == ParentId;
+        var getData = await dataDetailService.GetList(func);
+        dataListAttr = getData;
+    }
+
+    private async void OnRowClick(RowData<SysSageKingMessage> data)
+    {
+        var row = data.Data;
+        model.Id = row.Id;
         model.Name = row.Name;
         model.Description = row.Description;
         model.Type = row.Type;
-        model.Varsion = row.Version;
+        model.Version = row.Version;
+
+        await QueryDetailList(row.Id);
     }
-    private async void Send()
+
+    private void OnRowAttrClick(RowData<SysSageKingMessageAttribute> data)
     {
-        if (!modelSelect.ServerIds.Any())
-        {
-            Notice = $"请选择服务端发送";
-            return;
-        }
-
-        Notice = $"开始向【{modelSelect.ServerIds.Count()}】服务端发送";
-
-        loading = true;
-
-        foreach (var item in modelSelect.ServerIds)
-        {
-            var result = await dataService.SendMsg(model.Description, item);
-        }
-
-        loading = false;
-
-        model.Description = string.Empty;
-        Notice = $"完成发送【{modelSelect.ServerIds.Count()}】服务端";
-
-        await inputMessageRef.Focus();
-
-        StateHasChanged();
+        var row = data.Data;
+        model2.Name = row.Name;
+        model2.Type = row.Type;
     }
 
     private async void Save()
@@ -251,34 +208,35 @@
         {
             return;
         };
-        if (!dataService.sageKingMessageDic.TryGetValue(model.Name, out var data))
+        if (model.Id <= 0)
         {
-
-            data = new SageKingMessage()
-                {
-                    Name = model.Name,
-                    Description = model.Description,
-                    Id = Guid.NewGuid().ToString(),
-                    Type = model.Type,
-                    Version = model.Varsion
-                };
-            model = new Model();
-            Notice = $"新增成功【{data.Name}】";
+            await dataService.Add(model);
+            Notice = $"新增成功【{model.Name}】";
             await inputMessageRef.Focus();
         }
         else
         {
-            data.Name = model.Name;
-            data.Description = model.Description;
-            data.Type = model.Type;
-            data.Version = model.Varsion;
 
+            await dataService.Update(model);
             Notice = $"保存成功【{model.Name}】";
             await inputMessageRef.Focus();
         }
-        dataService.sageKingMessageDic[data.Name] = data;
+
+        await QueryList();
 
         StateHasChanged();
+    }
+
+    private void Reset()
+    {
+        model = new SysSageKingMessage();
+        form.Reset();
+    } 
+    
+    private void ResetAtt()
+    {
+        model2 = new SysSageKingMessageAttribute();
+        form2.Reset();
     }
 
     private async void SaveAtt()
@@ -287,7 +245,7 @@
         {
             return;
         };
-        if (model.Name.IsNullOrEmpty() || !dataService.sageKingMessageDic.TryGetValue(model.Name, out var data))
+        if (model.Name.IsNullOrEmpty() || model.Id <= 0)
         {
 
             Notice = $"请选择一个消息定义";
@@ -296,33 +254,13 @@
         }
         else
         {
-            switch (model2.Type)
-            {
-                case DataStreamTypeEnum.String:
-                    data.AddOrUpdate(model2.Name, new DataStreamTypValue<string>("dddd"));
-                    break;
-                case DataStreamTypeEnum.Int8:
-                    data.AddOrUpdate(model2.Name, new DataStreamTypValue<sbyte>(1));
-                    break;
-                case DataStreamTypeEnum.Uint8:
-                    data.AddOrUpdate(model2.Name, new DataStreamTypValue<byte>(1));
-                    break;
-                case DataStreamTypeEnum.Int32:
-                    data.AddOrUpdate(model2.Name, new DataStreamTypValue<int>(1));
-                    break;
-                case DataStreamTypeEnum.Int64:
-                    data.AddOrUpdate(model2.Name, new DataStreamTypValue<long>(1));
-                    break;
-                case DataStreamTypeEnum.Float32:
-                    data.AddOrUpdate(model2.Name, new DataStreamTypValue<float>(1));
-                    break;
-                default:
-                    break;
-            }
-
-            Notice = $"保存成功【{model.Name}】";
+            model2.MessageId = model.Id;
+            await dataDetailService.Add(model2);
+            Notice = $"保存属性成功【{model2.Name}】";
             await inputMessageRef.Focus();
         }
+
+        await QueryDetailList(model.Id);
 
         StateHasChanged();
     }
