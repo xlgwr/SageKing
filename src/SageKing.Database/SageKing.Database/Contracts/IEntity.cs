@@ -3,7 +3,7 @@ namespace SageKing.Database.Contracts;
 /// <summary>
 /// 框架实体基类Id
 /// </summary>
-public interface IEntityBaseId
+public interface IEntityBaseId : ICloneable
 {
     public long Id { get; }
 }

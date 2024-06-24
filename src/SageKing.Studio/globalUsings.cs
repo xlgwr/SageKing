@@ -9,6 +9,7 @@ global using SageKing.Core.Attributes;
 global using SageKing.Core.Extensions;
 global using SageKing.Core.EventMessage;
 
+global using Mapster;
 global using IceRpc;
 global using MediatR;
 global using SageKing.IceRPC;

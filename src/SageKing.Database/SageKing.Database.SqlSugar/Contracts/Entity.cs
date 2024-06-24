@@ -10,6 +10,15 @@ public abstract class EntityBaseId : IEntityBaseId
     /// </summary>
     [SugarColumn(ColumnName = "Id", ColumnDescription = "主键Id", IsPrimaryKey = true, IsIdentity = false)]
     public virtual long Id { get; set; }
+
+    public virtual object Clone()
+    {
+        return this.MemberwiseClone();
+    }
+    public virtual T Clone<T>() where T : EntityBaseId
+    {
+        return (T)this.MemberwiseClone();
+    }
 }
 
 /// <summary>

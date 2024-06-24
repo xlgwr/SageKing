@@ -6,7 +6,7 @@
 @inject SysSageKingMessageAttributeService dataDetailService
 
 <Row Gutter="24">
-    <Col Span="12">
+    <Col Span="8">
     <Card Title="消息编辑" Style="height:100%; min-height:600px">
 
         <Form @ref="form"
@@ -103,44 +103,146 @@
 
     </Card>
     </Col>
-    <Col Span="12">
+    <Col Span="16">
         @if (dataList == null)
         {
         <Spin size="large" Tip="Loading..." />
         }
         else
         {
-        <Card Title="消息结构列表" Style="height:100%; min-height:600px">
-            <Row>
-                <Table @ref="table" TItem="SysSageKingMessage" DataSource="@dataList"
-                       @bind-SelectedRows="@selectedRows" RowKey="a=>a.Id.ToString()" OnRowClick="OnRowClick">
-                    <Selection Key="@context.Id.ToString()" Type="@selectionType"></Selection>
-                    <PropertyColumn Property="c=>c.Id" Title="Id"></PropertyColumn>
-                    <PropertyColumn Property="c=>c.Name" Title="Name"></PropertyColumn>
-                    <PropertyColumn Property="c=>c.Type" Title="Type"></PropertyColumn>
-                    <PropertyColumn Property="c=>c.Status" Title="Status"></PropertyColumn>
-                    <PropertyColumn Property="c=>c.Version" Title="Version"></PropertyColumn>
-                    <PropertyColumn Property="c=>c.Description" Title="Description"></PropertyColumn>
-                </Table>
-            </Row>
-            <Row>
-                <Table @ref="tableDetail" TItem="SysSageKingMessageAttribute" DataSource="@dataListAttr"
-                       @bind-SelectedRows="@selectedRowsAttr" RowKey="a=>a.Id.ToString()" OnRowClick="OnRowAttrClick">
-                    <Selection Key="@context.Id.ToString()" Type="@selectionType"></Selection>
-                    <PropertyColumn Property="c=>c.Id" Title="Id"></PropertyColumn>
-                    <PropertyColumn Property="c=>c.MessageId" Title="MessageId"></PropertyColumn>
-                    <PropertyColumn Property="c=>c.Name" Title="Name"></PropertyColumn>
-                    <PropertyColumn Property="c=>c.Type" Title="Type"></PropertyColumn>
-                    <PropertyColumn Property="c=>c.Status" Title="Status"></PropertyColumn>
-                </Table>
-            </Row>
+        <Card Title="消息结构列表" Style="min-height:600px; overflow:scroll;">
 
+            <Table @ref="table" TItem="SysSageKingMessage" DataSource="@dataSource" OnChange="OnChange"
+                   @bind-SelectedRows="@selectedRows" RowKey="a=>a.Id.ToString()" OnRowClick="OnRowClick"
+                   OnExpand="OnRowExpand" Size=@TableSize.Middle RowClassName="@(_=>"editable-row")" Bordered TableLayout="fixed">
+                <TitleTemplate>
+                    <Search Placeholder="Search Name" @bind-Value="searchString" OnSearch="()=>table?.ReloadData()" />
+                </TitleTemplate>
+                <ColumnDefinitions>
+                    <Selection Key="@context.Id.ToString()" Type="@selectionType"></Selection>
+                    <PropertyColumn Property="c=>c.Name" Title="消息名称" DefaultSortOrder="@SortDirection.Descending">
+                            @if (!editCache[context.Id].edit)
+                            {
+                                @context.Name
+                            }
+                            else
+                            {
+                            <Input @bind-Value="editCache[context.Id].data.Name" />
+                            }
+                    </PropertyColumn>
+                    <PropertyColumn Property="c=>c.Type" Title="Type" DefaultSortOrder="@SortDirection.Descending">
+                            @if (!editCache[context.Id].edit)
+                            {
+                                @context.Type
+                            }
+                            else
+                            {
+                            <Select @bind-Value="editCache[context.Id].data.Type"
+                                    DefaultValue="@(0)"
+                                    Style="width: 100%;"
+                                    TItemValue="int"
+                                    TItem="string">
+                                <SelectOptions>
+                                    <SelectOption Value="@(1)" Label="DB表类" />
+                                    <SelectOption Value="@(2)" Label="业务类" />
+                                    <SelectOption Value="@(3)" Label="通知类" />
+                                    <SelectOption Value="@(4)" Label="行情类" />
+                                </SelectOptions>
+                            </Select>
+                            }
+                    </PropertyColumn>
+                    <PropertyColumn Property="c=>c.Status" Title="Status" DefaultSortOrder="@SortDirection.Descending">
+                            @if (!editCache[context.Id].edit)
+                            {
+                                @context.Status
+                            }
+                            else
+                            {
+                            <Select @bind-Value="editCache[context.Id].data.Status"
+                                    DefaultValue="@(StatusEnum.Enable)"
+                                    Style="width: 100%;"
+                                    TItemValue="StatusEnum"
+                                    TItem="string">
+                                <SelectOptions>
+                                    <SelectOption Value="@(StatusEnum.Enable)" Label="Enable" />
+                                    <SelectOption Value="@(StatusEnum.Disable)" Label="Disable" />
+                                </SelectOptions>
+                            </Select>
+                            }
+                    </PropertyColumn>
+                    <PropertyColumn Property="c=>c.Description" Title="描述信息" Ellipsis>
+                            @if (!editCache[context.Id].edit)
+                            {
+                                @context.Description
+                            }
+                            else
+                            {
+                            <TextArea ShowCount MaxLength="200" Placeholder="描述信息" @bind-Value="editCache[context.Id].data.Description"></TextArea>
+                            }
+                    </PropertyColumn>
+                    <PropertyColumn Property="c=>c.Version" Title="Version"></PropertyColumn>
+                    <PropertyColumn Property="c=>c.Id" Title="Id" DefaultSortOrder="@SortDirection.Descending" />
+                    <ActionColumn Title="Action">
+                        <Space Size=@("middle")>
+                                @if (!editCache[context.Id].edit)
+                                {
+                                <SpaceItem>
+                                    <a @onclick="() => startEdit(context.Id)">修改</a>
+                                </SpaceItem>
+                                }
+                                else
+                                {
+                                <SpaceItem>
+                                    <a @onclick="() => saveEdit(context.Id)" class="save">保存</a>
+                                    <Popconfirm Title="确认取消?"
+                                                OnConfirm="() => cancelEdit(context.Id)"
+                                                OkText="Yes"
+                                                CancelText="No">
+                                        <a>取消</a>
+                                    </Popconfirm>
+                                </SpaceItem>
+                                }
+
+                            <SpaceItem>
+                                <Popconfirm Title="确认删除?"
+                                            OnConfirm="() => DeleteData(context)"
+                                            OkText="Yes"
+                                            CancelText="No">
+                                    <a>删除</a>
+                                </Popconfirm>
+                            </SpaceItem>
+                        </Space>
+                    </ActionColumn>
+                </ColumnDefinitions>
+                <ExpandTemplate Context="rowData">
+                    <Table TItem="SysSageKingMessageAttribute" DataSource="rowData.Data.Children" Loading="rowData.Data.Children==null" HidePagination Size=@TableSize.Middle
+                           @bind-SelectedRows="@selectedRowsAttr" RowKey="a=>a.Id.ToString()" OnRowClick="OnRowAttrClick">
+                        <Selection Key="@context.Id.ToString()" Type="@selectionType"></Selection>
+                        <PropertyColumn Property="c=>c.Name" Title="属性名称" DefaultSortOrder="@SortDirection.Descending" />
+                        <PropertyColumn Property="c=>c.Type" Title="Type" DefaultSortOrder="@SortDirection.Descending" />
+                        <PropertyColumn Property="c=>c.Status" Title="Status" DefaultSortOrder="@SortDirection.Descending" />
+                        <PropertyColumn Property="c=>c.Id" Title="Id" DefaultSortOrder="@SortDirection.Descending" />
+                        <PropertyColumn Property="c=>c.MessageId" Title="MessageId"></PropertyColumn>
+                        <ActionColumn Title="Action">
+                            <Space Size=@("middle")>
+                                <SpaceItem>
+                                    <a>删除</a>
+                                </SpaceItem>
+                            </Space>
+                        </ActionColumn>
+                    </Table>
+                </ExpandTemplate>
+            </Table>
         </Card>
 
         }
     </Col>
 </Row>
-
+<style>
+    .save {
+        margin-right: 8px;
+    }
+</style>
 @code {
 
     bool loading;
@@ -154,33 +256,36 @@
     string Notice = string.Empty;
     AntDesign.Input<string> inputMessageRef;
 
+    string searchString;
     ITable table;
-    ITable tableDetail;
     string selectionType = "checkbox";
 
-
-    IEnumerable<SysSageKingMessage> dataList;
+    List<SysSageKingMessage> dataList;
+    IEnumerable<SysSageKingMessage> dataSource;
     IEnumerable<SysSageKingMessage> selectedRows;
 
-    IEnumerable<SysSageKingMessageAttribute> dataListAttr;
     IEnumerable<SysSageKingMessageAttribute> selectedRowsAttr;
 
     protected override async Task OnInitializedAsync()
     {
-        await QueryList();
         await base.OnInitializedAsync();
+        await QueryList();
     }
 
     public async Task QueryList()
     {
         var getPage = await dataService.GetPage(new PageBaseInput() { Page = 1, PageSize = 20 });
-        dataList = getPage.Items;
+        dataSource = dataList = getPage.Items.ToList(); 
+        dataList.ForEach(item =>
+        {
+            editCache[item.Id] = (false, item);
+        });
     }
-    public async Task QueryDetailList(long ParentId)
+
+    public async Task<List<SysSageKingMessageAttribute>> QueryDetailList(long ParentId)
     {
         Expression<Func<SysSageKingMessageAttribute, bool>> func = a => a.MessageId == ParentId;
-        var getData = await dataDetailService.GetList(func);
-        dataListAttr = getData;
+        return await dataDetailService.GetList(func);
     }
 
     private async void OnRowClick(RowData<SysSageKingMessage> data)
@@ -231,8 +336,8 @@
     {
         model = new SysSageKingMessage();
         form.Reset();
-    } 
-    
+    }
+
     private void ResetAtt()
     {
         model2 = new SysSageKingMessageAttribute();
@@ -264,4 +369,46 @@
 
         StateHasChanged();
     }
+
+    private async void OnRowExpand(RowData<SysSageKingMessage> data)
+    {
+        data.Data.Children = await QueryDetailList(data.Data.Id);
+    }
+    void OnChange(QueryModel<SysSageKingMessage> query)
+    {
+        dataSource = query.ExecuteQuery(dataList.AsQueryable())
+            .Where(x => string.IsNullOrWhiteSpace(searchString) || x.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase));
+    }
+    #region edit
+    int i = 0;
+    long editId;
+    IDictionary<long, (bool edit, SysSageKingMessage data)> editCache = new Dictionary<long, (bool edit, SysSageKingMessage data)>();
+
+    void startEdit(long id)
+    {
+        var data = editCache[id];
+        editCache[id] = (true, data.data.Clone<SysSageKingMessage>()); // add a copy in cache
+    }
+
+    void cancelEdit(long id)
+    {
+        var data = dataList.FirstOrDefault(item => item.Id == id);
+        editCache[id] = (false, data); // recovery
+    }
+
+    async void saveEdit(long id)
+    {
+        var index = dataList.FindIndex(item => item.Id == id);
+        dataList[index] = editCache[id].data;
+        editCache[id] = (false, editCache[id].data); // don't affect rows in editing
+        await dataService.Update(editCache[id].data);
+    }
+    async void DeleteData(SysSageKingMessage row)
+    {
+        dataList.Remove(row);
+        // editCache.Remove(row.Id);
+        await dataService.Delete(row.Id);
+
+    }
+    #endregion
 }
