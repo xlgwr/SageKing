@@ -4,52 +4,52 @@
 
 @inject PackagesDataService dataService
 
-<Card Title="消息推送">
-
-    <Form @ref="form"
-          Model="@model"
-          ValidateOnChange="true"
-          LabelColSpan="3">
-
-        <FormItem Label="推送内容">
-            <TextArea ShowCount MaxLength="200" Placeholder="输入推送内容" @ref="inputMessageRef" @bind-Value="@context.Message"></TextArea>
-        </FormItem>
-
-        <FormItem Label="客户端" HasFeedback>
-            <Select Mode="multiple"
-                    Placeholder="请选择客户端"
-                    @bind-Values="@context.ConnectIds"
-                    TItemValue="string"
-                    TItem="string"
-                    OnSelectedItemsChanged="OnSelectedItemsChangedHandler"
-                    Style="width: 100%; margin-bottom: 8px;"
-                    EnableSearch
-                    AllowClear>
-                <SelectOptions>
-                    @foreach (var item in dic)
-                    {
-                        <SelectOption TItemValue="string" TItem="string" Value=@item.Key Label=@($"{item.Value.ClientId}:{item.Value.ClientTypeDesc}") />
-                    }
-                </SelectOptions>
-            </Select>
-        </FormItem>
-
-        <FormItem WrapperColOffset="1">
-            <Button Type="@ButtonType.Primary" @onclick="Push" Loading="@loading">推送</Button>
-            <label class="validation-message">@Notice</label>
-        </FormItem>
-
-    </Form>
-
-</Card>
 @if (dic == null)
 {
     <Spin size="large" Tip="Loading..." />
 }
 else
 {
+    <Card Title="消息推送">
+
+        <Form @ref="form"
+              Model="@model"
+              ValidateOnChange="true"
+              LabelColSpan="3">
+
+            <FormItem Label="推送内容">
+                <TextArea ShowCount MaxLength="200" Placeholder="输入推送内容" @ref="inputMessageRef" @bind-Value="@context.Message"></TextArea>
+            </FormItem>
+
+            <FormItem Label="客户端" HasFeedback>
+                <Select Mode="multiple"
+                        Placeholder="请选择客户端"
+                        @bind-Values="@context.ConnectIds"
+                        TItemValue="string"
+                        TItem="string"
+                        OnSelectedItemsChanged="OnSelectedItemsChangedHandler"
+                        Style="width: 100%; margin-bottom: 8px;"
+                        EnableSearch
+                        AllowClear>
+                    <SelectOptions>
+                        @foreach (var item in dic)
+                        {
+                            <SelectOption TItemValue="string" TItem="string" Value=@item.Key Label=@($"{item.Value.ClientId}:{item.Value.ClientTypeDesc}") />
+                        }
+                    </SelectOptions>
+                </Select>
+            </FormItem>
+
+            <FormItem WrapperColOffset="1">
+                <Button Type="@ButtonType.Primary" @onclick="Push" Loading="@loading">推送</Button>
+                <label class="validation-message">@Notice</label>
+            </FormItem>
+
+        </Form>
+
+    </Card>
     <Card Title="客户端列表">
-        <Table @ref="table" TItem="KeyValuePair<string, ClientConnectionInfo<IConnectionContext>>" DataSource="@dic"
+        <Table @ref="table" TItem="Items" DataSource="@dic"
                @bind-SelectedRows="@selectedRows" RowKey="a=>a.Key" OnRowClick="OnRowClick">
 
             <Selection Key="@context.Key" Type="@selectionType"></Selection>
@@ -69,6 +69,12 @@ else
         [RequiredList]
         public IEnumerable<string> ConnectIds { get; set; }
     }
+    class Items
+    {
+        public string Key { get; set; }
+        public ClientConnectionInfo<IConnectionContext> Value { get; set; }
+
+    }
 }
 
 @code {
@@ -83,14 +89,14 @@ else
 
     ITable table;
     string selectionType = "checkbox";
-    ConcurrentDictionary<string, ClientConnectionInfo<IConnectionContext>>? dic;
-    IEnumerable<KeyValuePair<string, ClientConnectionInfo<IConnectionContext>>> selectedRows;
+    IEnumerable<Items> dic;
+    IEnumerable<Items> selectedRows;
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        dic = dataService.DataClientDic;
-        selectedRows = new List<KeyValuePair<string, ClientConnectionInfo<IConnectionContext>>>();
+        dic = dataService.DataClientDic.Select(a => new Items() { Key = a.Key, Value = a.Value });
+        selectedRows = new List<Items>();
     }
 
     private void OnSelectedItemsChangedHandler(IEnumerable<string> values)
@@ -132,7 +138,7 @@ else
         StateHasChanged();
     }
 
-    public void OnRowClick(RowData<KeyValuePair<string, ClientConnectionInfo<IConnectionContext>>> row)
+    void OnRowClick(RowData<Items> row)
     {
         if (selectedRows.Where(a => a.Key == row.Data.Key).Any())
         {
@@ -144,13 +150,13 @@ else
         }
     }
 
-    public void RemoveSelection(string key)
+    void RemoveSelection(string key)
     {
         var selected = selectedRows.Where(x => x.Key != key).ToList();
         table.SetSelection(selected.Select(x => x.Key).ToArray());
     }
 
-    public void AddSelection(string key)
+    void AddSelection(string key)
     {
         var currlist = selectedRows.Select(a => a.Key).ToList();
         currlist.Add(key);
