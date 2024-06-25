@@ -88,9 +88,9 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        await base.OnInitializedAsync();
         dic = dataService.DataClientDic;
         selectedRows = new List<KeyValuePair<string, ClientConnectionInfo<IConnectionContext>>>();
-        await base.OnInitializedAsync();
     }
 
     private void OnSelectedItemsChangedHandler(IEnumerable<string> values)

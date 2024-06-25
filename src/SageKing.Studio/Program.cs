@@ -40,16 +40,10 @@ builder.Services.AddSageKing(sk =>
 
 });
 
-
-//builder.Services
-//            .AddTransient<SysConfigService>()
-//            .AddTransient<SysDictDataService>()
-//            .AddTransient<SysDictTypeService>()
-//            .AddTransient<SysSageKingMessageService>()
-//            .AddTransient<SysSageKingMessageAttributeService>();
-
 // Add services to the container.
 builder.Services.AddRazorPages();
+builder.Services.AddRazorComponents(options =>
+    options.DetailedErrors = builder.Environment.IsDevelopment());
 builder.Services.AddServerSideBlazor();
 
 //other services

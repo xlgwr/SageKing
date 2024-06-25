@@ -120,89 +120,14 @@
                 </TitleTemplate>
                 <ColumnDefinitions>
                     <Selection Key="@context.Id.ToString()" Type="@selectionType"></Selection>
-                    <PropertyColumn Property="c=>c.Name" Title="消息名称" DefaultSortOrder="@SortDirection.Descending">
-                            @if (!editCache[context.Id].edit)
-                            {
-                                @context.Name
-                            }
-                            else
-                            {
-                            <Input @bind-Value="editCache[context.Id].data.Name" />
-                            }
-                    </PropertyColumn>
-                    <PropertyColumn Property="c=>c.Type" Title="Type" DefaultSortOrder="@SortDirection.Descending">
-                            @if (!editCache[context.Id].edit)
-                            {
-                                @context.Type
-                            }
-                            else
-                            {
-                            <Select @bind-Value="editCache[context.Id].data.Type"
-                                    DefaultValue="@(0)"
-                                    Style="width: 100%;"
-                                    TItemValue="int"
-                                    TItem="string">
-                                <SelectOptions>
-                                    <SelectOption Value="@(1)" Label="DB表类" />
-                                    <SelectOption Value="@(2)" Label="业务类" />
-                                    <SelectOption Value="@(3)" Label="通知类" />
-                                    <SelectOption Value="@(4)" Label="行情类" />
-                                </SelectOptions>
-                            </Select>
-                            }
-                    </PropertyColumn>
-                    <PropertyColumn Property="c=>c.Status" Title="Status" DefaultSortOrder="@SortDirection.Descending">
-                            @if (!editCache[context.Id].edit)
-                            {
-                                @context.Status
-                            }
-                            else
-                            {
-                            <Select @bind-Value="editCache[context.Id].data.Status"
-                                    DefaultValue="@(StatusEnum.Enable)"
-                                    Style="width: 100%;"
-                                    TItemValue="StatusEnum"
-                                    TItem="string">
-                                <SelectOptions>
-                                    <SelectOption Value="@(StatusEnum.Enable)" Label="Enable" />
-                                    <SelectOption Value="@(StatusEnum.Disable)" Label="Disable" />
-                                </SelectOptions>
-                            </Select>
-                            }
-                    </PropertyColumn>
-                    <PropertyColumn Property="c=>c.Description" Title="描述信息" Ellipsis>
-                            @if (!editCache[context.Id].edit)
-                            {
-                                @context.Description
-                            }
-                            else
-                            {
-                            <TextArea ShowCount MaxLength="200" Placeholder="描述信息" @bind-Value="editCache[context.Id].data.Description"></TextArea>
-                            }
-                    </PropertyColumn>
+                    <PropertyColumn Property="c=>c.Name" Title="消息名称" DefaultSortOrder="@SortDirection.Descending" />
+                    <PropertyColumn Property="c=>c.Type" Title="Type" DefaultSortOrder="@SortDirection.Descending" />
+                    <PropertyColumn Property="c=>c.Status" Title="Status" DefaultSortOrder="@SortDirection.Descending" />
+                    <PropertyColumn Property="c=>c.Description" Title="描述信息" Ellipsis />
                     <PropertyColumn Property="c=>c.Version" Title="Version"></PropertyColumn>
                     <PropertyColumn Property="c=>c.Id" Title="Id" DefaultSortOrder="@SortDirection.Descending" />
                     <ActionColumn Title="Action">
                         <Space Size=@("middle")>
-                                @if (!editCache[context.Id].edit)
-                                {
-                                <SpaceItem>
-                                    <a @onclick="() => startEdit(context.Id)">修改</a>
-                                </SpaceItem>
-                                }
-                                else
-                                {
-                                <SpaceItem>
-                                    <a @onclick="() => saveEdit(context.Id)" class="save">保存</a>
-                                    <Popconfirm Title="确认取消?"
-                                                OnConfirm="() => cancelEdit(context.Id)"
-                                                OkText="Yes"
-                                                CancelText="No">
-                                        <a>取消</a>
-                                    </Popconfirm>
-                                </SpaceItem>
-                                }
-
                             <SpaceItem>
                                 <Popconfirm Title="确认删除?"
                                             OnConfirm="() => DeleteData(context)"
@@ -226,7 +151,12 @@
                         <ActionColumn Title="Action">
                             <Space Size=@("middle")>
                                 <SpaceItem>
-                                    <a>删除</a>
+                                    <Popconfirm Title="确认删除?"
+                                                OnConfirm="() => DeleteDataDetails(context,rowData.Data.Id)"
+                                                OkText="Yes"
+                                                CancelText="No">
+                                        <a>删除</a>
+                                    </Popconfirm>
                                 </SpaceItem>
                             </Space>
                         </ActionColumn>
@@ -246,6 +176,9 @@
 @code {
 
     bool loading;
+
+    [CascadingParameter]
+    public Error? Error { get; set; }
 
     SysSageKingMessage model = new SysSageKingMessage();
     SysSageKingMessageAttribute model2 = new SysSageKingMessageAttribute();
@@ -275,11 +208,7 @@
     public async Task QueryList()
     {
         var getPage = await dataService.GetPage(new PageBaseInput() { Page = 1, PageSize = 20 });
-        dataSource = dataList = getPage.Items.ToList(); 
-        dataList.ForEach(item =>
-        {
-            editCache[item.Id] = (false, item);
-        });
+        dataSource = dataList = getPage.Items.ToList();
     }
 
     public async Task<List<SysSageKingMessageAttribute>> QueryDetailList(long ParentId)
@@ -379,36 +308,15 @@
         dataSource = query.ExecuteQuery(dataList.AsQueryable())
             .Where(x => string.IsNullOrWhiteSpace(searchString) || x.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase));
     }
-    #region edit
-    int i = 0;
-    long editId;
-    IDictionary<long, (bool edit, SysSageKingMessage data)> editCache = new Dictionary<long, (bool edit, SysSageKingMessage data)>();
-
-    void startEdit(long id)
-    {
-        var data = editCache[id];
-        editCache[id] = (true, data.data.Clone<SysSageKingMessage>()); // add a copy in cache
-    }
-
-    void cancelEdit(long id)
-    {
-        var data = dataList.FirstOrDefault(item => item.Id == id);
-        editCache[id] = (false, data); // recovery
-    }
-
-    async void saveEdit(long id)
-    {
-        var index = dataList.FindIndex(item => item.Id == id);
-        dataList[index] = editCache[id].data;
-        editCache[id] = (false, editCache[id].data); // don't affect rows in editing
-        await dataService.Update(editCache[id].data);
-    }
     async void DeleteData(SysSageKingMessage row)
     {
         dataList.Remove(row);
-        // editCache.Remove(row.Id);
         await dataService.Delete(row.Id);
-
     }
-    #endregion
+
+    async void DeleteDataDetails(SysSageKingMessageAttribute row, long parentId)
+    {
+        await dataDetailService.Delete(row.Id);
+        await QueryDetailList(parentId);
+    }
 }

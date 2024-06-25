@@ -94,9 +94,9 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        await base.OnInitializedAsync();
         dic = dataService.DataDic;
         serverNamelst = dataService.ClientConnectionProvider.GetServerNames().ToList();
-        await base.OnInitializedAsync();
     }
     private async void Send()
     {
