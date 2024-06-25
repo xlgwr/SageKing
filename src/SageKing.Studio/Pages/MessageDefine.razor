@@ -2,135 +2,119 @@
 
 <PageTitle>消息结构定义</PageTitle>
 
+@inject IConfirmService _confirmService
 @inject SysSageKingMessageService dataService
 @inject SysSageKingMessageAttributeService dataDetailService
 
-<Row Gutter="24">
-    <Col Span="8">
-    <Card Title="消息编辑" Style="height:100%; min-height:600px">
+@{
+    RenderFragment icon = @<Icon Type="exclamation-circle" Theme="outline"></Icon>;
 
-        <Form @ref="form"
-              Model="@model"
-              ValidateOnChange="true"
-              LabelColSpan="8" WrapperColSpan="20">
+    RenderFragment FormTemplate()
+    {
+        return@<SysSageKingMessageEdit @ref=@edit Title="@addTitle" model="@addModel"></SysSageKingMessageEdit>;
+    }
 
-            <Row Gutter="24">
-                <Col Span="12">
-                <FormItem Label="名称">
-                    <Input ShowCount MaxLength="64" @bind-Value="@context.Name" />
-                </FormItem>
-                </Col>
-                <Col Span="12">
-                <FormItem Label="类型">
-                    <Select @bind-Value="@context.Type"
-                            DefaultValue="@(0)"
-                            Style="width: 100%;"
-                            TItemValue="int"
-                            TItem="string">
-                        <SelectOptions>
-                            <SelectOption Value="@(1)" Label="DB表类" />
-                            <SelectOption Value="@(2)" Label="业务类" />
-                            <SelectOption Value="@(3)" Label="通知类" />
-                            <SelectOption Value="@(4)" Label="行情类" />
-                        </SelectOptions>
-                    </Select>
-                </FormItem>
-                </Col>
-            </Row>
-            <Row Gutter="24">
-                <Col Span="12">
-                <FormItem Label="描述信息">
-                    <TextArea ShowCount MaxLength="200" Placeholder="描述信息" @ref="inputMessageRef" @bind-Value="@context.Description"></TextArea>
-                </FormItem>
-                </Col>
-                <Col Span="12">
-                <FormItem Label="版本号">
-                    <Input @bind-Value="@context.Version" />
-                </FormItem>
-                </Col>
-            </Row>
-            <Row Gutter="24">
-                <Col Span="24" Offset="10">
-                <FormItem>
-                    <Button Type="@ButtonType.Primary" @onclick="Save" Loading="@loading">保存</Button>
-                    <Button Type="@ButtonType.Primary" @onclick="Reset">重置</Button>
-                    <label class="validation-message">@Notice</label>
-                </FormItem>
-                </Col>
-            </Row>
-        </Form>
+    RenderFragment footer = @<Template>
+        <Button OnClick="@HandleOk" @key="@( "submit" )"
+                Type="primary"
+                Loading="@addloading">
+            保存
+        </Button>
+        <Button OnClick="@HandleCancel" @key="@( "back" )">取消</Button>
+    </Template>
+    ;
 
-        <Form @ref="form2"
-              Model="@model2"
-              ValidateOnChange="true"
-              Layout="@FormLayout.Horizontal"
-              LabelColSpan="8" WrapperColSpan="20">
-            <Row Gutter="24">
-                <Col Span="12">
-                <FormItem Label="属性名称">
-                    <Input ShowCount MaxLength="64" @bind-Value="@model2.Name" />
-                </FormItem>
-                </Col>
-                <Col Span="12">
-                <FormItem Label="属性类型">
-                    <Select @bind-Value="@model2.Type"
-                            DefaultValue="@(DataStreamTypeEnum.String)"
-                            Style="width: 100%;"
-                            TItemValue="DataStreamTypeEnum"
-                            TItem="string">
-                        <SelectOptions>
-                            <SelectOption Value="@(DataStreamTypeEnum.String)" Label="String" />
-                            <SelectOption Value="@(DataStreamTypeEnum.Int8)" Label="sbyte" />
-                            <SelectOption Value="@(DataStreamTypeEnum.Int32)" Label="int" />
-                            <SelectOption Value="@(DataStreamTypeEnum.Int64)" Label="long" />
-                            <SelectOption Value="@(DataStreamTypeEnum.Float32)" Label="float" />
-                        </SelectOptions>
-                    </Select>
-                </FormItem>
+    Func<ModalClosingEventArgs, Task> onOk = (e) =>
+    {
+        _visible = false;
+        return Task.CompletedTask;
+    };
+    Func<ModalClosingEventArgs, Task> onCancel = (e) =>
+    {
+        _visible = true;
+        return Task.CompletedTask;
+    };
 
-                </Col>
-            </Row>
-            <Row>
-                <Col Span="24">
-                <FormItem WrapperColOffset="10">
-                    <Button Type="@ButtonType.Primary" @onclick="SaveAtt" Loading="@loading">新增属性</Button>
-                    <Button Type="@ButtonType.Primary" @onclick="ResetAtt">重置</Button>
-                </FormItem>
-                </Col>
-
-            </Row>
-        </Form>
-
-    </Card>
-    </Col>
-    <Col Span="16">
-        @if (dataList == null)
+    async Task HandleOk(MouseEventArgs e)
+    {
+        addloading = true;
+        if (edit != null)
         {
-        <Spin size="large" Tip="Loading..." />
+            var result = await edit.Save();
+            if (!result)
+            {
+                addloading = false;
+                return;
+            }
         }
-        else
-        {
-        <Card Title="消息结构列表" Style="min-height:600px; overflow:scroll;">
+        await QueryList();
+        _visible = false;
+        addloading = false;
+    }
 
-            <Table @ref="table" TItem="SysSageKingMessage" DataSource="@dataSource" OnChange="OnChange"
-                   @bind-SelectedRows="@selectedRows" RowKey="a=>a.Id.ToString()" OnRowClick="OnRowClick"
-                   OnExpand="OnRowExpand" Size=@TableSize.Middle RowClassName="@(_=>"editable-row")" Bordered TableLayout="fixed">
-                <TitleTemplate>
-                    <Search Placeholder="Search Name" @bind-Value="searchString" OnSearch="()=>table?.ReloadData()" />
-                </TitleTemplate>
-                <ColumnDefinitions>
+    void HandleCancel(MouseEventArgs e)
+    {
+        _visible = false;
+    } 
+}
+
+@if (dataList == null)
+{
+    <Spin size="large" Tip="Loading..." />
+}
+else
+{
+    <Card Title="消息结构列表" Style="min-height:600px; overflow:auto;">
+
+        <Table @ref="table" TItem="SysSageKingMessage" DataSource="@dataSource" OnChange="OnChange"
+               @bind-SelectedRows="@selectedRows" RowKey="a=>a.Id.ToString()" OnRowClick="OnRowClick"
+               OnExpand="OnRowExpand" Size=@TableSize.Middle Resizable Bordered TableLayout="fixed">
+            <TitleTemplate>
+                <GridRow>
+                    <GridCol Span="4">
+                        <Search Placeholder="Search Name" @bind-Value="searchString" OnSearch="()=>table?.ReloadData()" AllowClear="true" />
+                    </GridCol>
+                    <GridCol Span="8">
+                        <Button Type="@ButtonType.Primary" OnClick="@AddData">新增</Button>
+                    </GridCol>
+                </GridRow>
+            </TitleTemplate>
+            <ColumnDefinitions>
+                <Selection Key="@context.Id.ToString()" Type="@selectionType"></Selection>
+                <PropertyColumn Property="c=>c.Name" Title="消息名称" DefaultSortOrder="@SortDirection.Descending" />
+                <PropertyColumn Property="c=>c.Type" Title="Type" DefaultSortOrder="@SortDirection.Descending" />
+                <PropertyColumn Property="c=>c.Status" Title="Status" DefaultSortOrder="@SortDirection.Descending" />
+                <PropertyColumn Property="c=>c.Description" Title="描述信息" Ellipsis />
+                <PropertyColumn Property="c=>c.Version" Title="Version"></PropertyColumn>
+                <PropertyColumn Property="c=>c.Id" Title="Id" DefaultSortOrder="@SortDirection.Descending" />
+                <ActionColumn Title="Action">
+                    <Space Size=@("middle")>
+                        <SpaceItem>
+                            <Button OnClick="(e)=>EditData(context)">修改</Button>
+                            <Popconfirm Title="确认删除?"
+                                        OnConfirm="(e) => DeleteData(context)"
+                                        OkText="Yes"
+                                        CancelText="No">
+                                <Button Danger>删除</Button>
+                            </Popconfirm>
+                        </SpaceItem>
+                    </Space>
+                </ActionColumn>
+            </ColumnDefinitions>
+            <ExpandTemplate Context="rowData">
+                <Table TItem="SysSageKingMessageAttribute" DataSource="rowData.Data.Children" Loading="rowData.Data.Children==null" HidePagination Size=@TableSize.Middle
+                       @bind-SelectedRows="@selectedRowsAttr" RowKey="a=>a.Id.ToString()" OnRowClick="OnRowAttrClick" Resizable Bordered>
                     <Selection Key="@context.Id.ToString()" Type="@selectionType"></Selection>
-                    <PropertyColumn Property="c=>c.Name" Title="消息名称" DefaultSortOrder="@SortDirection.Descending" />
+                    <PropertyColumn Property="c=>c.Name" Title="属性名称" DefaultSortOrder="@SortDirection.Descending" />
                     <PropertyColumn Property="c=>c.Type" Title="Type" DefaultSortOrder="@SortDirection.Descending" />
                     <PropertyColumn Property="c=>c.Status" Title="Status" DefaultSortOrder="@SortDirection.Descending" />
-                    <PropertyColumn Property="c=>c.Description" Title="描述信息" Ellipsis />
-                    <PropertyColumn Property="c=>c.Version" Title="Version"></PropertyColumn>
                     <PropertyColumn Property="c=>c.Id" Title="Id" DefaultSortOrder="@SortDirection.Descending" />
+                    <PropertyColumn Property="c=>c.MessageId" Title="MessageId"></PropertyColumn>
                     <ActionColumn Title="Action">
                         <Space Size=@("middle")>
                             <SpaceItem>
                                 <Popconfirm Title="确认删除?"
-                                            OnConfirm="() => DeleteData(context)"
+                                            OnConfirm="() => DeleteDataDetails(context,rowData.Data.Id)"
                                             OkText="Yes"
                                             CancelText="No">
                                     <a>删除</a>
@@ -138,56 +122,33 @@
                             </SpaceItem>
                         </Space>
                     </ActionColumn>
-                </ColumnDefinitions>
-                <ExpandTemplate Context="rowData">
-                    <Table TItem="SysSageKingMessageAttribute" DataSource="rowData.Data.Children" Loading="rowData.Data.Children==null" HidePagination Size=@TableSize.Middle
-                           @bind-SelectedRows="@selectedRowsAttr" RowKey="a=>a.Id.ToString()" OnRowClick="OnRowAttrClick">
-                        <Selection Key="@context.Id.ToString()" Type="@selectionType"></Selection>
-                        <PropertyColumn Property="c=>c.Name" Title="属性名称" DefaultSortOrder="@SortDirection.Descending" />
-                        <PropertyColumn Property="c=>c.Type" Title="Type" DefaultSortOrder="@SortDirection.Descending" />
-                        <PropertyColumn Property="c=>c.Status" Title="Status" DefaultSortOrder="@SortDirection.Descending" />
-                        <PropertyColumn Property="c=>c.Id" Title="Id" DefaultSortOrder="@SortDirection.Descending" />
-                        <PropertyColumn Property="c=>c.MessageId" Title="MessageId"></PropertyColumn>
-                        <ActionColumn Title="Action">
-                            <Space Size=@("middle")>
-                                <SpaceItem>
-                                    <Popconfirm Title="确认删除?"
-                                                OnConfirm="() => DeleteDataDetails(context,rowData.Data.Id)"
-                                                OkText="Yes"
-                                                CancelText="No">
-                                        <a>删除</a>
-                                    </Popconfirm>
-                                </SpaceItem>
-                            </Space>
-                        </ActionColumn>
-                    </Table>
-                </ExpandTemplate>
-            </Table>
-        </Card>
+                </Table>
+            </ExpandTemplate>
+        </Table>
 
-        }
-    </Col>
-</Row>
-<style>
-    .save {
-        margin-right: 8px;
-    }
-</style>
+    </Card>
+    <Modal Title="@addTitle" Resizable=true Footer="@footer" 
+           @bind-Visible="@_visible" Draggable="@(true)" Centered >
+
+        @FormTemplate()
+    </Modal>
+}
+
+
+
 @code {
 
     bool loading;
+    bool _visible = false;
 
     [CascadingParameter]
     public Error? Error { get; set; }
 
-    SysSageKingMessage model = new SysSageKingMessage();
-    SysSageKingMessageAttribute model2 = new SysSageKingMessageAttribute();
+    string addTitle = "新增";
+    SysSageKingMessage addModel;
 
-    AntDesign.Form<SysSageKingMessage> form;
-    AntDesign.Form<SysSageKingMessageAttribute> form2;
-
-    string Notice = string.Empty;
-    AntDesign.Input<string> inputMessageRef;
+    bool addloading = false;
+    SysSageKingMessageEdit edit;
 
     string searchString;
     ITable table;
@@ -195,8 +156,8 @@
 
     List<SysSageKingMessage> dataList;
     IEnumerable<SysSageKingMessage> dataSource;
-    IEnumerable<SysSageKingMessage> selectedRows;
 
+    IEnumerable<SysSageKingMessage> selectedRows;
     IEnumerable<SysSageKingMessageAttribute> selectedRowsAttr;
 
     protected override async Task OnInitializedAsync()
@@ -220,11 +181,11 @@
     private async void OnRowClick(RowData<SysSageKingMessage> data)
     {
         var row = data.Data;
-        model.Id = row.Id;
-        model.Name = row.Name;
-        model.Description = row.Description;
-        model.Type = row.Type;
-        model.Version = row.Version;
+        // model.Id = row.Id;
+        // model.Name = row.Name;
+        // model.Description = row.Description;
+        // model.Type = row.Type;
+        // model.Version = row.Version;
 
         await QueryDetailList(row.Id);
     }
@@ -232,82 +193,33 @@
     private void OnRowAttrClick(RowData<SysSageKingMessageAttribute> data)
     {
         var row = data.Data;
-        model2.Name = row.Name;
-        model2.Type = row.Type;
-    }
-
-    private async void Save()
-    {
-        if (!form.Validate())
-        {
-            return;
-        };
-        if (model.Id <= 0)
-        {
-            await dataService.Add(model);
-            Notice = $"新增成功【{model.Name}】";
-            await inputMessageRef.Focus();
-        }
-        else
-        {
-
-            await dataService.Update(model);
-            Notice = $"保存成功【{model.Name}】";
-            await inputMessageRef.Focus();
-        }
-
-        await QueryList();
-
-        StateHasChanged();
-    }
-
-    private void Reset()
-    {
-        model = new SysSageKingMessage();
-        form.Reset();
-    }
-
-    private void ResetAtt()
-    {
-        model2 = new SysSageKingMessageAttribute();
-        form2.Reset();
-    }
-
-    private async void SaveAtt()
-    {
-        if (!form2.Validate())
-        {
-            return;
-        };
-        if (model.Name.IsNullOrEmpty() || model.Id <= 0)
-        {
-
-            Notice = $"请选择一个消息定义";
-            await inputMessageRef.Focus();
-            return;
-        }
-        else
-        {
-            model2.MessageId = model.Id;
-            await dataDetailService.Add(model2);
-            Notice = $"保存属性成功【{model2.Name}】";
-            await inputMessageRef.Focus();
-        }
-
-        await QueryDetailList(model.Id);
-
-        StateHasChanged();
+        // model2.Name = row.Name;
+        // model2.Type = row.Type;
     }
 
     private async void OnRowExpand(RowData<SysSageKingMessage> data)
     {
         data.Data.Children = await QueryDetailList(data.Data.Id);
     }
+
     void OnChange(QueryModel<SysSageKingMessage> query)
     {
         dataSource = query.ExecuteQuery(dataList.AsQueryable())
             .Where(x => string.IsNullOrWhiteSpace(searchString) || x.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase));
     }
+
+    private void AddData()
+    {
+        addModel = new SysSageKingMessage();
+        addTitle = "消息新增";
+        _visible = true;
+    }
+
+    async void EditData(SysSageKingMessage row)
+    {
+
+    }
+
     async void DeleteData(SysSageKingMessage row)
     {
         dataList.Remove(row);
@@ -319,4 +231,5 @@
         await dataDetailService.Delete(row.Id);
         await QueryDetailList(parentId);
     }
+
 }
