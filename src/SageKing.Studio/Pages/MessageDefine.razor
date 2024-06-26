@@ -263,7 +263,9 @@ else
 
     async void DeleteData(SysSageKingMessage row)
     {
-        pageData.Items.ToList().Remove(row);
+        pageData.Items = pageData.Items.Where(a => a.Id != row.Id);
+        pageData.Total -= 1;
+        table.ResetData();
         await dataService.Delete(row.Id);
     }
 
