@@ -37,7 +37,7 @@
 </Card>
 @code {
     [Parameter]
-    public string Title{ get; set; }
+    public string Title { get; set; }
 
     [Parameter]
     public SysSageKingMessageAttribute model { get; set; }
@@ -59,7 +59,7 @@
         else
         {
             await dataDetailService.Update(model);
-        }
+        } 
     }
 
     private void Reset()

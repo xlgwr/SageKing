@@ -1,9 +1,11 @@
+using BlazorPro.BlazorSize;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
 using SageKing.Studio.Data;
 using System.Reflection;
+using static NewLife.Remoting.ApiHttpClient;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -50,6 +52,8 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<PackagesDataService>();
 builder.Services.AddSingleton<WeatherForecastService>();
 
+builder.Services.AddMediaQueryService();
+builder.Services.AddResizeListener();
 builder.Services.AddAntDesign();
 
 var app = builder.Build();

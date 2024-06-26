@@ -2,38 +2,17 @@
 
 <PageTitle>消息结构定义</PageTitle>
 
-@inject IConfirmService _confirmService
+@inject IResizeListener listener
+@inject IMessageService _message
 @inject SysSageKingMessageService dataService
 @inject SysSageKingMessageAttributeService dataDetailService
 
 @{
-    RenderFragment icon = @<Icon Type="exclamation-circle" Theme="outline"></Icon>;
 
     RenderFragment FormTemplate()
     {
         return@<SysSageKingMessageEdit @ref=@edit Title="@addTitle" model="@addModel"></SysSageKingMessageEdit>;
     }
-
-    RenderFragment footer = @<Template>
-        <Button OnClick="@HandleOk" @key="@( "submit" )"
-                Type="primary"
-                Loading="@addloading">
-            保存
-        </Button>
-        <Button OnClick="@HandleCancel" @key="@( "back" )">取消</Button>
-    </Template>
-    ;
-
-    Func<ModalClosingEventArgs, Task> onOk = (e) =>
-    {
-        _visible = false;
-        return Task.CompletedTask;
-    };
-    Func<ModalClosingEventArgs, Task> onCancel = (e) =>
-    {
-        _visible = true;
-        return Task.CompletedTask;
-    };
 
     async Task HandleOk(MouseEventArgs e)
     {
@@ -43,133 +22,201 @@
             var result = await edit.Save();
             if (!result)
             {
+                _visible = true;
                 addloading = false;
                 return;
             }
+
+            await _message.Success($"{addTitle}【{addModel.Name}】成功！");
         }
-        await QueryList();
+        await OnPageToDo(this.pageargs);
         _visible = false;
         addloading = false;
     }
 
-    void HandleCancel(MouseEventArgs e)
-    {
-        _visible = false;
-    } 
 }
 
-@if (dataList == null)
+@if (pageData == null)
 {
     <Spin size="large" Tip="Loading..." />
 }
 else
 {
-    <Card Title="消息结构列表" Style="min-height:600px; overflow:auto;">
-
-        <Table @ref="table" TItem="SysSageKingMessage" DataSource="@dataSource" OnChange="OnChange"
-               @bind-SelectedRows="@selectedRows" RowKey="a=>a.Id.ToString()" OnRowClick="OnRowClick"
-               OnExpand="OnRowExpand" Size=@TableSize.Middle Resizable Bordered TableLayout="fixed">
-            <TitleTemplate>
-                <GridRow>
-                    <GridCol Span="4">
-                        <Search Placeholder="Search Name" @bind-Value="searchString" OnSearch="()=>table?.ReloadData()" AllowClear="true" />
-                    </GridCol>
-                    <GridCol Span="8">
-                        <Button Type="@ButtonType.Primary" OnClick="@AddData">新增</Button>
-                    </GridCol>
-                </GridRow>
-            </TitleTemplate>
-            <ColumnDefinitions>
+    <Table @ref="table" TItem="SysSageKingMessage"
+           DataSource="@pageData.Items"
+           RowKey="x=>x.Id"
+           OnRowClick="OnRowClick"
+           @bind-SelectedRows="@selectedRows"
+           Size="TableSize.Small"
+           OnChange="OnChange"
+           OnExpand="OnRowExpand"
+           Resizable Bordered
+           ScrollY="@ScrollY" PageSize="pageData.PageSize">
+        <TitleTemplate>
+            <GridRow>
+                <GridCol Span="4" Offset="1">
+                    <Search Placeholder="Search Name" @bind-Value="searchString" OnSearch="()=>table?.ReloadData()" AllowClear="true" />
+                </GridCol>
+                <GridCol Span="8">
+                    <Button Type="@ButtonType.Primary" OnClick="@AddData">新增</Button>
+                </GridCol>
+            </GridRow>
+        </TitleTemplate>
+        <ColumnDefinitions>
+            <Selection Type="@selectionType"></Selection>
+            <PropertyColumn Property="c=>c.Name" Title="消息名称" DefaultSortOrder="@SortDirection.Descending" />
+            <PropertyColumn Property="c=>c.Type" Title="Type" DefaultSortOrder="@SortDirection.Descending" />
+            <PropertyColumn Property="c=>c.Status" Title="Status" DefaultSortOrder="@SortDirection.Descending" />
+            <PropertyColumn Property="c=>c.Description" Title="描述信息" Ellipsis />
+            <PropertyColumn Property="c=>c.Version" Title="Version"></PropertyColumn>
+            <PropertyColumn Property="c=>c.Id" Title="Id" DefaultSortOrder="@SortDirection.Descending" />
+            <ActionColumn Title="Action">
+                <Space Size=@("middle")>
+                    <SpaceItem>
+                        <Button OnClick="(e)=>EditData(context)">修改</Button>
+                        <Popconfirm Title="确认删除?"
+                                    OnConfirm="(e) => DeleteData(context)"
+                                    OkText="Yes"
+                                    CancelText="No">
+                            <Button Danger>删除</Button>
+                        </Popconfirm>
+                    </SpaceItem>
+                </Space>
+            </ActionColumn>
+        </ColumnDefinitions>
+        <ExpandTemplate Context="rowData">
+            <Table TItem="SysSageKingMessageAttribute" DataSource="rowData.Data.Children" Loading="rowData.Data.Children==null" HidePagination Size=@TableSize.Middle
+                   @bind-SelectedRows="@selectedRowsAttr" RowKey="a=>a.Id.ToString()" OnRowClick="OnRowAttrClick" Resizable Bordered>
                 <Selection Key="@context.Id.ToString()" Type="@selectionType"></Selection>
-                <PropertyColumn Property="c=>c.Name" Title="消息名称" DefaultSortOrder="@SortDirection.Descending" />
+                <PropertyColumn Property="c=>c.Name" Title="属性名称" DefaultSortOrder="@SortDirection.Descending" />
                 <PropertyColumn Property="c=>c.Type" Title="Type" DefaultSortOrder="@SortDirection.Descending" />
                 <PropertyColumn Property="c=>c.Status" Title="Status" DefaultSortOrder="@SortDirection.Descending" />
-                <PropertyColumn Property="c=>c.Description" Title="描述信息" Ellipsis />
-                <PropertyColumn Property="c=>c.Version" Title="Version"></PropertyColumn>
                 <PropertyColumn Property="c=>c.Id" Title="Id" DefaultSortOrder="@SortDirection.Descending" />
+                <PropertyColumn Property="c=>c.MessageId" Title="MessageId"></PropertyColumn>
                 <ActionColumn Title="Action">
                     <Space Size=@("middle")>
                         <SpaceItem>
-                            <Button OnClick="(e)=>EditData(context)">修改</Button>
                             <Popconfirm Title="确认删除?"
-                                        OnConfirm="(e) => DeleteData(context)"
+                                        OnConfirm="() => DeleteDataDetails(context,rowData.Data.Id)"
                                         OkText="Yes"
                                         CancelText="No">
-                                <Button Danger>删除</Button>
+                                <a>删除</a>
                             </Popconfirm>
                         </SpaceItem>
                     </Space>
                 </ActionColumn>
-            </ColumnDefinitions>
-            <ExpandTemplate Context="rowData">
-                <Table TItem="SysSageKingMessageAttribute" DataSource="rowData.Data.Children" Loading="rowData.Data.Children==null" HidePagination Size=@TableSize.Middle
-                       @bind-SelectedRows="@selectedRowsAttr" RowKey="a=>a.Id.ToString()" OnRowClick="OnRowAttrClick" Resizable Bordered>
-                    <Selection Key="@context.Id.ToString()" Type="@selectionType"></Selection>
-                    <PropertyColumn Property="c=>c.Name" Title="属性名称" DefaultSortOrder="@SortDirection.Descending" />
-                    <PropertyColumn Property="c=>c.Type" Title="Type" DefaultSortOrder="@SortDirection.Descending" />
-                    <PropertyColumn Property="c=>c.Status" Title="Status" DefaultSortOrder="@SortDirection.Descending" />
-                    <PropertyColumn Property="c=>c.Id" Title="Id" DefaultSortOrder="@SortDirection.Descending" />
-                    <PropertyColumn Property="c=>c.MessageId" Title="MessageId"></PropertyColumn>
-                    <ActionColumn Title="Action">
-                        <Space Size=@("middle")>
-                            <SpaceItem>
-                                <Popconfirm Title="确认删除?"
-                                            OnConfirm="() => DeleteDataDetails(context,rowData.Data.Id)"
-                                            OkText="Yes"
-                                            CancelText="No">
-                                    <a>删除</a>
-                                </Popconfirm>
-                            </SpaceItem>
-                        </Space>
-                    </ActionColumn>
-                </Table>
-            </ExpandTemplate>
-        </Table>
+            </Table>
+        </ExpandTemplate>
 
-    </Card>
-    <Modal Title="@addTitle" Resizable=true Footer="@footer" 
-           @bind-Visible="@_visible" Draggable="@(true)" Centered >
+
+        <PaginationTemplate>
+            <Pagination ShowTotal="showTotal"
+                        Total="pageData.Total"
+                        PageSize="pageData.PageSize"
+                        Current="pageData.Page"
+                        ShowSizeChanger
+                        ShowQuickJumper
+                        OnChange="OnPageToDo" />
+        </PaginationTemplate>
+    </Table>
+
+    <Modal Title="@addTitle" Resizable=true
+           @bind-Visible="@_visible" Draggable="@(true)" Centered Closable="false"
+           OnOk="HandleOk" ConfirmLoading="addloading" OkText="addOkTitle" CancelText="addCancelText">
 
         @FormTemplate()
     </Modal>
 }
-
-
-
+<style>
+    .ant-table-body {
+        height: @(browser.Height - ScrollYOffset + "px");
+    }
+</style>
 @code {
 
     bool loading;
     bool _visible = false;
 
+    string ScrollY = "500px";
+    int ScrollYOffset = 200;
+    bool IsSmallMedia = false;
+    // We can also capture the browser's width / height if needed. We hold the value here.
+    BrowserWindowSize browser = new BrowserWindowSize();
+
     [CascadingParameter]
     public Error? Error { get; set; }
 
-    string addTitle = "新增";
-    SysSageKingMessage addModel;
-
-    bool addloading = false;
-    SysSageKingMessageEdit edit;
-
-    string searchString;
+    //table
     ITable table;
+    string searchString;
     string selectionType = "checkbox";
+    RenderFragment<PaginationTotalContext> showTotal = ctx => @<div style="margin-top:3.5px;">Total: <b>@ctx.Total</b></div>;
 
-    List<SysSageKingMessage> dataList;
-    IEnumerable<SysSageKingMessage> dataSource;
+    PaginationEventArgs pageargs = new PaginationEventArgs(1, 10);
+    PageBase<SysSageKingMessage> pageData;
 
     IEnumerable<SysSageKingMessage> selectedRows;
     IEnumerable<SysSageKingMessageAttribute> selectedRowsAttr;
 
+
+    //add
+    bool addloading = false;
+    string addTitle = "新增";
+    string addOkTitle = "保存";
+    string addCancelText = "取消";
+    SysSageKingMessage addModel;
+    SysSageKingMessageEdit edit;
+
+    #region init
+
     protected override async Task OnInitializedAsync()
     {
+        await OnPageToDo(pageargs);
         await base.OnInitializedAsync();
-        await QueryList();
     }
 
-    public async Task QueryList()
+    protected override void OnAfterRender(bool firstRender)
     {
-        var getPage = await dataService.GetPage(new PageBaseInput() { Page = 1, PageSize = 20 });
-        dataSource = dataList = getPage.Items.ToList();
+        if (firstRender)
+        {
+            // Subscribe to the OnResized event. This will do work when the browser is resized.
+            listener.OnResized += WindowResized;
+        }
+    }
+
+    void Dispose()
+    {
+        // Always use IDisposable in your component to unsubscribe from the event.
+        // Be a good citizen and leave things how you found them.
+        // This way event handlers aren't called when nobody is listening.
+        listener.OnResized -= WindowResized;
+    }
+
+    // This method will be called when the window resizes.
+    // It is ONLY called when the user stops dragging the window's edge. (It is already throttled to protect your app from perf. nightmares)
+    async void WindowResized(object _, BrowserWindowSize window)
+    {
+        // Get the browsers's width / height
+        browser = window;
+
+        // Check a media query to see if it was matched. We can do this at any time, but it's best to check on each resize
+        IsSmallMedia = await listener.MatchMedia(Breakpoints.SmallDown);
+
+
+        ScrollY = $"{browser.Height - ScrollYOffset}px";
+
+        // We're outside of the component's lifecycle, be sure to let it know it has to re-render.
+        StateHasChanged();
+    }
+    #endregion
+
+    public async Task OnPageToDo(PaginationEventArgs args)
+    {
+        // pageargs.Page = args.Page;
+        // pageargs.PageSize = args.PageSize;
+
+        var page = new PageBaseInput() { Page = args.Page, PageSize = args.PageSize };
+        pageData = await dataService.GetPage(page);
     }
 
     public async Task<List<SysSageKingMessageAttribute>> QueryDetailList(long ParentId)
@@ -181,20 +228,12 @@ else
     private async void OnRowClick(RowData<SysSageKingMessage> data)
     {
         var row = data.Data;
-        // model.Id = row.Id;
-        // model.Name = row.Name;
-        // model.Description = row.Description;
-        // model.Type = row.Type;
-        // model.Version = row.Version;
-
         await QueryDetailList(row.Id);
     }
 
     private void OnRowAttrClick(RowData<SysSageKingMessageAttribute> data)
     {
         var row = data.Data;
-        // model2.Name = row.Name;
-        // model2.Type = row.Type;
     }
 
     private async void OnRowExpand(RowData<SysSageKingMessage> data)
@@ -204,25 +243,27 @@ else
 
     void OnChange(QueryModel<SysSageKingMessage> query)
     {
-        dataSource = query.ExecuteQuery(dataList.AsQueryable())
-            .Where(x => string.IsNullOrWhiteSpace(searchString) || x.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase));
     }
 
-    private void AddData()
+    #region crud
+
+    void AddData()
     {
         addModel = new SysSageKingMessage();
         addTitle = "消息新增";
         _visible = true;
     }
 
-    async void EditData(SysSageKingMessage row)
+    void EditData(SysSageKingMessage row)
     {
-
+        addModel = row.Clone<SysSageKingMessage>();
+        addTitle = "消息编辑";
+        _visible = true;
     }
 
     async void DeleteData(SysSageKingMessage row)
     {
-        dataList.Remove(row);
+        pageData.Items.ToList().Remove(row);
         await dataService.Delete(row.Id);
     }
 
@@ -232,4 +273,5 @@ else
         await QueryDetailList(parentId);
     }
 
+    #endregion
 }
