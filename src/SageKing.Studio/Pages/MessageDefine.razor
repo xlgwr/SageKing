@@ -10,7 +10,7 @@
 
 @{
 
-    RenderFragment FormTemplate()
+    RenderFragment FormParentTemplate()
     {
         return@<SysSageKingMessageEdit @ref=@edit Title="@addTitle" model="@addModel"></SysSageKingMessageEdit>;
     }
@@ -28,11 +28,44 @@
                 return;
             }
 
-            await _message.Success($"{addTitle}【{addModel.Name}】成功！");
         }
         await OnPageToDo(this.pageargs);
+        await _message.Success($"{addTitle}【{addModel.Name}】成功！");
         _visible = false;
         addloading = false;
+    }
+
+}
+
+@{
+
+    RenderFragment FormChildTemplate()
+    {
+        return@<SysSageKingMessageAttributeEdit @ref=@editchild Title="@addchildTitle" model="@addchildModel"></SysSageKingMessageAttributeEdit>;
+    }
+
+    async Task HandleChilcOk(MouseEventArgs e)
+    {
+        addchildloading = true;
+        if (editchild != null)
+        {
+            var result = await editchild.Save();
+            if (!result)
+            {
+                _visibleChild = true;
+                addchildloading = false;
+                return;
+            }
+
+        }
+        var getParent = pageData.Items.Where(a => a.Id == addchildModel.MessageId).FirstOrDefault();
+        if (getParent != null)
+        {
+            getParent.Children = await QueryChildList(addchildModel.MessageId);
+        }
+        await _message.Success($"{addchildTitle}【{addchildModel.Name}】成功！");
+        _visibleChild = false;
+        addchildloading = false;
     }
 
 }
@@ -51,7 +84,7 @@ else
            Size="TableSize.Small"
            OnChange="OnChange"
            OnExpand="OnRowExpand"
-           Resizable Bordered
+           Resizable Bordered EnableVirtualization
            ScrollY="@ScrollY" PageSize="pageData.PageSize">
         <TitleTemplate>
             <GridRow>
@@ -71,7 +104,7 @@ else
             <PropertyColumn Property="c=>c.Description" Title="描述信息" Ellipsis />
             <PropertyColumn Property="c=>c.Version" Title="Version"></PropertyColumn>
             <PropertyColumn Property="c=>c.Id" Title="Id" DefaultSortOrder="@SortDirection.Descending" />
-            <ActionColumn Title="Action">
+            <ActionColumn Title="Action" Fixed="right">
                 <Space Size=@("middle")>
                     <SpaceItem>
                         <Button OnClick="(e)=>EditData(context)">修改</Button>
@@ -86,26 +119,36 @@ else
             </ActionColumn>
         </ColumnDefinitions>
         <ExpandTemplate Context="rowData">
-            <Table TItem="SysSageKingMessageAttribute" DataSource="rowData.Data.Children" Loading="rowData.Data.Children==null" HidePagination Size=@TableSize.Middle
+            <Table Class="childTable" TItem="SysSageKingMessageAttribute" DataSource="rowData.Data.Children" Loading="rowData.Data.Children==null" Size=@TableSize.Middle EnableVirtualization PageSize="50" HidePagination
                    @bind-SelectedRows="@selectedRowsAttr" RowKey="a=>a.Id.ToString()" OnRowClick="OnRowAttrClick" Resizable Bordered>
-                <Selection Key="@context.Id.ToString()" Type="@selectionType"></Selection>
-                <PropertyColumn Property="c=>c.Name" Title="属性名称" DefaultSortOrder="@SortDirection.Descending" />
-                <PropertyColumn Property="c=>c.Type" Title="Type" DefaultSortOrder="@SortDirection.Descending" />
-                <PropertyColumn Property="c=>c.Status" Title="Status" DefaultSortOrder="@SortDirection.Descending" />
-                <PropertyColumn Property="c=>c.Id" Title="Id" DefaultSortOrder="@SortDirection.Descending" />
-                <PropertyColumn Property="c=>c.MessageId" Title="MessageId"></PropertyColumn>
-                <ActionColumn Title="Action">
-                    <Space Size=@("middle")>
-                        <SpaceItem>
-                            <Popconfirm Title="确认删除?"
-                                        OnConfirm="() => DeleteDataDetails(context,rowData.Data.Id)"
-                                        OkText="Yes"
-                                        CancelText="No">
-                                <a>删除</a>
-                            </Popconfirm>
-                        </SpaceItem>
-                    </Space>
-                </ActionColumn>
+                <TitleTemplate>
+                    <GridRow>
+                        <GridCol Span="6" Offset="1">
+                            <Button Type="@ButtonType.Primary" OnClick="(e)=>AddDataAtt(rowData.Data.Id)">新增属性</Button>
+                        </GridCol>
+                    </GridRow>
+                </TitleTemplate>
+                <ColumnDefinitions>
+                    <Selection Key="@rowData.Data.Id.ToString()" Type="@selectionType"></Selection>
+                    <PropertyColumn Property="c=>c.Name" Title="属性名称" DefaultSortOrder="@SortDirection.Descending" />
+                    <PropertyColumn Property="c=>c.Type" Title="Type" DefaultSortOrder="@SortDirection.Descending" />
+                    <PropertyColumn Property="c=>c.Status" Title="Status" DefaultSortOrder="@SortDirection.Descending" />
+                    <PropertyColumn Property="c=>c.Id" Title="Id" DefaultSortOrder="@SortDirection.Descending" />
+                    <PropertyColumn Property="c=>c.MessageId" Title="MessageId"></PropertyColumn>
+                    <ActionColumn Title="Action" Fixed="right">
+                        <Space Size=@("middle")>
+                            <SpaceItem>
+                                <Button OnClick="(e)=>EditDataAtt(context)">修改</Button>
+                                <Popconfirm Title="确认删除?"
+                                            OnConfirm="() => DeleteAtt(context,rowData.Data.Id)"
+                                            OkText="Yes"
+                                            CancelText="No">
+                                    <Button Danger>删除</Button>
+                                </Popconfirm>
+                            </SpaceItem>
+                        </Space>
+                    </ActionColumn>
+                </ColumnDefinitions>
             </Table>
         </ExpandTemplate>
 
@@ -121,11 +164,18 @@ else
         </PaginationTemplate>
     </Table>
 
-    <Modal Title="@addTitle" Resizable=true
+    <Modal Title="@addTitle"
            @bind-Visible="@_visible" Draggable="@(true)" Centered Closable="false"
            OnOk="HandleOk" ConfirmLoading="addloading" OkText="addOkTitle" CancelText="addCancelText">
 
-        @FormTemplate()
+        @FormParentTemplate()
+    </Modal>
+
+    <Modal Title="@addchildTitle"
+           @bind-Visible="@_visibleChild" Draggable="@(true)" Centered Closable="false"
+           OnOk="HandleChilcOk" ConfirmLoading="addchildloading" OkText="addOkchildTitle" CancelText="addchildCancelText">
+
+        @FormChildTemplate()
     </Modal>
 }
 <style>
@@ -136,12 +186,15 @@ else
     .showTotal {
         margin: 3.5px 0 0 5px;
     }
+
+    .childTable {
+        box-shadow: 0px 0px 0.5px 0.5px #aaa;
+    }
 </style>
 @code {
 
     bool loading;
     static bool IsfirstRender = false;
-    bool _visible = false;
 
     string ScrollY = "500px";
     int browserHeight = 760;
@@ -167,12 +220,22 @@ else
 
 
     //add
+    bool _visible = false;
     bool addloading = false;
     string addTitle = "新增";
     string addOkTitle = "保存";
     string addCancelText = "取消";
     SysSageKingMessage addModel;
     SysSageKingMessageEdit edit;
+
+    //add child
+    bool _visibleChild = false;
+    bool addchildloading = false;
+    string addchildTitle = "新增";
+    string addOkchildTitle = "保存";
+    string addchildCancelText = "取消";
+    SysSageKingMessageAttribute addchildModel;
+    SysSageKingMessageAttributeEdit editchild;
 
     #region init
 
@@ -208,7 +271,7 @@ else
 
         // Check a media query to see if it was matched. We can do this at any time, but it's best to check on each resize
         IsSmallMedia = await listener.MatchMedia(Breakpoints.SmallDown);
-            
+
         browserHeight = browser.Height <= 0 ? browserHeight : browser.Height;
         ScrollY = $"{(browserHeight - ScrollYOffset)}px";
 
@@ -219,14 +282,14 @@ else
 
     public async Task OnPageToDo(PaginationEventArgs args)
     {
-        // pageargs.Page = args.Page;
-        // pageargs.PageSize = args.PageSize;
+        pageargs.Page = args.Page;
+        pageargs.PageSize = args.PageSize;
 
         var page = new PageBaseInput() { Page = args.Page, PageSize = args.PageSize };
         pageData = await dataService.GetPage(page);
     }
 
-    public async Task<List<SysSageKingMessageAttribute>> QueryDetailList(long ParentId)
+    public async Task<List<SysSageKingMessageAttribute>> QueryChildList(long ParentId)
     {
         Expression<Func<SysSageKingMessageAttribute, bool>> func = a => a.MessageId == ParentId;
         return await dataDetailService.GetList(func);
@@ -235,7 +298,7 @@ else
     private async void OnRowClick(RowData<SysSageKingMessage> data)
     {
         var row = data.Data;
-        await QueryDetailList(row.Id);
+        await QueryChildList(row.Id);
     }
 
     private void OnRowAttrClick(RowData<SysSageKingMessageAttribute> data)
@@ -245,7 +308,7 @@ else
 
     private async void OnRowExpand(RowData<SysSageKingMessage> data)
     {
-        data.Data.Children = await QueryDetailList(data.Data.Id);
+        data.Data.Children = await QueryChildList(data.Data.Id);
     }
 
     void OnChange(QueryModel<SysSageKingMessage> query)
@@ -257,14 +320,14 @@ else
     void AddData()
     {
         addModel = new SysSageKingMessage();
-        addTitle = "消息新增";
+        addTitle = "消息结构新增";
         _visible = true;
     }
 
     void EditData(SysSageKingMessage row)
     {
         addModel = row.Clone<SysSageKingMessage>();
-        addTitle = "消息编辑";
+        addTitle = "消息结构编辑";
         _visible = true;
     }
 
@@ -276,11 +339,27 @@ else
         await dataService.Delete(row.Id);
     }
 
-    async void DeleteDataDetails(SysSageKingMessageAttribute row, long parentId)
+    #endregion
+
+    #region crud attr
+    void AddDataAtt(long parentid)
     {
-        await dataDetailService.Delete(row.Id);
-        await QueryDetailList(parentId);
+        addchildModel = new SysSageKingMessageAttribute() { MessageId = parentid };
+        addchildTitle = "消息属性新增";
+        _visibleChild = true;
     }
 
+    void EditDataAtt(SysSageKingMessageAttribute row)
+    {
+        addchildModel = row.Clone<SysSageKingMessageAttribute>();
+        addchildTitle = "消息属性编辑";
+        _visibleChild = true;
+    }
+
+    async void DeleteAtt(SysSageKingMessageAttribute row, long parentId)
+    {
+        await dataDetailService.Delete(row.Id);
+        await QueryChildList(parentId);
+    }
     #endregion
 }
