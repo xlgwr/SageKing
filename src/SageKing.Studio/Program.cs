@@ -53,7 +53,12 @@ builder.Services.AddSingleton<PackagesDataService>();
 builder.Services.AddSingleton<WeatherForecastService>();
 
 builder.Services.AddMediaQueryService();
-builder.Services.AddResizeListener();
+builder.Services.AddResizeListener(options =>
+                            {
+                                options.ReportRate = 300;
+                                options.EnableLogging = true;
+                                options.SuppressInitEvent = true;
+                            });
 builder.Services.AddAntDesign();
 
 var app = builder.Build();

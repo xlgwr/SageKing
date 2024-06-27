@@ -1,11 +1,12 @@
-﻿@page "/MessageDefine"
+﻿@inject IResizeListener listener
+@implements IDisposable
+@page "/MessageDefine"
 
-<PageTitle>消息结构定义</PageTitle>
-
-@inject IResizeListener listener
 @inject IMessageService _message
 @inject SysSageKingMessageService dataService
 @inject SysSageKingMessageAttributeService dataDetailService
+
+<PageTitle>消息结构定义</PageTitle>
 
 @{
 
@@ -129,15 +130,21 @@ else
 }
 <style>
     .ant-table-body {
-        height: @(browser.Height - ScrollYOffset + "px");
+        height: @(browserHeight - ScrollYOffset + "px");
+    }
+
+    .showTotal {
+        margin: 3.5px 0 0 5px;
     }
 </style>
 @code {
 
     bool loading;
+    static bool IsfirstRender = false;
     bool _visible = false;
 
     string ScrollY = "500px";
+    int browserHeight = 760;
     int ScrollYOffset = 200;
     bool IsSmallMedia = false;
     // We can also capture the browser's width / height if needed. We hold the value here.
@@ -150,7 +157,7 @@ else
     ITable table;
     string searchString;
     string selectionType = "checkbox";
-    RenderFragment<PaginationTotalContext> showTotal = ctx => @<div style="margin-top:3.5px;">Total: <b>@ctx.Total</b></div>;
+    RenderFragment<PaginationTotalContext> showTotal = ctx => @<div class="showTotal">Total: <b>@ctx.Total</b></div>;
 
     PaginationEventArgs pageargs = new PaginationEventArgs(1, 10);
     PageBase<SysSageKingMessage> pageData;
@@ -184,7 +191,7 @@ else
         }
     }
 
-    void Dispose()
+    void IDisposable.Dispose()
     {
         // Always use IDisposable in your component to unsubscribe from the event.
         // Be a good citizen and leave things how you found them.
@@ -201,9 +208,9 @@ else
 
         // Check a media query to see if it was matched. We can do this at any time, but it's best to check on each resize
         IsSmallMedia = await listener.MatchMedia(Breakpoints.SmallDown);
-
-
-        ScrollY = $"{browser.Height - ScrollYOffset}px";
+            
+        browserHeight = browser.Height <= 0 ? browserHeight : browser.Height;
+        ScrollY = $"{(browserHeight - ScrollYOffset)}px";
 
         // We're outside of the component's lifecycle, be sure to let it know it has to re-render.
         StateHasChanged();
