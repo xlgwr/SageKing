@@ -104,14 +104,14 @@ else
         </TitleTemplate>
         <ColumnDefinitions>
             <Selection Type="@selectionType"></Selection>
-            <PropertyColumn Property="c=>c.Name" Title="消息名称" DefaultSortOrder="@SortDirection.Descending" />
-            <PropertyColumn Property="c=>c.Type" Title="Type" DefaultSortOrder="@SortDirection.Descending" />
-            <PropertyColumn Property="c=>c.Status" Title="Status" DefaultSortOrder="@SortDirection.Descending">
+            <PropertyColumn Property="c=>c.Name" Title="消息名称" Sortable="true" />
+            <PropertyColumn Property="c=>c.Type" Title="Type" Sortable="true" />
+            <PropertyColumn Property="c=>c.Status" Title="Status" Align="ColumnAlign.Center" Sortable="true">
                 <Switch @bind-Value="@context.Status" OnClick="()=>EditOnStatusSwitch(context)" CheckedChildren="开" UnCheckedChildren="关"></Switch>
             </PropertyColumn>
             <PropertyColumn Property="c=>c.Description" Title="描述信息" Ellipsis />
-            <PropertyColumn Property="c=>c.Version" Title="Version"></PropertyColumn>
-            <PropertyColumn Property="c=>c.Id" Title="Id" DefaultSortOrder="@SortDirection.Descending" />
+            <PropertyColumn Property="c=>c.Version" Title="Version" Sortable="true"></PropertyColumn>
+            <PropertyColumn Property="c=>c.Id" Title="Id" Sortable="true" />
             <ActionColumn Title="Action" Fixed="right">
                 <Space Size=@("middle")>
                     <SpaceItem>
@@ -138,12 +138,12 @@ else
                 </TitleTemplate>
                 <ColumnDefinitions>
                     <Selection Key="@rowData.Data.Id.ToString()" Type="@selectionType"></Selection>
-                    <PropertyColumn Property="c=>c.Name" Title="属性名称" DefaultSortOrder="@SortDirection.Descending" />
-                    <PropertyColumn Property="c=>c.Type" Title="Type" DefaultSortOrder="@SortDirection.Descending" />
-                    <PropertyColumn Property="c=>c.Status" Title="Status">
+                    <PropertyColumn Property="c=>c.Name" Title="属性名称" Sortable="true" />
+                    <PropertyColumn Property="c=>c.Type" Title="Type" Sortable="true" />
+                    <PropertyColumn Property="c=>c.Status" Title="Status" Sortable="true" Align="ColumnAlign.Center">
                         <Switch @bind-Value="@context.Status" OnClick="()=>EditOnStatusSwitchAtt(context)" CheckedChildren="开" UnCheckedChildren="关"></Switch>
                     </PropertyColumn>
-                    <PropertyColumn Property="c=>c.Id" Title="Id" DefaultSortOrder="@SortDirection.Descending" />
+                    <PropertyColumn Property="c=>c.Id" Title="Id" Sortable="true" />
                     <PropertyColumn Property="c=>c.MessageId" Title="MessageId"></PropertyColumn>
                     <ActionColumn Title="Action" Fixed="right">
                         <Space Size=@("middle")>
@@ -252,7 +252,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        await Refresh();
+        await Refresh(false);
         await base.OnInitializedAsync();
     }
 
@@ -294,6 +294,7 @@ else
     async Task Refresh(bool notice = true)
     {
         tableLoading = true;
+        table?.CollapseAll();
         await OnPageToDo(pageargs);
         tableLoading = false;
         if (notice)
