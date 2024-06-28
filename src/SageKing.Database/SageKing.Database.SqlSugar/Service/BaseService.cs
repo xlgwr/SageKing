@@ -40,9 +40,19 @@ public class BaseService<TEntity> : IBaseService<TEntity>
     /// </summary>
     /// <returns></returns>
     [DisplayName("获取集合")]
-    public virtual async Task<List<TEntity>> GetList(Expression<Func<TEntity, bool>> func)
+    public virtual async Task<List<TEntity>> GetList(Expression<Func<TEntity, bool>> wherefunc)
     {
-        return await _rep.AsQueryable().Where(func).ToListAsync();
+        return await _rep.AsQueryable().Where(wherefunc).ToListAsync();
+    }
+
+    /// <summary>
+    /// 获取集合
+    /// </summary>
+    /// <returns></returns>
+    [DisplayName("获取集合")]
+    public virtual async Task<List<TEntity>> GetList(Expression<Func<TEntity, bool>> wherefunc, Expression<Func<TEntity, object>> orderByColumns, bool orderByType)
+    {
+        return await _rep.AsQueryable().Where(wherefunc).OrderBy(orderByColumns, orderByType ? OrderByType.Asc : OrderByType.Desc).ToListAsync();
     }
 
     /// <summary>
@@ -54,6 +64,17 @@ public class BaseService<TEntity> : IBaseService<TEntity>
     public virtual async Task<PageBase<TEntity>> GetPage(PageBaseInput input)
     {
         return await _rep.AsQueryable().ToPagedListAsync(input.Page, input.PageSize);
+    }
+
+    /// <summary>
+    /// 获取实体分页
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    [DisplayName("获取实体分页")]
+    public virtual async Task<PageBase<TEntity>> GetPage(PageBaseInput input, Expression<Func<TEntity, object>> orderByColumns, bool orderByType)
+    {
+        return await _rep.AsQueryable().OrderBy(orderByColumns, orderByType ? OrderByType.Asc : OrderByType.Desc).ToPagedListAsync(input.Page, input.PageSize);
     }
 
     /// <summary>
@@ -76,6 +97,28 @@ public class BaseService<TEntity> : IBaseService<TEntity>
     public virtual async Task<int> Update(TEntity entity)
     {
         return await _rep.AsUpdateable(entity).IgnoreColumns(true).ExecuteCommandAsync();
+    }
+
+    /// <summary>
+    /// 更新
+    /// </summary>
+    /// <param name="entity"></param>
+    /// <returns></returns>
+    [DisplayName("更新")]
+    public virtual async Task<int> Update(TEntity entity, Expression<Func<TEntity, object>> updateColumns)
+    {
+        return await _rep.AsUpdateable(entity).IgnoreColumns(true).UpdateColumns(updateColumns).ExecuteCommandAsync();
+    }
+
+    /// <summary>
+    /// 更新
+    /// </summary>
+    /// <param name="entity"></param>
+    /// <returns></returns>
+    [DisplayName("更新")]
+    public virtual async Task<int> Update(Expression<Func<TEntity, bool>> wherefunc, Expression<Func<TEntity, TEntity>> updateColumns)
+    {
+        return await _rep.AsUpdateable().SetColumns(updateColumns).IgnoreColumns(true).Where(wherefunc).ExecuteCommandAsync();
     }
 
     /// <summary>

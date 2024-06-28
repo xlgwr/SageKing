@@ -12,7 +12,7 @@
         </FormItem>
         </Col>
         <Col Span="12">
-        <FormItem Label="类型" >
+        <FormItem Label="类型">
             <Select @bind-Value="@context.Type"
                     DefaultValue="@(0)"
                     Style="width: 100%;"
@@ -29,10 +29,17 @@
         </Col>
     </Row>
     <Row Gutter="24">
+        <Col Span="12">
+        <FormItem Label="是否启用" LabelColSpan="6" WrapperColSpan="6" WrapperColOffset="4">
+            <Switch @bind-Value="@context.Status" CheckedChildren="开" UnCheckedChildren="关"></Switch>
+        </FormItem>
+        </Col>
+    </Row>
+    <Row Gutter="24">
         <Col Span="24">
-            <FormItem Label="描述信息" LabelColSpan="4" WrapperColSpan="20">
-                <TextArea ShowCount MaxLength="200" Width="100%" Placeholder="描述信息" @bind-Value="@context.Description"></TextArea>
-            </FormItem>
+        <FormItem Label="描述信息" LabelColSpan="4" WrapperColSpan="20">
+            <TextArea ShowCount MaxLength="200" Width="100%" Placeholder="描述信息" @bind-Value="@context.Description"></TextArea>
+        </FormItem>
         </Col>
     </Row>
 </Form>

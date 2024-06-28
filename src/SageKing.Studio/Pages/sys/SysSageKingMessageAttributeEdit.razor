@@ -1,10 +1,10 @@
 ﻿@inject SysSageKingMessageAttributeService dataService
 
 <Form @ref="form"
-        Model="@model"
-        ValidateOnChange="true"
-        Layout="@FormLayout.Horizontal"
-        LabelColSpan="4" WrapperColSpan="20">
+      Model="@model"
+      ValidateOnChange="true"
+      Layout="@FormLayout.Horizontal"
+      LabelColSpan="4" WrapperColSpan="20">
 
     <FormItem Label="属性名称">
         <Input ShowCount MaxLength="64" @bind-Value="@model.Name" />
@@ -24,6 +24,9 @@
                 <SelectOption Value="@(DataStreamTypeEnum.Float32)" Label="float" />
             </SelectOptions>
         </Select>
+    </FormItem>
+    <FormItem Label="是否启用">
+        <Switch @bind-Value="@context.Status" CheckedChildren="开" UnCheckedChildren="关"></Switch>
     </FormItem>
 </Form>
 @code {

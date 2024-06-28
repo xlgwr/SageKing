@@ -3,6 +3,7 @@
 @page "/MessageDefine"
 
 @inject IMessageService _message
+@inject IConfirmService _confirmService
 @inject SysSageKingMessageService dataService
 @inject SysSageKingMessageAttributeService dataDetailService
 
@@ -29,7 +30,7 @@
             }
 
         }
-        await OnPageToDo(this.pageargs);
+        await Refresh(false);
         await _message.Success($"{addTitle}【{addModel.Name}】成功！");
         _visible = false;
         addloading = false;
@@ -83,24 +84,31 @@ else
            @bind-SelectedRows="@selectedRows"
            Size="TableSize.Small"
            OnChange="OnChange"
-           OnExpand="OnRowExpand"
+           OnExpand="OnRowExpand" Loading="tableLoading"
            Resizable Bordered EnableVirtualization
            ScrollY="@ScrollY" PageSize="pageData.PageSize">
         <TitleTemplate>
-            <GridRow>
-                <GridCol Span="4" Offset="1">
+            <Space>
+                <SpaceItem Style="margin-left:15px;">
                     <Search Placeholder="Search Name" @bind-Value="searchString" OnSearch="()=>table?.ReloadData()" AllowClear="true" />
-                </GridCol>
-                <GridCol Span="8">
+                </SpaceItem>
+
+                <SpaceItem>
+                    <Button Type="@ButtonType.Primary" OnClick="()=>Refresh()">刷新</Button>
+                </SpaceItem>
+
+                <SpaceItem>
                     <Button Type="@ButtonType.Primary" OnClick="@AddData">新增</Button>
-                </GridCol>
-            </GridRow>
+                </SpaceItem>
+            </Space>
         </TitleTemplate>
         <ColumnDefinitions>
             <Selection Type="@selectionType"></Selection>
             <PropertyColumn Property="c=>c.Name" Title="消息名称" DefaultSortOrder="@SortDirection.Descending" />
             <PropertyColumn Property="c=>c.Type" Title="Type" DefaultSortOrder="@SortDirection.Descending" />
-            <PropertyColumn Property="c=>c.Status" Title="Status" DefaultSortOrder="@SortDirection.Descending" />
+            <PropertyColumn Property="c=>c.Status" Title="Status" DefaultSortOrder="@SortDirection.Descending">
+                <Switch @bind-Value="@context.Status" OnClick="()=>EditOnStatusSwitch(context)" CheckedChildren="开" UnCheckedChildren="关"></Switch>
+            </PropertyColumn>
             <PropertyColumn Property="c=>c.Description" Title="描述信息" Ellipsis />
             <PropertyColumn Property="c=>c.Version" Title="Version"></PropertyColumn>
             <PropertyColumn Property="c=>c.Id" Title="Id" DefaultSortOrder="@SortDirection.Descending" />
@@ -132,7 +140,9 @@ else
                     <Selection Key="@rowData.Data.Id.ToString()" Type="@selectionType"></Selection>
                     <PropertyColumn Property="c=>c.Name" Title="属性名称" DefaultSortOrder="@SortDirection.Descending" />
                     <PropertyColumn Property="c=>c.Type" Title="Type" DefaultSortOrder="@SortDirection.Descending" />
-                    <PropertyColumn Property="c=>c.Status" Title="Status" DefaultSortOrder="@SortDirection.Descending" />
+                    <PropertyColumn Property="c=>c.Status" Title="Status">
+                        <Switch @bind-Value="@context.Status" OnClick="()=>EditOnStatusSwitchAtt(context)" CheckedChildren="开" UnCheckedChildren="关"></Switch>
+                    </PropertyColumn>
                     <PropertyColumn Property="c=>c.Id" Title="Id" DefaultSortOrder="@SortDirection.Descending" />
                     <PropertyColumn Property="c=>c.MessageId" Title="MessageId"></PropertyColumn>
                     <ActionColumn Title="Action" Fixed="right">
@@ -208,6 +218,7 @@ else
 
     //table
     ITable table;
+    bool tableLoading;
     string searchString;
     string selectionType = "checkbox";
     RenderFragment<PaginationTotalContext> showTotal = ctx => @<div class="showTotal">Total: <b>@ctx.Total</b></div>;
@@ -241,7 +252,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        await OnPageToDo(pageargs);
+        await Refresh();
         await base.OnInitializedAsync();
     }
 
@@ -280,19 +291,34 @@ else
     }
     #endregion
 
+    async Task Refresh(bool notice = true)
+    {
+        tableLoading = true;
+        await OnPageToDo(pageargs);
+        tableLoading = false;
+        if (notice)
+        {
+            await _message.Success("刷新成功!");
+        }
+    }
+
     public async Task OnPageToDo(PaginationEventArgs args)
     {
         pageargs.Page = args.Page;
         pageargs.PageSize = args.PageSize;
 
         var page = new PageBaseInput() { Page = args.Page, PageSize = args.PageSize };
-        pageData = await dataService.GetPage(page);
+        Expression<Func<SysSageKingMessage, object>> orderbyfunc = a => a.Id;
+
+        pageData = await dataService.GetPage(page, orderbyfunc, false);
     }
 
     public async Task<List<SysSageKingMessageAttribute>> QueryChildList(long ParentId)
     {
         Expression<Func<SysSageKingMessageAttribute, bool>> func = a => a.MessageId == ParentId;
-        return await dataDetailService.GetList(func);
+        Expression<Func<SysSageKingMessageAttribute, object>> orderbyfunc = a => a.Id;
+
+        return await dataDetailService.GetList(func, orderbyfunc, false);
     }
 
     private async void OnRowClick(RowData<SysSageKingMessage> data)
@@ -331,6 +357,28 @@ else
         _visible = true;
     }
 
+    async void EditOnStatusSwitch(SysSageKingMessage entity)
+    {
+        var id = entity.Id;
+        var state = entity.Status;
+        string content = !state ? $"确认关闭【{entity.Name}】" : $"确认开启【{entity.Name}】";
+
+        var confirmResult = await _confirmService.Show(content + "?", "提示", ConfirmButtons.YesNo);
+        if (confirmResult == ConfirmResult.Yes)
+        {
+            Expression<Func<SysSageKingMessage, bool>> wherefunc = a => a.Id == id;
+            Expression<Func<SysSageKingMessage, object>> updatefunc = a => new { a.Status };
+
+            await dataService.Update(entity, updatefunc);
+            await _message.Success($"{content} 成功", 2);
+        }
+        else
+        {
+            entity.Status = !state;
+            StateHasChanged();
+        }
+    }
+
     async void DeleteData(SysSageKingMessage row)
     {
         pageData.Items = pageData.Items.Where(a => a.Id != row.Id);
@@ -338,7 +386,6 @@ else
         table.ResetData();
         await dataService.Delete(row.Id);
     }
-
     #endregion
 
     #region crud attr
@@ -356,10 +403,33 @@ else
         _visibleChild = true;
     }
 
+    async void EditOnStatusSwitchAtt(SysSageKingMessageAttribute entity)
+    {
+        var id = entity.Id;
+        var state = entity.Status;
+        string content = !state ? $"确认关闭【{entity.Name}】" : $"确认开启【{entity.Name}】";
+
+        var confirmResult = await _confirmService.Show(content + "?", "提示", ConfirmButtons.YesNo);
+        if (confirmResult == ConfirmResult.Yes)
+        {
+            Expression<Func<SysSageKingMessageAttribute, bool>> wherefunc = a => a.Id == id;
+            Expression<Func<SysSageKingMessageAttribute, object>> updatefunc = a => new { a.Status };
+
+            await dataDetailService.Update(entity, updatefunc);
+            await _message.Success($"{content} 成功", 2);
+        }
+        else
+        {
+            entity.Status = !state;
+            StateHasChanged();
+        }
+    }
+
     async void DeleteAtt(SysSageKingMessageAttribute row, long parentId)
     {
         await dataDetailService.Delete(row.Id);
         await QueryChildList(parentId);
     }
+
     #endregion
 }
