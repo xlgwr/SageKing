@@ -13,13 +13,14 @@
     <FormItem Label="属性类型">
         <Select @bind-Value="@model.Type"
                 DataSource="@SelectType"
+                DefaultValue="DataStreamTypeEnum.String"
                 LabelName="@nameof(KeyValue<string, DataStreamTypeEnum>.Key)"
                 ValueName="@nameof(KeyValue<string, DataStreamTypeEnum>.Value)"
                 Style="width: 100%;"
                 TItemValue="DataStreamTypeEnum"
                 TItem="KeyValue<string, DataStreamTypeEnum>"
                 Placeholder="请选属性类型"
-                DefaultActiveFirstOption="false"
+                DefaultActiveFirstOption="true"
                 EnableSearch>
         </Select>
     </FormItem>

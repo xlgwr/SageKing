@@ -2,7 +2,7 @@
 @inject SysDictTypeService selectService
 
 <Form @ref="form"
-      Model="@model"
+      Model="@model" ValidateMode="FormValidateMode.Complex"
       ValidateOnChange="true"
       LabelColSpan="8" WrapperColSpan="16">
 
@@ -18,12 +18,11 @@
                     DataSource="@SelectType.Children"
                     LabelName="@nameof(SysDictData.Code)"
                     ValueName="@nameof(SysDictData.ValueInt)"
-                    DefaultValue="@(0)"
                     Style="width: 100%;"
                     TItemValue="int"
                     TItem="SysDictData"
                     Placeholder="请选消息类型"
-                    DefaultActiveFirstOption="false"
+                    DefaultActiveFirstOption="true"
                     EnableSearch>
             </Select>
         </FormItem>
