@@ -4,6 +4,7 @@
 
 @inject IMessageService _message
 @inject IConfirmService _confirmService
+@inject SysDictTypeService selectService
 @inject SysSageKingMessageService dataService
 @inject SysSageKingMessageAttributeService dataDetailService
 
@@ -105,83 +106,88 @@ else
         <ColumnDefinitions>
             <Selection Type="@selectionType"></Selection>
             <PropertyColumn Property="c=>c.Name" Title="消息名称" Sortable="true" />
-            <PropertyColumn Property="c=>c.Type" Title="Type" Sortable="true" />
-            <PropertyColumn Property="c=>c.Status" Title="Status" Align="ColumnAlign.Center" Sortable="true">
-                <Switch @bind-Value="@context.Status" OnClick="()=>EditOnStatusSwitch(context)" CheckedChildren="开" UnCheckedChildren="关"></Switch>
-            </PropertyColumn>
-            <PropertyColumn Property="c=>c.Description" Title="描述信息" Ellipsis />
-            <PropertyColumn Property="c=>c.Version" Title="Version" Sortable="true"></PropertyColumn>
-            <PropertyColumn Property="c=>c.Id" Title="Id" Sortable="true" />
-            <ActionColumn Title="Action" Fixed="right">
-                <Space>
-                    <SpaceItem>
-                        <Tooltip Title="@IconType.Outline.Edit">
-                            <Button OnClick="(e)=>EditData(context)" Shape="@ButtonShape.Circle" Icon="@IconType.Outline.Edit" />
-                        </Tooltip>
-                    </SpaceItem>
-                    <SpaceItem>
-                        <Popconfirm Title="确认删除?"
-                                    OnConfirm="(e) => DeleteData(context)"
-                                    OkText="Yes"
-                                    CancelText="No">
-                            <Button Icon="@IconType.Outline.Delete" Shape="@ButtonShape.Circle" Danger></Button>
-                        </Popconfirm>
-                    </SpaceItem>
-                </Space>
-            </ActionColumn>
-        </ColumnDefinitions>
-        <ExpandTemplate Context="rowData">
-            <Table Class="childTable" TItem="SysSageKingMessageAttribute" DataSource="rowData.Data.Children" Loading="rowData.Data.Children==null" Size=@TableSize.Middle EnableVirtualization PageSize="50" HidePagination 
-                   @bind-SelectedRows="@selectedRowsAttr" RowKey="a=>a.Id.ToString()" OnRowClick="OnRowAttrClick" Resizable Bordered>
-                <TitleTemplate>
-                    <GridRow>
-                        <GridCol Span="6" Offset="1">
-                            <Button Type="@ButtonType.Primary" Icon="@IconType.Outline.AppstoreAdd" OnClick="(e)=>AddDataAtt(rowData.Data.Id)">新增属性</Button>
-                        </GridCol>
-                    </GridRow>
-                </TitleTemplate>
-                <ColumnDefinitions>
-                    <Selection Key="@rowData.Data.Id.ToString()" Type="@selectionType"></Selection>
-                    <PropertyColumn Property="c=>c.Name" Title="属性名称" Sortable="true" />
-                    <PropertyColumn Property="c=>c.Type" Title="Type" Sortable="true" Align="ColumnAlign.Center" />
-                    <PropertyColumn Property="c=>c.Status" Title="Status" Sortable="true" Align="ColumnAlign.Center">
-                        <Switch @bind-Value="@context.Status" OnClick="()=>EditOnStatusSwitchAtt(context)" CheckedChildren="开" UnCheckedChildren="关"></Switch>
-                    </PropertyColumn>
-                    <PropertyColumn Property="c=>c.Id" Title="Id" Sortable="true" />
-                    <PropertyColumn Property="c=>c.MessageId" Title="MessageId"></PropertyColumn>
-                    <ActionColumn Title="Action" Fixed="right">
-                        <Space>
-                            <SpaceItem>
-                                <Tooltip Title="@IconType.Outline.Edit">
-                                    <Button OnClick="(e)=>EditDataAtt(context)" Shape="@ButtonShape.Circle" Icon="@IconType.Outline.Edit" />
-                                </Tooltip>
-                            </SpaceItem>
-                            <SpaceItem>
-                                <Popconfirm Title="确认删除?"
-                                            OnConfirm="() => DeleteAtt(context,rowData.Data.Id)"
-                                            OkText="Yes"
-                                            CancelText="No">
-                                    <Button Icon="@IconType.Outline.Delete" Shape="@ButtonShape.Circle" Danger></Button>
-                                </Popconfirm>
+            <PropertyColumn Property="c=>c.Type" Title="类型" Sortable="true" Align="ColumnAlign.Center">
+                <Text>@GetTypeDesc(context.Type)</Text>
+                </PropertyColumn>
+                <PropertyColumn Property="c=>c.Status" Title="状态" Align="ColumnAlign.Center" Sortable="true">
+                    <Switch @bind-Value="@context.Status" OnClick="()=>EditOnStatusSwitch(context)" CheckedChildren="开" UnCheckedChildren="关"></Switch>
+                </PropertyColumn>
+                <PropertyColumn Property="c=>c.Description" Title="描述信息" Ellipsis />
+                <PropertyColumn Property="c=>c.Version" Title="Version" Sortable="true"></PropertyColumn>
+                <PropertyColumn Property="c=>c.Id" Title="Id" Sortable="true" />
+                <ActionColumn Title="Action" Fixed="right">
+                    <Space>
+                        <SpaceItem>
+                            <Tooltip Title="@IconType.Outline.Edit">
+                                <Button OnClick="(e)=>EditData(context)" Shape="@ButtonShape.Circle" Icon="@IconType.Outline.Edit" />
+                            </Tooltip>
+                        </SpaceItem>
+                        <SpaceItem>
+                            <Popconfirm Title="确认删除?"
+                                        OnConfirm="(e) => DeleteData(context)"
+                                        OkText="Yes"
+                                        CancelText="No">
+                                <Button Icon="@IconType.Outline.Delete" Shape="@ButtonShape.Circle" Danger></Button>
+                            </Popconfirm>
+                        </SpaceItem>
+                    </Space>
+                </ActionColumn>
+            </ColumnDefinitions>
+            <ExpandTemplate Context="rowData">
+                <Table Class="childTable" TItem="SysSageKingMessageAttribute" DataSource="rowData.Data.Children" Loading="rowData.Data.Children==null" Size=@TableSize.Middle EnableVirtualization PageSize="50" HidePagination
+                       @bind-SelectedRows="@selectedRowsAttr" RowKey="a=>a.Id.ToString()" OnRowClick="OnRowAttrClick" Resizable Bordered>
+                    <TitleTemplate>
+                        <GridRow>
+                            <GridCol Span="6" Offset="1">
+                                <Button Type="@ButtonType.Primary" Icon="@IconType.Outline.AppstoreAdd" OnClick="(e)=>AddDataAtt(rowData.Data.Id)">新增属性</Button>
+                            </GridCol>
+                        </GridRow>
+                    </TitleTemplate>
+                    <ColumnDefinitions>
+                        <Selection Key="@rowData.Data.Id.ToString()" Type="@selectionType"></Selection>
+                        <PropertyColumn  Property="c=>c.Name" Title="属性名称" Sortable="true" />
+                        <PropertyColumn Property="c=>c.Type" Title="类型" Sortable="true" Align="ColumnAlign.Center">
+                            <Text>@context.Type.GetMapCsharp()</Text>
+                        </PropertyColumn>
+                        <PropertyColumn Property="c=>c.Status" Title="Status" Sortable="true" Align="ColumnAlign.Center">
+                            <Switch @bind-Value="@context.Status" OnClick="()=>EditOnStatusSwitchAtt(context)" CheckedChildren="开" UnCheckedChildren="关"></Switch>
+                        </PropertyColumn>
+                        <PropertyColumn Property="c=>c.Description" Title="描述信息" Ellipsis />
+                        <PropertyColumn Property="c=>c.Id" Title="Id" Sortable="true" />
+                        <PropertyColumn Property="c=>c.MessageId" Title="MessageId"></PropertyColumn>
+                        <ActionColumn Title="Action" Fixed="right">
+                            <Space>
+                                <SpaceItem>
+                                    <Tooltip Title="@IconType.Outline.Edit">
+                                        <Button OnClick="(e)=>EditDataAtt(context)" Shape="@ButtonShape.Circle" Icon="@IconType.Outline.Edit" />
+                                    </Tooltip>
+                                </SpaceItem>
+                                <SpaceItem>
+                                    <Popconfirm Title="确认删除?"
+                                                OnConfirm="() => DeleteAtt(context,rowData.Data.Id)"
+                                                OkText="Yes"
+                                                CancelText="No">
+                                        <Button Icon="@IconType.Outline.Delete" Shape="@ButtonShape.Circle" Danger></Button>
+                                    </Popconfirm>
 
-                            </SpaceItem>
-                        </Space>
-                    </ActionColumn>
-                </ColumnDefinitions>
-            </Table>
-        </ExpandTemplate>
+                                </SpaceItem>
+                            </Space>
+                        </ActionColumn>
+                    </ColumnDefinitions>
+                </Table>
+            </ExpandTemplate>
 
 
-        <PaginationTemplate>
-            <Pagination ShowTotal="showTotal"
-                        Total="pageData.Total"
-                        PageSize="pageData.PageSize"
-                        Current="pageData.Page"
-                        ShowSizeChanger
-                        ShowQuickJumper
-                        OnChange="OnPageToDo" />
-        </PaginationTemplate>
-    </Table>
+            <PaginationTemplate>
+                <Pagination ShowTotal="showTotal"
+                            Total="pageData.Total"
+                            PageSize="pageData.PageSize"
+                            Current="pageData.Page"
+                            ShowSizeChanger
+                            ShowQuickJumper
+                            OnChange="OnPageToDo" />
+            </PaginationTemplate>
+        </Table>
 
     <Modal Title="@addTitle"
            @bind-Visible="@_visible" Draggable="@(true)" Centered Closable="false"
@@ -238,6 +244,8 @@ else
     IEnumerable<SysSageKingMessage> selectedRows;
     IEnumerable<SysSageKingMessageAttribute> selectedRowsAttr;
 
+    //select data
+    SysDictType SelectDataType;
 
     //add
     bool _visible = false;
@@ -261,10 +269,20 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        await InitSelectData();
         await Refresh(false);
         await base.OnInitializedAsync();
     }
 
+    async Task InitSelectData()
+    {
+        SelectDataType = await selectService.GetDetailCache(SysDictTypeConst.code_message_type);
+    }
+
+    string? GetTypeDesc(int type)
+    {
+        return SelectDataType?.Children?.FirstOrDefault(a => a.ValueInt == type)?.Code;
+    }
     protected override void OnAfterRender(bool firstRender)
     {
         if (firstRender)

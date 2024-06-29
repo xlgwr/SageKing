@@ -26,8 +26,13 @@ public partial class SysDictData : EntityBase
     /// 值
     /// </summary>
     [SugarColumn(ColumnDescription = "值", Length = 128)]
-    [Required, MaxLength(128)]
-    public virtual string Value { get; set; }
+    public virtual string? Value { get; set; }
+
+    /// <summary>
+    /// 值int
+    /// </summary>
+    [SugarColumn(ColumnDescription = "值int")]
+    public virtual int ValueInt { get; set; }
 
     /// <summary>
     /// 编码

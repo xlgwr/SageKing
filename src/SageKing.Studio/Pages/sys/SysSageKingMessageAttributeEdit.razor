@@ -12,21 +12,22 @@
 
     <FormItem Label="属性类型">
         <Select @bind-Value="@model.Type"
-                DefaultValue="@(DataStreamTypeEnum.String)"
+                DataSource="@SelectType"
+                LabelName="@nameof(KeyValue<string, DataStreamTypeEnum>.Key)"
+                ValueName="@nameof(KeyValue<string, DataStreamTypeEnum>.Value)"
                 Style="width: 100%;"
                 TItemValue="DataStreamTypeEnum"
-                TItem="string">
-            <SelectOptions>
-                <SelectOption Value="@(DataStreamTypeEnum.String)" Label="String" />
-                <SelectOption Value="@(DataStreamTypeEnum.Int8)" Label="sbyte" />
-                <SelectOption Value="@(DataStreamTypeEnum.Int32)" Label="int" />
-                <SelectOption Value="@(DataStreamTypeEnum.Int64)" Label="long" />
-                <SelectOption Value="@(DataStreamTypeEnum.Float32)" Label="float" />
-            </SelectOptions>
+                TItem="KeyValue<string, DataStreamTypeEnum>"
+                Placeholder="请选属性类型"
+                DefaultActiveFirstOption="false"
+                EnableSearch>
         </Select>
     </FormItem>
     <FormItem Label="是否启用">
         <Switch @bind-Value="@context.Status" CheckedChildren="开" UnCheckedChildren="关"></Switch>
+    </FormItem>
+    <FormItem Label="描述信息">
+        <TextArea ShowCount MaxLength="200" Width="100%" Placeholder="描述信息" @bind-Value="@context.Description"></TextArea>
     </FormItem>
 </Form>
 @code {
@@ -38,6 +39,16 @@
 
     bool loading;
     AntDesign.Form<SysSageKingMessageAttribute> form;
+
+
+    //select data
+    List<KeyValue<string, DataStreamTypeEnum>> SelectType;
+
+    protected override async Task OnInitializedAsync()
+    {
+        SelectType = ((int)DataStreamTypeEnum.String).ToMapCsharpDic<DataStreamTypeEnum>((int)DataStreamTypeEnum.Float64);
+        await base.OnInitializedAsync();
+    }
 
     public async Task<bool> Save()
     {

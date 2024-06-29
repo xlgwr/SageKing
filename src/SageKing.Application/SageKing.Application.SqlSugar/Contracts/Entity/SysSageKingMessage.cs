@@ -41,7 +41,7 @@ public partial class SysSageKingMessage : EntityTenantBaseData
     /// 状态
     /// </summary>
     [SugarColumn(ColumnDescription = "状态")]
-    public bool Status { get; set; }
+    public bool Status { get; set; } = false;
 
     /// <summary>
     /// 属性集合

@@ -6,9 +6,16 @@ namespace SageKing.Application.AspNetCore.SqlSugar.Contracts.Entity;
 [SugarTable(null, "系统字典类型表")]
 [SysTable]
 [SugarIndex("index_{table}_N", nameof(Name), OrderByType.Asc)]
-[SugarIndex("index_{table}_C", nameof(Code), OrderByType.Asc)]
+[SugarIndex("index_{table}_C", nameof(Code), OrderByType.Asc, isUnique: true)]
 public partial class SysDictType : EntityBase
 {
+    /// <summary>
+    /// 编码
+    /// </summary>
+    [SugarColumn(ColumnDescription = "编码", Length = 64)]
+    [Required, MaxLength(64)]
+    public virtual string Code { get; set; }
+
     /// <summary>
     /// 名称
     /// </summary>
@@ -16,12 +23,6 @@ public partial class SysDictType : EntityBase
     [Required, MaxLength(64)]
     public virtual string Name { get; set; }
 
-    /// <summary>
-    /// 编码
-    /// </summary>
-    [SugarColumn(ColumnDescription = "编码", Length = 64)]
-    [Required, MaxLength(64)]
-    public virtual string Code { get; set; }
 
     /// <summary>
     /// 排序
