@@ -9,5 +9,6 @@ namespace SageKing.Application.AspNetCore.SqlSugar.Contracts
     public class CachePrefixConst
     {
         public const string SysDictTypePrefix = "SysDictType:";
+        public const string BaseMenuCache = "BaseMenuCache:";
     }
 }

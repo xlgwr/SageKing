@@ -21,57 +21,57 @@ namespace SageKing.Core.Contracts
         /// <summary>
         /// 单个类型
         /// </summary>
-        [MapCsharp("string")]
+        [Description("string")]
         String = 20,
         /// <summary>
         /// int8	-128 to 127	sbyte
         /// </summary>
-        [MapCsharp("sbyte")]
+        [Description("sbyte")]
         Int8,
         /// <summary>
         /// uint8	0 to 255	byte
         /// </summary>
-        [MapCsharp("byte")]
+        [Description("byte")]
         Uint8,
         /// <summary>
         /// int16 -32,768 to 32,767	short
         /// </summary>
-        [MapCsharp("short")]
+        [Description("short")]
         Int16,
         /// <summary>
         /// uint16 0 to 65,535	ushort
         /// </summary>
-        [MapCsharp("ushort")]
+        [Description("ushort")]
         Uint16,
         /// <summary>
         /// int32 -2,147,483,648 to 2,147,483,647	int
         /// </summary>
-        [MapCsharp("int")]
+        [Description("int")]
         Int32,
         /// <summary>
         /// uint32	0 to 4,294,967,295	uint
         /// </summary>
-        [MapCsharp("uint")]
+        [Description("uint")]
         Uint32,
         /// <summary>
         /// int64	-9,223,372,036,854,775,808 to 9,223,372,036,854,775,807	long
         /// </summary>
-        [MapCsharp("long")]
+        [Description("long")]
         Int64,
         /// <summary>
         /// 0 to 18,446,744,073,709,551,615	ulong
         /// </summary>
-        [MapCsharp("ulong")]
+        [Description("ulong")]
         Uint64,
         /// <summary>
         /// float
         /// </summary>
-        [MapCsharp("float")]
+        [Description("float")]
         Float32,
         /// <summary>
         /// double
         /// </summary>
-        [MapCsharp("double")]
+        [Description("double")]
         Float64,
         /// <summary>
         /// 集合类型

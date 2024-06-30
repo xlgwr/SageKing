@@ -19,7 +19,7 @@ global using SageKing.Studio.Validations;
 global using SageKing.IceRPC.Client.Options;
 global using SageKing.IceRPC.Server.Options;
 
-
+global using SageKing.Cache.Contracts;
 global using SageKing.IceRPC.Contracts;
 
 global using SageKing.Database.Contracts;

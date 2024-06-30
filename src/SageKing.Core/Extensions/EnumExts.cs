@@ -36,8 +36,13 @@ public static class EnumExts
         return result;
 
     }
-
-    public static string GetMapCsharp<T>(this T value) where T : struct
+    /// <summary>
+    /// GetDescription
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static string GetMapCsharp<T>(this T value, bool checkDesc = false) where T : struct
     {
         string result = string.Empty;
         try
@@ -49,6 +54,13 @@ public static class EnumExts
             if (attributes != null && attributes.FirstOrDefault() != null)
             {
                 result = (attributes.First() as MapCsharpAttribute).MapType;
+            }
+            else
+            {
+                if (checkDesc)
+                {
+                    result = value.GetDescription();
+                }
             }
         }
         catch { }
@@ -115,36 +127,16 @@ public static class EnumExts
         }
         return (T)Enum.ToObject(typeof(T), value);
     }
+
     /// <summary>
-    /// 枚举生成字典
+    /// 枚举生成列表,Key=GetDescription
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="e"></param>
     /// <param name="start"></param>
     /// <param name="end"></param>
     /// <returns></returns>
-    public static Dictionary<string, T> ToDescriptionDic<T>(this int start, int end)
-        where T : struct
-    {
-        var result = new Dictionary<string, T>();
-
-        for (int i = start; i <= end; i++)
-        {
-            var getCurrEnum = (T)Enum.ToObject(typeof(T), i);
-            result[getCurrEnum.GetDescription()] = getCurrEnum;
-        }
-        return result;
-    }
-
-    /// <summary>
-    /// 枚举生成列表
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="e"></param>
-    /// <param name="start"></param>
-    /// <param name="end"></param>
-    /// <returns></returns>
-    public static List<KeyValue<string, T>> ToMapCsharpDic<T>(this int start, int end)
+    public static IList<KeyValue<string, T>> ToList<T>(this T v, int start, int end)
         where T : struct
     {
         var result = new List<KeyValue<string, T>>();
@@ -152,11 +144,16 @@ public static class EnumExts
         for (int i = start; i <= end; i++)
         {
             var getCurrEnum = (T)Enum.ToObject(typeof(T), i);
-
-            result.Add(new KeyValue<string, T>(getCurrEnum.GetMapCsharp(), getCurrEnum));
+            result.Add(new KeyValue<string, T>(getCurrEnum.GetDescription(), getCurrEnum));
         }
 
         return result;
 
+    }
+    public static T GetMax<T>(this T v)
+        where T : struct
+    {
+        T maxValue = Enum.GetValues(typeof(T)).Cast<T>().Max();
+        return maxValue;
     }
 }

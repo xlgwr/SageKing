@@ -1,4 +1,5 @@
 ﻿@inject SysSageKingMessageAttributeService dataService
+@inject SelectMenuCacheService<DataStreamTypeEnum> selectCacheService
 
 <Form @ref="form"
       Model="@model"
@@ -43,11 +44,11 @@
 
 
     //select data
-    List<KeyValue<string, DataStreamTypeEnum>> SelectType;
+    IList<KeyValue<string, DataStreamTypeEnum>> SelectType;
 
     protected override async Task OnInitializedAsync()
     {
-        SelectType = ((int)DataStreamTypeEnum.String).ToMapCsharpDic<DataStreamTypeEnum>((int)DataStreamTypeEnum.Float64);
+        SelectType = selectCacheService.GetCache((int)DataStreamTypeEnum.String,(int)DataStreamTypeEnum.Float64);
         await base.OnInitializedAsync();
     }
 

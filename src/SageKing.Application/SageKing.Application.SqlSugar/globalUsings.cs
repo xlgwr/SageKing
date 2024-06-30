@@ -28,6 +28,7 @@ global using MediatR;
 
 global using NewLife.Caching;
 global using NewLife.Caching.Models;
+global using SageKing.Cache.Contracts;
 global using CacheDefault = NewLife.Caching.Cache;
 
 global using SageKing.Database;

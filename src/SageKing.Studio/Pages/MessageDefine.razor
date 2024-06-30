@@ -147,7 +147,7 @@ else
                         <Selection Key="@rowData.Data.Id.ToString()" Type="@selectionType"></Selection>
                         <PropertyColumn  Property="c=>c.Name" Title="属性名称" Sortable="true" />
                         <PropertyColumn Property="c=>c.Type" Title="类型" Sortable="true" Align="ColumnAlign.Center">
-                            <Text>@context.Type.GetMapCsharp()</Text>
+                            <Text>@context.Type.GetDescription()</Text>
                         </PropertyColumn>
                         <PropertyColumn Property="c=>c.Status" Title="Status" Sortable="true" Align="ColumnAlign.Center">
                             <Switch @bind-Value="@context.Status" OnClick="()=>EditOnStatusSwitchAtt(context)" CheckedChildren="开" UnCheckedChildren="关"></Switch>

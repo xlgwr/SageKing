@@ -1,4 +1,5 @@
 ﻿using SageKing.Application.AspNetCore.SqlSugar.Service;
+using SageKing.Cache.Contracts;
 using SageKing.Cache.Features;
 using SageKing.Database.SqlSugar.AspNetCore;
 using SageKing.Database.SqlSugar.AspNetCore.Features;
@@ -25,6 +26,7 @@ public class SageKingApplicationAspNetCoreSqlSugarFeature : FeatureBase
     {
         Services.Configure(ApplicationAspNetCoreSqlSugarOptions)
             .AddTransient<ICacheService, SqlSugarCache>()
+            .AddTransient(typeof(SelectMenuCacheService<>))
             .AddTransient<SysConfigService>()
             .AddTransient<SysMenuService>()
             .AddTransient<SysDictDataService>()
@@ -37,7 +39,7 @@ public class SageKingApplicationAspNetCoreSqlSugarFeature : FeatureBase
     public override void Init()
     {
         //默认调用InitDB
-        var sqlSugar = Services.BuildServiceProvider().GetService<ISqlSugarClient>(); 
+        var sqlSugar = Services.BuildServiceProvider().GetService<ISqlSugarClient>();
 
     }
 }
