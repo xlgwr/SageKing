@@ -1,4 +1,7 @@
-﻿namespace SageKing.Application.AspNetCore.SqlSugar.Contracts.Entity;
+﻿using StackExchange.Profiling.Internal;
+using System.Text.Json.Serialization;
+
+namespace SageKing.Application.AspNetCore.SqlSugar.Contracts.Entity;
 
 /// <summary>
 /// 系统字典值表
@@ -93,4 +96,17 @@ public partial class SysDictData : EntityBase
     /// </summary>
     [SugarColumn(ColumnDescription = "状态")]
     public StatusEnum Status { get; set; } = StatusEnum.Enable;
+
+    [JsonIgnore]
+    public virtual string CodeValue
+    {
+        get
+        {
+            if (Value.HasValue())
+            {
+                return $"{Value}:{Code}";
+            }
+            return $"{ValueInt}:{Code}";
+        }
+    }
 }

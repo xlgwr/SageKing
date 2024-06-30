@@ -48,7 +48,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        SelectType = selectCacheService.GetCache((int)DataStreamTypeEnum.String,(int)DataStreamTypeEnum.Float64);
+        SelectType = selectCacheService.GetCache((int)DataStreamTypeEnum.String, (int)DataStreamTypeEnum.Float64, true);
         await base.OnInitializedAsync();
     }
 

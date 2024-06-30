@@ -18,7 +18,7 @@ public static class EnumExts
     /// <typeparam name="T"></typeparam>
     /// <param name="value"></param>
     /// <returns></returns>
-    public static string GetDescription<T>(this T value) where T : struct
+    public static string GetDescription<T>(this T value, bool keyAddName = false) where T : struct
     {
         string result = string.Empty;
         try
@@ -29,7 +29,8 @@ public static class EnumExts
             var attributes = info.GetCustomAttributes(typeof(DescriptionAttribute), true);
             if (attributes != null && attributes.FirstOrDefault() != null)
             {
-                result = (attributes.First() as DescriptionAttribute).Description;
+                var getDesc = (attributes.First() as DescriptionAttribute).Description;
+                result = keyAddName ? $"{result}:{getDesc}" : getDesc;
             }
         }
         catch { }
@@ -136,7 +137,7 @@ public static class EnumExts
     /// <param name="start"></param>
     /// <param name="end"></param>
     /// <returns></returns>
-    public static IList<KeyValue<string, T>> ToList<T>(this T v, int start, int end)
+    public static IList<KeyValue<string, T>> ToList<T>(this T v, int start, int end, bool keyAddName = false)
         where T : struct
     {
         var result = new List<KeyValue<string, T>>();
@@ -144,7 +145,7 @@ public static class EnumExts
         for (int i = start; i <= end; i++)
         {
             var getCurrEnum = (T)Enum.ToObject(typeof(T), i);
-            result.Add(new KeyValue<string, T>(getCurrEnum.GetDescription(), getCurrEnum));
+            result.Add(new KeyValue<string, T>(getCurrEnum.GetDescription(keyAddName), getCurrEnum));
         }
 
         return result;

@@ -12,7 +12,7 @@ namespace SageKing.Application.AspNetCore.SqlSugar.Service
     public class SelectMenuCacheService<T>(SageKingCacheService cache) : ISelectTypeCache<string, T>
         where T : struct
     {
-        public IList<KeyValue<string, T>> GetCache(int start, int end)
+        public IList<KeyValue<string, T>> GetCache(int start, int end, bool keyAddName = false)
         {
             var getName = typeof(T).Name;
             string cachekey = CachePrefixConst.BaseMenuCache + $"{getName}_{start}_{end}";
@@ -22,7 +22,7 @@ namespace SageKing.Application.AspNetCore.SqlSugar.Service
                 return getResult;
             }
             var defaultT = default(T);
-            getResult = defaultT.ToList(start, end);
+            getResult = defaultT.ToList(start, end, keyAddName);
             cache.Set(cachekey, getResult);
             return getResult;
         }

@@ -11,5 +11,5 @@ namespace SageKing.Cache.Contracts;
 /// </summary>
 public interface ISelectTypeCache<K, V>
 {
-    public IList<KeyValue<K, V>> GetCache(int start = 0, int end = 0);
+    public IList<KeyValue<K, V>> GetCache(int start = 0, int end = 0, bool keyAddName = false);
 }

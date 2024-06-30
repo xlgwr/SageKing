@@ -16,13 +16,13 @@
         <FormItem Label="类型">
             <Select @bind-Value="@context.Type"
                     DataSource="@SelectType.Children"
-                    LabelName="@nameof(SysDictData.Code)"
+                    LabelName="@nameof(SysDictData.CodeValue)"
                     ValueName="@nameof(SysDictData.ValueInt)"
                     Style="width: 100%;"
                     TItemValue="int"
                     TItem="SysDictData"
                     Placeholder="请选消息类型"
-                    DefaultActiveFirstOption="true"
+                    DefaultActiveFirstOption="true" 
                     EnableSearch>
             </Select>
         </FormItem>
