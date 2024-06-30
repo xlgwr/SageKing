@@ -14,7 +14,7 @@
 
     RenderFragment FormParentTemplate()
     {
-        return@<SysSageKingMessageEdit @ref=@edit Title="@addTitle" model="@addModel"></SysSageKingMessageEdit>;
+        return@<SysSageKingMessageEdit @ref=@edit Title="@modelTitle" model="@addModel"></SysSageKingMessageEdit>;
     }
 
     async Task HandleOk(MouseEventArgs e)
@@ -29,10 +29,10 @@
                 addloading = false;
                 return;
             }
-
+            edit.Reset();
         }
         await Refresh(false);
-        await _message.Success($"{addTitle}【{addModel.Name}】成功！");
+        await _message.Success($"{modelTitle}【{addModel.Name}】成功！");
         _visible = false;
         addloading = false;
     }
@@ -43,7 +43,7 @@
 
     RenderFragment FormChildTemplate()
     {
-        return@<SysSageKingMessageAttributeEdit @ref=@editchild Title="@addchildTitle" model="@addchildModel"></SysSageKingMessageAttributeEdit>;
+        return@<SysSageKingMessageAttributeEdit @ref=@editchild Title="@modelTitle" model="@addchildModel"></SysSageKingMessageAttributeEdit>;
     }
 
     async Task HandleChilcOk(MouseEventArgs e)
@@ -65,9 +65,48 @@
         {
             getParent.Children = await QueryChildList(addchildModel.MessageId);
         }
-        await _message.Success($"{addchildTitle}【{addchildModel.Name}】成功！");
+        await _message.Success($"{modelTitle}【{addchildModel.Name}】成功！");
         _visibleChild = false;
         addchildloading = false;
+    }
+
+}
+
+@{
+
+    RenderFragment FormImportDataAttPageTemplate()
+    {
+        return@<ImportDataAttPage @ref=@editImportDataAtt ParentId="@messageId" AttrNames="@attrNames"></ImportDataAttPage>;
+    }
+
+    async Task HandleOkImportDataAtt(MouseEventArgs e)
+    {
+        loadingImport = true;
+        if (editImportDataAtt != null)
+        {
+            var result = await editImportDataAtt.Save();
+
+            if (result != 0)
+            {
+                _visibleImport = true;
+                loadingImport = false;
+
+                if (result == 2)
+                {
+                    await _message.Warning("当前消息结构,已有对应属性，无需再次导入！");
+                }
+                return;
+            }
+
+        }
+        var getParent = pageData.Items.Where(a => a.Id == messageId).FirstOrDefault();
+        if (getParent != null)
+        {
+            getParent.Children = await QueryChildList(messageId);
+        }
+        await _message.Success($"【{getParent?.Name}】{modelTitle}成功！");
+        _visibleImport = false;
+        loadingImport = false;
     }
 
 }
@@ -134,14 +173,19 @@ else
             </ActionColumn>
         </ColumnDefinitions>
         <ExpandTemplate Context="rowData">
-            <Table Class="childTable" TItem="SysSageKingMessageAttribute" DataSource="rowData.Data.Children" Loading="rowData.Data.Children==null" Size=@TableSize.Middle EnableVirtualization PageSize="50" HidePagination
+            <Table Class="childTable" TItem="SysSageKingMessageAttribute" DataSource="rowData.Data.Children" Loading="rowData.Data.Children==null" Size=@TableSize.Small EnableVirtualization PageSize="10" ScrollY="200px" PaginationPosition="bottomCenter"
                    @bind-SelectedRows="@selectedRowsAttr" RowKey="a=>a.Id.ToString()" OnRowClick="OnRowAttrClick" Resizable Bordered>
                 <TitleTemplate>
-                    <GridRow>
-                        <GridCol Span="6" Offset="1">
+                    <Space>
+                        <SpaceItem>
                             <Button Type="@ButtonType.Primary" Icon="@IconType.Outline.AppstoreAdd" OnClick="(e)=>AddDataAtt(rowData.Data.Id)">新增属性</Button>
-                        </GridCol>
-                    </GridRow>
+                        </SpaceItem>
+
+                        <SpaceItem>
+                            <Button Type="@ButtonType.Primary" Icon="@IconType.Outline.Import" OnClick="(e)=>ImportDataAtt(rowData.Data.Id)">快速导入</Button>
+                        </SpaceItem>
+                    </Space>
+
                 </TitleTemplate>
                 <ColumnDefinitions>
                     <Selection Key="@rowData.Data.Id.ToString()" Type="@selectionType"></Selection>
@@ -174,12 +218,21 @@ else
                         </Space>
                     </ActionColumn>
                 </ColumnDefinitions>
+                <PaginationTemplate>
+                    <Pagination Class="@(context.PaginationClass + " my-custom-pagination")"
+                                Total="context.Total"
+                                ShowTotal="showTotal"
+                                PageSize="context.PageSize"
+                                Current="context.PageIndex"
+                                ShowSizeChanger
+                                OnChange="context.HandlePageChange" />
+                </PaginationTemplate>
             </Table>
         </ExpandTemplate>
 
 
         <PaginationTemplate>
-            <Pagination ShowTotal="showTotal"
+            <Pagination ShowTotal="showTotal" Class="@(context.PaginationClass + " my-custom-pagination")"
                         Total="pageData.Total"
                         PageSize="pageData.PageSize"
                         Current="pageData.Page"
@@ -189,18 +242,25 @@ else
         </PaginationTemplate>
     </Table>
 
-    <Modal Title="@addTitle"
+    <Modal Title="@modelTitle"
            @bind-Visible="@_visible" Draggable="@(true)" Centered Closable="false"
-           OnOk="HandleOk" ConfirmLoading="addloading" OkText="addOkTitle" CancelText="addCancelText">
+           OnOk="HandleOk" ConfirmLoading="addloading" OkText="modelOkTitle" CancelText="modelCancelText">
 
         @FormParentTemplate()
     </Modal>
 
-    <Modal Title="@addchildTitle"
+    <Modal Title="@modelTitle"
            @bind-Visible="@_visibleChild" Draggable="@(true)" Centered Closable="false"
-           OnOk="HandleChilcOk" ConfirmLoading="addchildloading" OkText="addOkchildTitle" CancelText="addchildCancelText">
+           OnOk="HandleChilcOk" ConfirmLoading="addchildloading" OkText="modelOkTitle" CancelText="modelCancelText">
 
         @FormChildTemplate()
+    </Modal>
+
+    <Modal Title="@modelTitle"
+           @bind-Visible="@_visibleImport" Draggable="@(true)" Centered Closable="false"
+           OnOk="HandleOkImportDataAtt" ConfirmLoading="loadingImport" OkText="modelOkTitle" CancelText="modelCancelText">
+
+        @FormImportDataAttPageTemplate()
     </Modal>
 }
 <style>
@@ -215,6 +275,19 @@ else
     .childTable {
         box-shadow: 0px 0px 0.5px 0.5px #aaa;
     }
+
+    .my-custom-pagination {
+        margin: 12px 0 0 0;
+    }
+
+    .ant-table-pagination.ant-pagination {
+        margin: 12px 0 0 0;
+    }
+
+    .my-custom-pagination .ant-pagination-item,
+    .my-custom-pagination .ant-pagination-item-link {
+        border-radius: 100%;
+    }
 </style>
 @code {
 
@@ -223,7 +296,7 @@ else
 
     string ScrollY = "500px";
     int browserHeight = 760;
-    int ScrollYOffset = 200;
+    int ScrollYOffset = 210;
     bool IsSmallMedia = false;
     // We can also capture the browser's width / height if needed. We hold the value here.
     BrowserWindowSize browser = new BrowserWindowSize();
@@ -247,23 +320,29 @@ else
     //select data
     SysDictType SelectDataType;
 
+    //model base btn title
+    string modelTitle = "新增";
+    string modelOkTitle = "保存";
+    string modelCancelText = "取消";
+
     //add
     bool _visible = false;
     bool addloading = false;
-    string addTitle = "新增";
-    string addOkTitle = "保存";
-    string addCancelText = "取消";
     SysSageKingMessage addModel;
     SysSageKingMessageEdit edit;
 
     //add child
     bool _visibleChild = false;
     bool addchildloading = false;
-    string addchildTitle = "新增";
-    string addOkchildTitle = "保存";
-    string addchildCancelText = "取消";
     SysSageKingMessageAttribute addchildModel;
     SysSageKingMessageAttributeEdit editchild;
+
+    //ImportDataAttPage
+    bool _visibleImport = false;
+    bool loadingImport = false;
+    long messageId;
+    List<string> attrNames;
+    ImportDataAttPage editImportDataAtt;
 
     #region init
 
@@ -363,6 +442,7 @@ else
     private async void OnRowExpand(RowData<SysSageKingMessage> data)
     {
         data.Data.Children = await QueryChildList(data.Data.Id);
+        attrNames = data.Data.Children.Select(a => a.Name).ToList();
     }
 
     void OnChange(QueryModel<SysSageKingMessage> query)
@@ -374,15 +454,25 @@ else
     void AddData()
     {
         addModel = new SysSageKingMessage();
-        addTitle = "消息结构新增";
+        modelTitle = "消息结构新增";
+        modelOkTitle = "保存";
         _visible = true;
     }
 
     void EditData(SysSageKingMessage row)
     {
         addModel = row.Clone<SysSageKingMessage>();
-        addTitle = "消息结构编辑";
+        modelTitle = "消息结构编辑";
+        modelOkTitle = "保存";
         _visible = true;
+    }
+
+    void ImportDataAtt(long parentid)
+    {
+        messageId = parentid;
+        modelTitle = "消息属性-快速导入";
+        modelOkTitle = "导入";
+        _visibleImport = true;
     }
 
     async void EditOnStatusSwitch(SysSageKingMessage entity)
@@ -420,14 +510,14 @@ else
     void AddDataAtt(long parentid)
     {
         addchildModel = new SysSageKingMessageAttribute() { MessageId = parentid };
-        addchildTitle = "消息属性新增";
+        modelTitle = "消息属性新增";
         _visibleChild = true;
     }
 
     void EditDataAtt(SysSageKingMessageAttribute row)
     {
         addchildModel = row.Clone<SysSageKingMessageAttribute>();
-        addchildTitle = "消息属性编辑";
+        modelTitle = "消息属性编辑";
         _visibleChild = true;
     }
 

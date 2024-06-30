@@ -123,5 +123,100 @@ namespace SageKing.Core.Extensions
             }
             return a;
         }
+        /// <summary>
+        /// 去空，去空格
+        /// </summary>
+        /// <param name="m"></param>
+        /// <param name="separator"></param>
+        /// <returns></returns>
+        public static List<string> SplitTrim(this string m, params char[] separator)
+        {
+            if (m == null)
+            {
+                return null;
+            }
+            var result = new List<string>();
+            if (m.IsNullOrWhiteSpace())
+            {
+                return result;
+            }
+            var resultSplit = m.Split(separator);
+            foreach (var item in resultSplit)
+            {
+                if (!item.IsNullOrWhiteSpace())
+                {
+                    result.Add(item.Trim());
+                }
+            }
+            return result;
+        }
+        /// <summary>
+        /// 去空，去空格
+        /// </summary>
+        /// <param name="m"></param>
+        /// <param name="separator"></param>
+        /// <returns></returns>
+        public static Dictionary<string, bool> SplitTrimDic(this string m, params char[] separator)
+        {
+            if (m == null)
+            {
+                return null;
+            }
+            var result = new Dictionary<string, bool>();
+            var resultSplit = m.Split(separator);
+            foreach (var item in resultSplit)
+            {
+                if (!item.IsNullOrWhiteSpace())
+                {
+                    result[item.Trim()] = true;
+                }
+            }
+            return result;
+        }
+
+        public static List<string> SplitToLowerTrim(this string m, params char[] separator)
+        {
+            if (m == null)
+            {
+                return null;
+            }
+            var result = new List<string>();
+            if (m.IsNullOrWhiteSpace())
+            {
+                return result;
+            }
+            var resultSplit = m.Split(separator);
+            foreach (var item in resultSplit)
+            {
+                if (!item.IsNullOrWhiteSpace())
+                {
+                    result.Add(item.ToLower().Trim());
+                }
+            }
+            return result;
+        }
+        /// <summary>
+        /// 去空，去空格
+        /// </summary>
+        /// <param name="m"></param>
+        /// <param name="separator"></param>
+        /// <returns></returns>
+        public static Dictionary<string, bool> SplitTrimDic(this string[] m)
+        {
+            if (m == null || m.Length < 1)
+            {
+                return null;
+            }
+            var result = new Dictionary<string, bool>();
+            foreach (var item in m)
+            {
+                if (!item.IsNullOrWhiteSpace())
+                {
+                    result[item.Trim()] = true;
+                }
+            }
+            return result;
+        }
+
     }
 }

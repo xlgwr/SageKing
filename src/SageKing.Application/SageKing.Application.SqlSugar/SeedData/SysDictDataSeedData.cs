@@ -12,6 +12,7 @@ public class SysDictDataSeedData : ISqlSugarEntitySeedData<SysDictData>
     public IEnumerable<SysDictData> HasData()
     {
         int setp = 100;
+        int ParentStep = 5;
         var crrrStarId = SeedDataConst.DefaultSysDictTypeId + setp;
         var crrrStarDictTypeId = SeedDataConst.DefaultSysDictTypeId;
         return new[]
@@ -21,17 +22,14 @@ public class SysDictDataSeedData : ISqlSugarEntitySeedData<SysDictData>
             new SysDictData{ Id=crrrStarId+3, DictTypeId=crrrStarDictTypeId, Code="通知类", ValueInt=3, OrderNo=100, Remark="", Status=StatusEnum.Enable },
             new SysDictData{ Id=crrrStarId+5, DictTypeId=crrrStarDictTypeId, Code="行情类", ValueInt=4, OrderNo=100, Remark="", Status=StatusEnum.Enable},
 
-            new SysDictData{ Id=crrrStarId+7, DictTypeId=crrrStarDictTypeId+5, Code="String", ValueInt=20, OrderNo=100, Remark="", Status=StatusEnum.Enable },
-            new SysDictData{ Id=crrrStarId+8, DictTypeId=crrrStarDictTypeId+5, Code="sbyte", ValueInt=21, OrderNo=100, Remark="", Status=StatusEnum.Enable },
-            new SysDictData{ Id=crrrStarId+9, DictTypeId=crrrStarDictTypeId+5, Code="byte", ValueInt=22, OrderNo=100, Remark="", Status=StatusEnum.Enable },
-            new SysDictData{ Id=crrrStarId+10, DictTypeId=crrrStarDictTypeId+5, Code="short", ValueInt=23, OrderNo=100, Remark="", Status=StatusEnum.Enable},
-            new SysDictData{ Id=crrrStarId+11, DictTypeId=crrrStarDictTypeId+5, Code="ushort", ValueInt=24, OrderNo=100, Remark="", Status=StatusEnum.Enable},
-            new SysDictData{ Id=crrrStarId+12, DictTypeId=crrrStarDictTypeId+5, Code="int", ValueInt=25, OrderNo=100, Remark="", Status=StatusEnum.Enable},
-            new SysDictData{ Id=crrrStarId+13, DictTypeId=crrrStarDictTypeId+5, Code="uint", ValueInt=26, OrderNo=100, Remark="", Status=StatusEnum.Enable},
-            new SysDictData{ Id=crrrStarId+14, DictTypeId=crrrStarDictTypeId+5, Code="long", ValueInt=27, OrderNo=100, Remark="", Status=StatusEnum.Enable},
-            new SysDictData{ Id=crrrStarId+15, DictTypeId=crrrStarDictTypeId+5, Code="ulong", ValueInt=28, OrderNo=100, Remark="", Status=StatusEnum.Enable},
-            new SysDictData{ Id=crrrStarId+16, DictTypeId=crrrStarDictTypeId+5, Code="float", ValueInt=29, OrderNo=100, Remark="", Status=StatusEnum.Enable},
-            new SysDictData{ Id=crrrStarId+17, DictTypeId=crrrStarDictTypeId+5, Code="double", ValueInt=30, OrderNo=100, Remark="", Status=StatusEnum.Enable},
+            //ValueInt 请参照 DataStreamTypeEnumExts
+            new SysDictData{ Id=crrrStarId+100, DictTypeId=crrrStarDictTypeId+ParentStep*2, Code="status", ValueInt=21, OrderNo=100, Remark="", Status=StatusEnum.Enable},
+             new SysDictData{ Id=crrrStarId+101, DictTypeId=crrrStarDictTypeId+ParentStep*2, Code="enable", ValueInt=21, OrderNo=100, Remark="", Status=StatusEnum.Enable},
+             new SysDictData{ Id=crrrStarId+102, DictTypeId=crrrStarDictTypeId+ParentStep*2, Code="number", ValueInt=25, OrderNo=100, Remark="", Status=StatusEnum.Enable},
+             new SysDictData{ Id=crrrStarId+103, DictTypeId=crrrStarDictTypeId+ParentStep*2, Code="date", ValueInt=25, OrderNo=100, Remark="", Status=StatusEnum.Enable},
+             new SysDictData{ Id=crrrStarId+104, DictTypeId=crrrStarDictTypeId+ParentStep*2, Code="time", ValueInt=25, OrderNo=100, Remark="", Status=StatusEnum.Enable},
+             new SysDictData{ Id=crrrStarId+105, DictTypeId=crrrStarDictTypeId+ParentStep*2, Code="price", ValueInt=29, OrderNo=100, Remark="", Status=StatusEnum.Enable},
+            new SysDictData{ Id=crrrStarId+106, DictTypeId=crrrStarDictTypeId+ParentStep*2, Code="type", ValueInt=25, OrderNo=100, Remark="", Status=StatusEnum.Enable},
         };
     }
 }

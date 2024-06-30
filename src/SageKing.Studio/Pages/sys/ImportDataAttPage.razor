@@ -1,0 +1,87 @@
+﻿@inject SysSageKingMessageAttributeService dataService
+@inject SysDictTypeService selectService
+@inject IMessageService _message
+
+<Form @ref="form"
+      Model="@model"
+      ValidateOnChange="true"
+      Layout="@FormLayout.Horizontal"
+      LabelColSpan="4" WrapperColSpan="20">
+
+    <FormItem Label="生成内容">
+        <TextArea ShowCount MaxLength="300" Width="100%" Placeholder="a,b,c 默认导入类型，请配置【快速导入属性映射】" @bind-Value="@context.Content"></TextArea>
+    </FormItem>
+</Form>
+@code {
+    public class ModelInput
+    {
+        [Required]
+        public string Content { get; set; }
+    }
+}
+@code {
+
+    [Parameter]
+    public long ParentId { get; set; }
+
+    [Parameter]
+    public List<string> AttrNames { get; set; }
+
+    public ModelInput model { get; set; }
+
+    bool loading;
+    AntDesign.Form<ModelInput> form;
+
+    //select data
+    SysDictType SelectType;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        model = new ModelInput();
+        SelectType = await selectService.GetDetailCache(SysDictTypeConst.code_message_attr_import);
+        await base.OnInitializedAsync();
+    }
+
+    public async Task<int> Save()
+    {
+        if (!form.Validate() || ParentId <= 0)
+        {
+            return 1;
+        };
+
+        var splitArr = model.Content.SplitTrim(',', ';', '|', '，', '；', '：', ':');
+
+        //取交集
+        var diffArr = splitArr.Except(AttrNames);
+
+        if (!diffArr.HasItem())
+        {
+            return 2;
+        }
+
+        var attrDataSet = SelectType.Children.ToDictionary(a => a.Code, a => a.ValueInt);
+
+        List<SysSageKingMessageAttribute> toAdds = new List<SysSageKingMessageAttribute>();
+        foreach (var item in diffArr)
+        {
+            toAdds.Add(new SysSageKingMessageAttribute()
+                {
+                    Name = item,
+                    MessageId = ParentId,
+                    Type = item.GetDataStreamTypeEnum(attrDataSet),
+                    Description = "导入"
+                });
+        }
+
+        await dataService.Add(toAdds);
+
+        return 0;
+    }
+
+    public void Reset()
+    {
+        model = new ModelInput();
+        form.Reset();
+    }
+}

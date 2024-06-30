@@ -68,6 +68,14 @@ public interface IBaseService<TEntity> where TEntity : class, new()
     public Task<bool> Add(TEntity entity);
 
     /// <summary>
+    /// 增加 🔖
+    /// </summary>
+    /// <param name="entity"></param>
+    /// <returns></returns>
+    [DisplayName("增加")]
+    public Task<bool> Add(IList<TEntity> entitys);
+
+    /// <summary>
     /// 更新 🔖
     /// </summary>
     /// <param name="entity"></param>

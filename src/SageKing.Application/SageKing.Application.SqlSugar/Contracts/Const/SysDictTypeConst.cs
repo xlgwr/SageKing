@@ -13,10 +13,9 @@ namespace SageKing.Application.AspNetCore.SqlSugar.Contracts
         /// </summary>
         public const string code_message_type = "code_message_type";
 
-
         /// <summary>
-        /// SageKing消息属性类型
+        /// SageKing消息属性快速导入参数
         /// </summary>
-        public const string code_message_attr_type = "code_message_attr_type";
+        public const string code_message_attr_import = "code_message_attr_import";
     }
 }

@@ -89,6 +89,17 @@ public class BaseService<TEntity> : IBaseService<TEntity>
     }
 
     /// <summary>
+    /// 增加
+    /// </summary>
+    /// <param name="entity"></param>
+    /// <returns></returns>
+    [DisplayName("增加")]
+    public virtual async Task<bool> Add(IList<TEntity> entitys)
+    {
+        return await _rep.InsertRangeAsync(entitys.ToArray());
+    }
+
+    /// <summary>
     /// 更新
     /// </summary>
     /// <param name="entity"></param>
