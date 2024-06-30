@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
 using SageKing.Studio.Data;
+using SageKing.Studio.Middleware;
 using System.Reflection;
 using static NewLife.Remoting.ApiHttpClient;
 
@@ -42,6 +43,7 @@ builder.Services.AddSageKing(sk =>
 
 });
 
+
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddRazorComponents(options =>
@@ -49,6 +51,7 @@ builder.Services.AddRazorComponents(options =>
 builder.Services.AddServerSideBlazor();
 
 //other services
+builder.Services.AddTransient<ExceptionHandlingMiddleware>();
 builder.Services.AddSingleton<PackagesDataService>();
 builder.Services.AddSingleton<WeatherForecastService>();
 
@@ -63,12 +66,13 @@ builder.Services.AddAntDesign();
 
 var app = builder.Build();
 
+
 app.UseSageKing();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Error");
+    app.UseExceptionHandler();
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
@@ -78,6 +82,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");

@@ -12,7 +12,7 @@ namespace SageKing.Application.AspNetCore.SqlSugar.Contracts.Entity;
 /// </summary>
 [SysTable]
 [SugarTable(null, "SageKing消息结构表")]
-[SugarIndex("index_{table}_Name", new[] { nameof(Name), nameof(Version) }, new[] { OrderByType.Asc, OrderByType.Asc })]
+[SugarIndex("index_{table}_Name", new[] { nameof(Name), nameof(Version) }, new[] { OrderByType.Asc, OrderByType.Asc }, isUnique: true)]
 public partial class SysSageKingMessage : EntityTenantBaseData
 {
 

@@ -19,22 +19,28 @@
 
     async Task HandleOk(MouseEventArgs e)
     {
-        addloading = true;
-        if (edit != null)
+        try
         {
-            var result = await edit.Save();
-            if (!result)
+            addloading = true;
+            if (edit != null)
             {
-                _visible = true;
-                addloading = false;
-                return;
+                var result = await edit.Save();
+                if (!result)
+                {
+                    _visible = true;
+                    addloading = false;
+                    return;
+                }
             }
-            edit.Reset();
+            await Refresh(false);
+            await _message.Success($"{modelTitle}【{addModel.Name}】成功！");
+            _visible = false;
+            addloading = false;
         }
-        await Refresh(false);
-        await _message.Success($"{modelTitle}【{addModel.Name}】成功！");
-        _visible = false;
-        addloading = false;
+        catch (Exception ex)
+        {
+            Error?.ProcessError(ex, $"{modelTitle}【{addModel.Name}】失败！");
+        }
     }
 
 }
@@ -48,26 +54,33 @@
 
     async Task HandleChilcOk(MouseEventArgs e)
     {
-        addchildloading = true;
-        if (editchild != null)
+        try
         {
-            var result = await editchild.Save();
-            if (!result)
+            addchildloading = true;
+            if (editchild != null)
             {
-                _visibleChild = true;
-                addchildloading = false;
-                return;
-            }
+                var result = await editchild.Save();
+                if (!result)
+                {
+                    _visibleChild = true;
+                    addchildloading = false;
+                    return;
+                }
 
+            }
+            var getParent = pageData.Items.Where(a => a.Id == addchildModel.MessageId).FirstOrDefault();
+            if (getParent != null)
+            {
+                getParent.Children = await QueryChildList(addchildModel.MessageId);
+            }
+            await _message.Success($"{modelTitle}【{addchildModel.Name}】成功！");
+            _visibleChild = false;
+            addchildloading = false;
         }
-        var getParent = pageData.Items.Where(a => a.Id == addchildModel.MessageId).FirstOrDefault();
-        if (getParent != null)
+        catch (Exception ex)
         {
-            getParent.Children = await QueryChildList(addchildModel.MessageId);
+            Error?.ProcessError(ex, $"{modelTitle}【{addchildModel.Name}】失败！");
         }
-        await _message.Success($"{modelTitle}【{addchildModel.Name}】成功！");
-        _visibleChild = false;
-        addchildloading = false;
     }
 
 }
@@ -81,32 +94,39 @@
 
     async Task HandleOkImportDataAtt(MouseEventArgs e)
     {
-        loadingImport = true;
-        if (editImportDataAtt != null)
+        try
         {
-            var result = await editImportDataAtt.Save();
-
-            if (result != 0)
+            loadingImport = true;
+            if (editImportDataAtt != null)
             {
-                _visibleImport = true;
-                loadingImport = false;
+                var result = await editImportDataAtt.Save();
 
-                if (result == 2)
+                if (result != 0)
                 {
-                    await _message.Warning("当前消息结构,已有对应属性，无需再次导入！");
-                }
-                return;
-            }
+                    _visibleImport = true;
+                    loadingImport = false;
 
+                    if (result == 2)
+                    {
+                        await _message.Warning("当前消息结构,已有对应属性，无需再次导入！");
+                    }
+                    return;
+                }
+
+            }
+            var getParent = pageData.Items.Where(a => a.Id == messageId).FirstOrDefault();
+            if (getParent != null)
+            {
+                getParent.Children = await QueryChildList(messageId);
+            }
+            await _message.Success($"【{getParent?.Name}】{modelTitle}成功！");
+            _visibleImport = false;
+            loadingImport = false;
         }
-        var getParent = pageData.Items.Where(a => a.Id == messageId).FirstOrDefault();
-        if (getParent != null)
+        catch (Exception ex)
         {
-            getParent.Children = await QueryChildList(messageId);
+            Error?.ProcessError(ex, $"【{messageId}】{modelTitle}失败");
         }
-        await _message.Success($"【{getParent?.Name}】{modelTitle}成功！");
-        _visibleImport = false;
-        loadingImport = false;
     }
 
 }
@@ -301,9 +321,6 @@ else
     // We can also capture the browser's width / height if needed. We hold the value here.
     BrowserWindowSize browser = new BrowserWindowSize();
 
-    [CascadingParameter]
-    public Error? Error { get; set; }
-
     //table
     ITable table;
     bool tableLoading;
@@ -345,12 +362,21 @@ else
     ImportDataAttPage editImportDataAtt;
 
     #region init
+    [CascadingParameter]
+    public Error? Error { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        await InitSelectData();
-        await Refresh(false);
-        await base.OnInitializedAsync();
+        try
+        {
+            await InitSelectData();
+            await Refresh(false);
+            await base.OnInitializedAsync();
+        }
+        catch (Exception ex)
+        {
+            Error?.ProcessError(ex);
+        }
     }
 
     async Task InitSelectData()
@@ -457,6 +483,7 @@ else
         modelTitle = "消息结构新增";
         modelOkTitle = "保存";
         _visible = true;
+        addloading = false;
     }
 
     void EditData(SysSageKingMessage row)
@@ -465,6 +492,7 @@ else
         modelTitle = "消息结构编辑";
         modelOkTitle = "保存";
         _visible = true;
+        addloading = false;
     }
 
     void ImportDataAtt(long parentid)
@@ -473,27 +501,35 @@ else
         modelTitle = "消息属性-快速导入";
         modelOkTitle = "导入";
         _visibleImport = true;
+        loadingImport = false;
     }
 
     async void EditOnStatusSwitch(SysSageKingMessage entity)
     {
-        var id = entity.Id;
-        var state = entity.Status;
-        string content = !state ? $"确认关闭【{entity.Name}】" : $"确认开启【{entity.Name}】";
-
-        var confirmResult = await _confirmService.Show(content + "?", "提示", ConfirmButtons.YesNo);
-        if (confirmResult == ConfirmResult.Yes)
+        try
         {
-            Expression<Func<SysSageKingMessage, bool>> wherefunc = a => a.Id == id;
-            Expression<Func<SysSageKingMessage, object>> updatefunc = a => new { a.Status };
+            var id = entity.Id;
+            var state = entity.Status;
+            string content = !state ? $"确认关闭【{entity.Name}】" : $"确认开启【{entity.Name}】";
 
-            await dataService.Update(entity, updatefunc);
-            await _message.Success($"{content} 成功", 2);
+            var confirmResult = await _confirmService.Show(content + "?", "提示", ConfirmButtons.YesNo);
+            if (confirmResult == ConfirmResult.Yes)
+            {
+                Expression<Func<SysSageKingMessage, bool>> wherefunc = a => a.Id == id;
+                Expression<Func<SysSageKingMessage, object>> updatefunc = a => new { a.Status };
+
+                await dataService.Update(entity, updatefunc);
+                await _message.Success($"{content} 成功", 2);
+            }
+            else
+            {
+                entity.Status = !state;
+                StateHasChanged();
+            }
         }
-        else
+        catch (Exception ex)
         {
-            entity.Status = !state;
-            StateHasChanged();
+            Error?.ProcessError(ex);
         }
     }
 
@@ -512,6 +548,7 @@ else
         addchildModel = new SysSageKingMessageAttribute() { MessageId = parentid };
         modelTitle = "消息属性新增";
         _visibleChild = true;
+        addchildloading = false;
     }
 
     void EditDataAtt(SysSageKingMessageAttribute row)
@@ -519,27 +556,35 @@ else
         addchildModel = row.Clone<SysSageKingMessageAttribute>();
         modelTitle = "消息属性编辑";
         _visibleChild = true;
+        addchildloading = false;
     }
 
     async void EditOnStatusSwitchAtt(SysSageKingMessageAttribute entity)
     {
-        var id = entity.Id;
-        var state = entity.Status;
-        string content = !state ? $"确认关闭【{entity.Name}】" : $"确认开启【{entity.Name}】";
-
-        var confirmResult = await _confirmService.Show(content + "?", "提示", ConfirmButtons.YesNo);
-        if (confirmResult == ConfirmResult.Yes)
+        try
         {
-            Expression<Func<SysSageKingMessageAttribute, bool>> wherefunc = a => a.Id == id;
-            Expression<Func<SysSageKingMessageAttribute, object>> updatefunc = a => new { a.Status };
+            var id = entity.Id;
+            var state = entity.Status;
+            string content = !state ? $"确认关闭【{entity.Name}】" : $"确认开启【{entity.Name}】";
 
-            await dataDetailService.Update(entity, updatefunc);
-            await _message.Success($"{content} 成功", 2);
+            var confirmResult = await _confirmService.Show(content + "?", "提示", ConfirmButtons.YesNo);
+            if (confirmResult == ConfirmResult.Yes)
+            {
+                Expression<Func<SysSageKingMessageAttribute, bool>> wherefunc = a => a.Id == id;
+                Expression<Func<SysSageKingMessageAttribute, object>> updatefunc = a => new { a.Status };
+
+                await dataDetailService.Update(entity, updatefunc);
+                await _message.Success($"{content} 成功", 2);
+            }
+            else
+            {
+                entity.Status = !state;
+                StateHasChanged();
+            }
         }
-        else
+        catch (Exception ex)
         {
-            entity.Status = !state;
-            StateHasChanged();
+            Error?.ProcessError(ex);
         }
     }
 

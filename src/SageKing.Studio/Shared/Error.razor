@@ -1,4 +1,5 @@
 ﻿@inject ILogger<Error> Logger
+@inject NotificationService _notice
 
 <CascadingValue Value="this">
     @ChildContent
@@ -8,11 +9,16 @@
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
-    public void ProcessError(Exception ex)
+    public void ProcessError(Exception ex, string title = "")
     {
-        Logger.LogError("Error:ProcessError - Type: {Type} Message: {Message}",
-            ex.GetType(), ex.Message);
+        Logger.LogError($"Error:ProcessError - Type: {ex.GetType()} title:{title} Message: {ex.Message} StackTrace:{ex.StackTrace}"); 
 
+        _ = _notice.Error(new()
+            {
+                Message = title.NullOrWhiteSpaceToDefault("错误提示"),
+                Description = ex.Message,
+                Duration = 0,
+            });
         // Call StateHasChanged if ProcessError directly participates in
         // rendering. If ProcessError only logs or records the error,
         // there's no need to call StateHasChanged.
