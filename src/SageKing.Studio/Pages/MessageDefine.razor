@@ -283,6 +283,7 @@ else
         @FormImportDataAttPageTemplate()
     </Modal>
 }
+
 <style>
     .ant-table-body {
         height: @ScrollY;
@@ -315,7 +316,9 @@ else
     static bool IsfirstRender = false;
 
     string ScrollY = "500px";
-    int browserHeight = 760;
+    string ScrollY1080 = "700px";
+    int browserHeight = 708;
+    int browserHeight1080 = 908;
     int ScrollYOffset = 210;
     bool IsSmallMedia = false;
     // We can also capture the browser's width / height if needed. We hold the value here.
@@ -365,6 +368,9 @@ else
     [CascadingParameter]
     public Error? Error { get; set; }
 
+    bool Islarge1080_800 = false;
+    string large1080_800 => Breakpoints.Between("(max-Height: 1080px)", "(min-Height: 800px)");
+
     protected override async Task OnInitializedAsync()
     {
         try
@@ -372,6 +378,10 @@ else
             await InitSelectData();
             await Refresh(false);
             await base.OnInitializedAsync();
+            Islarge1080_800 = await listener.MatchMedia(large1080_800);
+            ScrollY = Islarge1080_800 ? ScrollY1080 : ScrollY;
+            browserHeight = Islarge1080_800 ? browserHeight1080 : browserHeight;
+
         }
         catch (Exception ex)
         {
@@ -388,6 +398,7 @@ else
     {
         return SelectDataType?.Children?.FirstOrDefault(a => a.ValueInt == type)?.CodeValue;
     }
+
     protected override void OnAfterRender(bool firstRender)
     {
         if (firstRender)
@@ -426,8 +437,8 @@ else
     async Task Refresh(bool notice = true)
     {
         tableLoading = true;
-        table?.CollapseAll();
         await OnPageToDo(pageargs);
+        table?.CollapseAll();
         tableLoading = false;
         if (notice)
         {

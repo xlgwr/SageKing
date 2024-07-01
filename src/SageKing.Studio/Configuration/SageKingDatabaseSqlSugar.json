@@ -29,7 +29,7 @@
             "EnableIncreTable": false // 启用表增量更新-特性[IncreTable]
           },
           "SeedSettings": {
-            "EnableInitSeed": true, // 启用种子初始化
+            "EnableInitSeed": false, // 启用种子初始化
             "EnableIncreSeed": false // 启用种子增量更新-特性[IncreSeed]
           }
         }
