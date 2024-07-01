@@ -1,7 +1,8 @@
 ﻿@page "/"
-@page "/PackageList"
+@implements IReuseTabsPage
+@attribute [ReuseTabsPage(Title = "消息管理中心", Closable = false, Pin = true)]
 
-<PageTitle>消息管理中心</PageTitle>
+<PageTitle>@TabTitle</PageTitle>
 
 @inject PackagesDataService dataService
 @if (dic == null)
@@ -98,6 +99,17 @@ else
     IEnumerable<Items> dic;
     IEnumerable<Items> selectedRows;
 
+    [Parameter]
+    public long menuid { get; set; }
+
+    [Parameter]
+    public string TabTitle { get; set; } = "消息管理中心";
+
+    public RenderFragment GetPageTitle() =>
+    @<div>
+        <Icon Type="home" /> @TabTitle
+    </div>
+    ;
 
     protected override async Task OnInitializedAsync()
     {

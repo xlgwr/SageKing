@@ -15,7 +15,7 @@ namespace SageKing.Application.AspNetCore.SqlSugar.Service
         public IList<KeyValue<string, T>> GetCache(int start, int end, bool keyAddName = false)
         {
             var getName = typeof(T).Name;
-            string cachekey = CachePrefixConst.BaseMenuCache + $"{getName}_{start}_{end}";
+            string cachekey = CachePrefixConst.BaseEnumCache + $"{getName}_{start}_{end}";
             var getResult = cache.Get<IList<KeyValue<string, T>>>(cachekey);
             if (getResult != null)
             {

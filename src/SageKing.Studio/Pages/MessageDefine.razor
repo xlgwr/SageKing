@@ -1,10 +1,13 @@
 ﻿@inject IResizeListener listener
 @implements IDisposable
 @page "/MessageDefine"
+@implements IReuseTabsPage
 
 @inject IMessageService _message
 @inject IConfirmService _confirmService
 @inject SysDictTypeService selectService
+
+@inject SysMenuService _sysMenuService
 @inject SysSageKingMessageService dataService
 @inject SysSageKingMessageAttributeService dataDetailService
 
@@ -230,7 +233,7 @@ else
                             </SpaceItem>
                             <SpaceItem>
                                 <Popconfirm Title="确认删除?"
-                                            OnConfirm="() => DeleteAtt(context,rowData.Data.Id)"
+                                            OnConfirm="() => DeleteAtt(context,rowData.Data)"
                                             OkText="Yes"
                                             CancelText="No">
                                     <Button Icon="@IconType.Outline.Delete" Shape="@ButtonShape.Circle" Danger></Button>
@@ -318,11 +321,11 @@ else
     static bool IsfirstRender = false;
 
     //table height
-    string ScrollY = "500px";
-    string ScrollY1080 = "700px";
-    int browserHeight = 708;
-    int browserHeight1080 = 908;
-    int ScrollYOffset = 210;
+    string ScrollY = "430px";
+    string ScrollY1080 = "650px";
+    int browserHeight = 700;
+    int browserHeight1080 = 924;
+    int ScrollYOffset = 280;
     bool IsSmallMedia = false;
     // We can also capture the browser's width / height if needed. We hold the value here.
     BrowserWindowSize browser = new BrowserWindowSize();
@@ -368,6 +371,23 @@ else
     ImportDataAttPage editImportDataAtt;
 
     #region init
+    #region menu
+    [SupplyParameterFromQuery(Name = "menuid")]
+    public long menuid { get; set; }
+
+    [Parameter]
+    public string TabTitle { get; set; } = "消息结构定义";
+
+    [Parameter]
+    public string TabIcon { get; set; } = "home";
+
+    public RenderFragment GetPageTitle() =>
+    @<div>
+        <Icon Type="@TabIcon" /> @TabTitle
+    </div>
+    ;
+    #endregion
+
     [CascadingParameter]
     public Error? Error { get; set; }
 
@@ -378,6 +398,7 @@ else
     {
         try
         {
+            await InitTabTitle();
             await InitSelectData();
             await Refresh(false);
             await InitTableHeight();
@@ -387,6 +408,21 @@ else
         {
             Error?.ProcessError(ex);
         }
+    }
+
+    async Task InitTabTitle()
+    {
+        if (menuid <= 0)
+        {
+            return;
+        }
+        var getmenu = await _sysMenuService.GetMenuCacheAsync(menuid);
+        if (getmenu == null)
+        {
+            return;
+        }
+        TabIcon = getmenu.Icon.NullOrWhiteSpaceToDefault("home");
+        TabTitle = getmenu.Title;
     }
 
     async Task InitTableHeight()
@@ -530,8 +566,8 @@ else
             var state = entity.Status;
             string content = !state ? $"确认关闭【{entity.Name}】" : $"确认开启【{entity.Name}】";
 
-            var confirmResult = await _confirmService.Show(content + "?", "提示", ConfirmButtons.YesNo);
-            if (confirmResult == ConfirmResult.Yes)
+            var confirmResult = await _confirmService.Show(content + "?", "提示", ConfirmButtons.OKCancel);
+            if (confirmResult == ConfirmResult.OK)
             {
                 Expression<Func<SysSageKingMessage, bool>> wherefunc = a => a.Id == id;
                 Expression<Func<SysSageKingMessage, object>> updatefunc = a => new { a.Status };
@@ -586,8 +622,8 @@ else
             var state = entity.Status;
             string content = !state ? $"确认关闭【{entity.Name}】" : $"确认开启【{entity.Name}】";
 
-            var confirmResult = await _confirmService.Show(content + "?", "提示", ConfirmButtons.YesNo);
-            if (confirmResult == ConfirmResult.Yes)
+            var confirmResult = await _confirmService.Show(content + "?", "提示", ConfirmButtons.OKCancel);
+            if (confirmResult == ConfirmResult.OK)
             {
                 Expression<Func<SysSageKingMessageAttribute, bool>> wherefunc = a => a.Id == id;
                 Expression<Func<SysSageKingMessageAttribute, object>> updatefunc = a => new { a.Status };
@@ -607,10 +643,11 @@ else
         }
     }
 
-    async void DeleteAtt(SysSageKingMessageAttribute row, long parentId)
+    async void DeleteAtt(SysSageKingMessageAttribute row, SysSageKingMessage parent)
     {
         await dataDetailService.Delete(row.Id);
-        await QueryChildList(parentId);
+        var result = parent.Children.Where(a => a.Id != row.Id).ToList();
+        parent.Children = result;
         await _message.Success($"删除【{row.Name}】成功", 2);
     }
 

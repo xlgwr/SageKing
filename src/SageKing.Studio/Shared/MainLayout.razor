@@ -3,6 +3,7 @@
 @inject ILogger<MainLayout> Logger
 @inject NotificationService _notice
 @inject PackagesDataService _package
+@inject ReuseTabsService TabService
 
 <PageTitle>SageKing.Studio</PageTitle>
 
@@ -45,7 +46,7 @@
             <Content Class="site-layout-background" Style=" padding: 5px; margin: 0; min-height: 380px; overflow:hidden;">
                 <ErrorBoundary @ref="errorBoundary">
                     <ChildContent>
-                        @Body
+                        <ReuseTabs Class="top-row px-4" TabPaneClass="content px-4" Draggable="true"></ReuseTabs>
                     </ChildContent>
                     <ErrorContent Context="ex">
                         @{
@@ -136,6 +137,11 @@
         {
             LeftMenuAutoHideClass = "site-layout maleft121";
         }
+    }
+
+    void Reload()
+    {
+        TabService.ReloadPage();
     }
 
     void OnCollapse(bool isCollapsed)

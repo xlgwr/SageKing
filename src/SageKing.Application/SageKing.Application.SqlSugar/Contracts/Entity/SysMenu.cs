@@ -1,4 +1,6 @@
-﻿namespace SageKing.Application.AspNetCore.SqlSugar.Contracts.Entity;
+﻿using System.Text.Json.Serialization;
+
+namespace SageKing.Application.AspNetCore.SqlSugar.Contracts.Entity;
 
 
 /// <summary>
@@ -126,4 +128,15 @@ public partial class SysMenu : EntityBase
     /// </summary>
     [SugarColumn(IsIgnore = true)]
     public List<SysMenu> Children { get; set; } = new List<SysMenu>();
+
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    [SugarColumn(IsIgnore = true)]
+    public string PathWithId
+    {
+        get
+        {
+            return $"{Path}?menuid={Id}";
+        }
+    }
 }

@@ -19,7 +19,7 @@ else
                     @foreach (var item2 in item.Children)
                     {
                         <MenuItem Key="@item2.Id.ToString()" Icon="@item2.Icon">
-                            <NavLink href="@item2.Path"> @item2.Title </NavLink>
+                            <NavLink href="@item2.PathWithId"> @item2.Title </NavLink>
                         </MenuItem>
                     }
                 </SubMenu>
@@ -27,7 +27,7 @@ else
             else
             {
                 <MenuItem Key="@item.Name" Title="@item.Title" Icon="@item.Icon">
-                    <NavLink href="@item.Path"> @item.Title </NavLink>
+                    <NavLink href="@item.PathWithId"> @item.Title </NavLink>
                 </MenuItem>
             }
         }
@@ -57,7 +57,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        menuListAll ??= await dataService.GetToTreeAsync();
+        menuListAll ??= await dataService.GetToTreeCacheAsync();
         defaultSelectedKeys = menuListAll.FirstOrDefault()?.Id.ToString();
         defaultOpenKeys = menuListAll.Where(a => a.Children.Any()).FirstOrDefault()?.Name;
 

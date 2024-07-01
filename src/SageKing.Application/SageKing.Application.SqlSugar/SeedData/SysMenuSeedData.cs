@@ -18,7 +18,7 @@ public class SysMenuSeedData : ISqlSugarEntitySeedData<SysMenu>
             //Dir
              new SysMenu{ Id=SeedDataConst.DefaultMenuId, Pid=0, Title="工作台", Path="/dashboard", Name="dashboard", Component="Layout", Icon="home", Type=MenuTypeEnum.Dir, OrderNo=0 },
             //menu
-            new SysMenu{ Id=defaultStartId, Pid=SeedDataConst.DefaultMenuId, Title="消息中心", Path="/PackageList", Name="PackageList", Component="/PackageList/index",  Icon="home", Type=MenuTypeEnum.Menu,  OrderNo=sept },
+            new SysMenu{ Id=defaultStartId, Pid=SeedDataConst.DefaultMenuId, Title="消息中心", Path="/", Name="PackageList", Component="/PackageList/index",  Icon="home", Type=MenuTypeEnum.Menu,  OrderNo=sept },
             new SysMenu{ Id=defaultStartId+1, Pid=SeedDataConst.DefaultMenuId, Title="客户端管理", Path="/ClientList", Name="ClientList", Component="/ClientList/index",  Icon="message", Type=MenuTypeEnum.Menu,  OrderNo=sept+1 },
             
             //Dir

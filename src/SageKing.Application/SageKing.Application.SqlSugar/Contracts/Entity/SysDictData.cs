@@ -97,7 +97,10 @@ public partial class SysDictData : EntityBase
     [SugarColumn(ColumnDescription = "状态")]
     public StatusEnum Status { get; set; } = StatusEnum.Enable;
 
-    [JsonIgnore]
+
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    [SugarColumn(IsIgnore = true)]
     public virtual string CodeValue
     {
         get
