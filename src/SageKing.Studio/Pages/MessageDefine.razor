@@ -79,7 +79,8 @@
         }
         catch (Exception ex)
         {
-            Error?.ProcessError(ex, $"{modelTitle}【{addchildModel.Name}】失败！");
+            // Error?.ProcessError(ex, $"{modelTitle}【{addchildModel.Name}】失败！");
+            throw ex;
         }
     }
 
@@ -112,6 +113,7 @@
                     }
                     return;
                 }
+                editImportDataAtt.Reset();
 
             }
             var getParent = pageData.Items.Where(a => a.Id == messageId).FirstOrDefault();
@@ -315,6 +317,7 @@ else
     bool loading;
     static bool IsfirstRender = false;
 
+    //table height
     string ScrollY = "500px";
     string ScrollY1080 = "700px";
     int browserHeight = 708;
@@ -377,16 +380,20 @@ else
         {
             await InitSelectData();
             await Refresh(false);
+            await InitTableHeight();
             await base.OnInitializedAsync();
-            Islarge1080_800 = await listener.MatchMedia(large1080_800);
-            ScrollY = Islarge1080_800 ? ScrollY1080 : ScrollY;
-            browserHeight = Islarge1080_800 ? browserHeight1080 : browserHeight;
-
         }
         catch (Exception ex)
         {
             Error?.ProcessError(ex);
         }
+    }
+
+    async Task InitTableHeight()
+    {
+        Islarge1080_800 = await listener.MatchMedia(large1080_800);
+        ScrollY = Islarge1080_800 ? ScrollY1080 : ScrollY;
+        browserHeight = Islarge1080_800 ? browserHeight1080 : browserHeight;
     }
 
     async Task InitSelectData()
@@ -550,6 +557,7 @@ else
         pageData.Total -= 1;
         table.ResetData();
         await dataService.Delete(row.Id);
+        await _message.Success($"删除【{row.Name}】成功", 2);
     }
     #endregion
 
@@ -603,6 +611,7 @@ else
     {
         await dataDetailService.Delete(row.Id);
         await QueryChildList(parentId);
+        await _message.Success($"删除【{row.Name}】成功", 2);
     }
 
     #endregion

@@ -1,5 +1,6 @@
 ﻿@inherits LayoutComponentBase
 
+@inject ILogger<MainLayout> Logger
 @inject NotificationService _notice
 @inject PackagesDataService _package
 
@@ -12,17 +13,17 @@
             <div class="title">
                 <b>SageKing.Studio</b>
             </div>
-@*             <Menu Theme="MenuTheme.Dark" Mode="MenuMode.Horizontal" DefaultSelectedKeys=@(new []{"1"}) Style="height:64px;position:fixed; right:0px;">
-                <MenuItem Key="1">
-                    <NavLink href="#">
-                        <span class="oi oi-home" aria-hidden="true"></span> 个人中心
-                    </NavLink>
-                </MenuItem>
-                <MenuItem Key="2">
-                    <NavLink href="#">
-                        <span class="oi oi-list-rich" aria-hidden="true"></span> 系统设置
-                    </NavLink>
-                </MenuItem>
+            @*             <Menu Theme="MenuTheme.Dark" Mode="MenuMode.Horizontal" DefaultSelectedKeys=@(new []{"1"}) Style="height:64px;position:fixed; right:0px;">
+            <MenuItem Key="1">
+            <NavLink href="#">
+            <span class="oi oi-home" aria-hidden="true"></span> 个人中心
+            </NavLink>
+            </MenuItem>
+            <MenuItem Key="2">
+            <NavLink href="#">
+            <span class="oi oi-list-rich" aria-hidden="true"></span> 系统设置
+            </NavLink>
+            </MenuItem>
             </Menu> *@
         </Flex>
     </Header>
@@ -42,7 +43,17 @@
                 }
             </div>
             <Content Class="site-layout-background" Style=" padding: 5px; margin: 0; min-height: 380px; overflow:hidden;">
-                @Body
+                <ErrorBoundary @ref="errorBoundary">
+                    <ChildContent>
+                        @Body
+                    </ChildContent>
+                    <ErrorContent Context="ex">
+                        @{
+                            ShowNotification(ex);
+                        }
+                    </ErrorContent>
+                </ErrorBoundary>
+
             </Content>
         </Layout>
     </Layout>
@@ -90,6 +101,8 @@
     bool collapsed;
     bool isLoadNoticeAction = false;
 
+    ErrorBoundary errorBoundary;
+
     #region
     string LeftMenuAutoHideClass = "site-layout maleft201";
     #endregion
@@ -128,5 +141,20 @@
     void OnCollapse(bool isCollapsed)
     {
         Console.WriteLine($"Collapsed: {isCollapsed}");
+    }
+
+    void ShowNotification(Exception ex)
+    {
+
+        Logger.LogError($"Error:ProcessError - Type: {ex.GetType()} Message: {ex.Message} StackTrace:{ex.StackTrace}");
+
+        _ = _notice.Error(new()
+            {
+                Message = "错误提示",
+                Description = ex.Message,
+                Duration = 0,
+            });
+
+        errorBoundary.Recover();
     }
 }
