@@ -1,10 +1,12 @@
-﻿@page "/System/SysMenu"
+﻿@page "/System/SysConfigPage"
 
-<PageTitle>菜单配置</PageTitle>
+@namespace SageKing.Studio.Pages.Config
 
-@inject SysMenuService dataService
+<PageTitle>配置参数中心</PageTitle>
 
-<h2>菜单配置</h2>
+@inject SysConfigService dataService
+
+<h2>配置参数中心</h2>
 <br />
 
 @if (data == null)
@@ -13,7 +15,7 @@
 }
 else
 {
-    <Table @ref="table" TItem="SysMenu" DataSource="@data"
+    <Table @ref="table" TItem="SysConfig" DataSource="@data"
            @bind-SelectedRows="@selectedRows" RowKey="a=>a.Id" OnRowClick="OnRowClick">
 
         <Selection Key="@context.Id.ToString()" Type="@selectionType"></Selection>
@@ -30,18 +32,18 @@ else
 
     ITable table;
     string selectionType = "checkbox";
-    IEnumerable<SysMenu>? data;
-    IEnumerable<SysMenu> selectedRows;
+    IEnumerable<SysConfig>? data;
+    IEnumerable<SysConfig> selectedRows;
 
     protected override async Task OnInitializedAsync()
     {
         var result = await dataService.GetPage(new Database.Contracts.PageBaseInput() { Page = 1, PageSize = 20 });
         data = result.Items;
-        selectedRows = new List<SysMenu>();
+        selectedRows = new List<SysConfig>();
         await base.OnInitializedAsync();
     }
 
-    public void OnRowClick(RowData<SysMenu> row)
+    public void OnRowClick(RowData<SysConfig> row)
     {
         if (selectedRows.Where(a => a.Id == row.Data.Id).Any())
         {

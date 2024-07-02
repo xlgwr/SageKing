@@ -1,6 +1,9 @@
-﻿@inject IResizeListener listener
+﻿@page "/MessageDefine"
+
+@namespace SageKing.Studio.Pages.SageKingMessage
+
+@inject IResizeListener listener
 @implements IDisposable
-@page "/MessageDefine"
 @implements IReuseTabsPage
 
 @inject IMessageService _message
@@ -10,6 +13,8 @@
 @inject SysMenuService _sysMenuService
 @inject SysSageKingMessageService dataService
 @inject SysSageKingMessageAttributeService dataDetailService
+
+@using SageKing.Studio.Pages.SysSageKingMessage.component
 
 <PageTitle>消息结构定义</PageTitle>
 
@@ -136,32 +141,6 @@
 
 }
 
-@{ 
-
-    RenderFragment GetDetails(SysSageKingMessage context)
-    {
-        return@<div style="min-width:266px;">
-        <GridRow Gutter="24">
-            <GridCol Span="12"><Text Ellipsis="true">创建时间:</Text></GridCol>
-            <GridCol Span="12"><Text>创建人:</Text></GridCol>
-        </GridRow>
-        <GridRow Gutter="24">
-            <GridCol Span="12"><Text Ellipsis="true">@context.CreateTime</Text></GridCol>
-            <GridCol Span="12"><Text>@context.CreateUserName</Text></GridCol>
-        </GridRow>
-        <GridRow Gutter="24">
-           <GridCol Span="12"><Text>更新时间:</Text></GridCol>
-            <GridCol Span="12"><Text>更新人:</Text></GridCol>
-        </GridRow>
-        <GridRow Gutter="24">
-            <GridCol Span="12"><Text>@context.UpdateTime</Text></GridCol>
-            <GridCol Span="12"><Text>@context.UpdateUserName</Text></GridCol>
-        </GridRow>
-
-    </div>;
-    }
-}
-
 @if (pageData == null)
 {
     <Spin size="large" Tip="Loading..." />
@@ -219,8 +198,8 @@ else
             <PropertyColumn Property="c=>c.Version" Title="Version" Sortable="true" Filterable></PropertyColumn>
             <PropertyColumn Property="c=>c.Id" Title="Id" Sortable="true" Filterable />
             <PropertyColumn Title="时间相关" Property="c=>c.CreateUserName" Align="ColumnAlign.Center">
-                <Popover ContentTemplate="@GetDetails(context)" Title="时间相关">
-                    <Button Icon="@IconType.Outline.OrderedList" Shape="@ButtonShape.Circle"/>
+                <Popover ContentTemplate="@baseRender.GetDetails(context)" Title="时间相关">
+                    <Button Icon="@IconType.Outline.OrderedList" Shape="@ButtonShape.Circle" />
                 </Popover>
             </PropertyColumn>
             <ActionColumn Title="Action" Fixed="right">
@@ -251,7 +230,7 @@ else
                         </SpaceItem>
 
                         <SpaceItem>
-                            <Button Type="@ButtonType.Primary" Icon="@IconType.Outline.Import" OnClick="(e)=>ImportDataAtt(rowData.Data.Id)">快速导入</Button>
+                            <Button Type="@ButtonType.Primary" Icon="@IconType.Outline.Import" OnClick="(e)=>ImportDataAtt(rowData.Data)">快速导入</Button>
                         </SpaceItem>
                     </Space>
 
@@ -268,6 +247,11 @@ else
                     <PropertyColumn Property="c=>c.Description" Title="描述信息" Ellipsis />
                     <PropertyColumn Property="c=>c.Id" Title="Id" Sortable="true" Filterable />
                     <PropertyColumn Property="c=>c.MessageId" Title="MessageId"></PropertyColumn>
+                    <PropertyColumn Title="时间相关" Property="c=>c.CreateUserName" Align="ColumnAlign.Center">
+                        <Popover ContentTemplate="@baseRender.GetDetails(context)" Title="时间相关">
+                            <Button Icon="@IconType.Outline.OrderedList" Shape="@ButtonShape.Circle" />
+                        </Popover>
+                    </PropertyColumn>
                     <ActionColumn Title="Action" Fixed="right">
                         <Space>
                             <SpaceItem>
@@ -364,6 +348,8 @@ else
     bool loading;
     static bool IsfirstRender = false;
 
+    BaseRenderFragment baseRender;
+
     //table height
     string ScrollY = "430px";
     string ScrollY1080 = "650px";
@@ -445,6 +431,7 @@ else
     {
         try
         {
+            baseRender = new BaseRenderFragment();
             await InitTabTitle();
             await InitSelectData();
             await InitSeachMain();
@@ -621,9 +608,10 @@ else
         addloading = false;
     }
 
-    void ImportDataAtt(long parentid)
+    void ImportDataAtt(SysSageKingMessage row)
     {
-        messageId = parentid;
+        messageId = row.Id;
+        attrNames = row.Children.Select(a => a.Name).ToList();
         modelTitle = "消息属性-快速导入";
         modelOkTitle = "导入";
         _visibleImport = true;
@@ -674,6 +662,7 @@ else
     {
         addchildModel = new SysSageKingMessageAttribute() { MessageId = parentid };
         modelTitle = "消息属性新增";
+        modelOkTitle = "保存";
         _visibleChild = true;
         addchildloading = false;
     }
@@ -682,6 +671,7 @@ else
     {
         addchildModel = row.Clone<SysSageKingMessageAttribute>();
         modelTitle = "消息属性编辑";
+        modelOkTitle = "保存";
         _visibleChild = true;
         addchildloading = false;
     }

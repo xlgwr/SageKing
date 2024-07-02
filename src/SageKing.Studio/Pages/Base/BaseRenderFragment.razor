@@ -1,0 +1,29 @@
+﻿@namespace SageKing.Studio.Pages.Base
+
+@code
+{
+    //用于存放共用RenderFragment
+
+    public RenderFragment GetDetails(EntityBase context)
+    {
+        return
+    @<div style="min-width:266px;">
+        <GridRow Gutter="24">
+            <GridCol Span="12"><Text Ellipsis="true">创建时间:</Text></GridCol>
+            <GridCol Span="12"><Text>创建人:</Text></GridCol>
+        </GridRow>
+        <GridRow Gutter="24">
+            <GridCol Span="12"><Text Ellipsis="true">@context.CreateTime</Text></GridCol>
+            <GridCol Span="12"><Text>@context.CreateUserName</Text></GridCol>
+        </GridRow>
+        <GridRow Gutter="24">
+            <GridCol Span="12"><Text>更新时间:</Text></GridCol>
+            <GridCol Span="12"><Text>更新人:</Text></GridCol>
+        </GridRow>
+        <GridRow Gutter="24">
+            <GridCol Span="12"><Text>@context.UpdateTime</Text></GridCol>
+            <GridCol Span="12"><Text>@context.UpdateUserName</Text></GridCol>
+        </GridRow>
+    </div>;
+    }
+}
