@@ -78,6 +78,22 @@ public class BaseService<TEntity> : IBaseService<TEntity>
     }
 
     /// <summary>
+    /// 获取实体分页
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    [DisplayName("获取实体分页")]
+    public virtual async Task<PageBase<TEntity>> GetPage(PageBaseInput input, List<(bool, Expression<Func<TEntity, bool>>)> whereIf, Expression<Func<TEntity, object>> orderByColumns, bool orderByType=true)
+    {
+        var querable = _rep.AsQueryable();
+        foreach (var item in whereIf)
+        {
+            querable = querable.WhereIF(item.Item1, item.Item2);
+        }
+        return await querable.OrderBy(orderByColumns, orderByType ? OrderByType.Asc : OrderByType.Desc).ToPagedListAsync(input.Page, input.PageSize);
+    }
+
+    /// <summary>
     /// 增加
     /// </summary>
     /// <param name="entity"></param>

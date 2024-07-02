@@ -48,16 +48,25 @@ public interface IBaseService<TEntity> where TEntity : class, new()
     [DisplayName("获取获取集合")]
     public Task<PageBase<TEntity>> GetPage(PageBaseInput input);
 
+
     /// <summary>
     /// 分页获取集合 🔖
     /// </summary>
     /// <returns></returns>
     /// <param name="input"></param>
     /// <param name="orderby"></param>
-    /// <param name="orderByType">true:asc,false:desc</param>
+    /// <param name="orderByAsc">true:asc,false:desc</param>
     [DisplayName("获取获取集合")]
     /// <returns></returns>
-    public Task<PageBase<TEntity>> GetPage(PageBaseInput input, Expression<Func<TEntity, object>> orderby, bool orderByType = true);
+    public Task<PageBase<TEntity>> GetPage(PageBaseInput input, Expression<Func<TEntity, object>> orderby, bool orderByAsc = true);
+
+    /// <summary>
+    /// 分页获取集合 🔖
+    /// </summary>
+    /// <returns></returns>
+    [DisplayName("获取获取集合")]
+    /// <param name="orderByAsc">true:asc,false:desc</param>
+    public Task<PageBase<TEntity>> GetPage(PageBaseInput input, List<(bool, Expression<Func<TEntity, bool>>)> whereIf, Expression<Func<TEntity, object>> orderByColumns, bool orderByAsc = true);
 
     /// <summary>
     /// 增加 🔖

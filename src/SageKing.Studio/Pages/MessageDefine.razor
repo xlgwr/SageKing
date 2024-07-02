@@ -136,6 +136,32 @@
 
 }
 
+@{ 
+
+    RenderFragment GetDetails(SysSageKingMessage context)
+    {
+        return@<div style="min-width:266px;">
+        <GridRow Gutter="24">
+            <GridCol Span="12"><Text Ellipsis="true">创建时间:</Text></GridCol>
+            <GridCol Span="12"><Text>创建人:</Text></GridCol>
+        </GridRow>
+        <GridRow Gutter="24">
+            <GridCol Span="12"><Text Ellipsis="true">@context.CreateTime</Text></GridCol>
+            <GridCol Span="12"><Text>@context.CreateUserName</Text></GridCol>
+        </GridRow>
+        <GridRow Gutter="24">
+           <GridCol Span="12"><Text>更新时间:</Text></GridCol>
+            <GridCol Span="12"><Text>更新人:</Text></GridCol>
+        </GridRow>
+        <GridRow Gutter="24">
+            <GridCol Span="12"><Text>@context.UpdateTime</Text></GridCol>
+            <GridCol Span="12"><Text>@context.UpdateUserName</Text></GridCol>
+        </GridRow>
+
+    </div>;
+    }
+}
+
 @if (pageData == null)
 {
     <Spin size="large" Tip="Loading..." />
@@ -154,12 +180,25 @@ else
            ScrollY="@ScrollY" PageSize="pageData.PageSize">
         <TitleTemplate>
             <Space>
-                <SpaceItem Style="margin-left:15px;">
-                    <Search Placeholder="Search Name" @bind-Value="searchString" OnSearch="()=>table?.ReloadData()" AllowClear="true" />
+                <SpaceItem>
+                    <Select @bind-Value="@searchModel.Type"
+                            DataSource="@SelectSearchModelType.Children"
+                            LabelName="@nameof(SysDictData.CodeValue)"
+                            ValueName="@nameof(SysDictData.ValueInt)"
+                            Style="min-width:150px; width: auto;"
+                            TItemValue="int"
+                            TItem="SysDictData"
+                            Placeholder="请选消息类型"
+                            AllowClear
+                            EnableSearch>
+                    </Select>
+                </SpaceItem>
+                <SpaceItem>
+                    <Search Placeholder="消息名称" @bind-Value="searchModel.Name" OnSearch="()=>OnSearch(pageargs)" AllowClear="true" />
                 </SpaceItem>
 
                 <SpaceItem>
-                    <Button Type="@ButtonType.Primary" Icon="@IconType.Outline.Reload" OnClick="()=>Refresh()">刷新</Button>
+                    <Button Type="@ButtonType.Primary" Icon="@IconType.Outline.Reload" OnClick="()=>ReSet()">重置</Button>
                 </SpaceItem>
 
                 <SpaceItem>
@@ -179,6 +218,11 @@ else
             <PropertyColumn Property="c=>c.Description" Title="描述信息" Ellipsis />
             <PropertyColumn Property="c=>c.Version" Title="Version" Sortable="true" Filterable></PropertyColumn>
             <PropertyColumn Property="c=>c.Id" Title="Id" Sortable="true" Filterable />
+            <PropertyColumn Title="时间相关" Property="c=>c.CreateUserName" Align="ColumnAlign.Center">
+                <Popover ContentTemplate="@GetDetails(context)" Title="时间相关">
+                    <Button Icon="@IconType.Outline.OrderedList" Shape="@ButtonShape.Circle"/>
+                </Popover>
+            </PropertyColumn>
             <ActionColumn Title="Action" Fixed="right">
                 <Space>
                     <SpaceItem>
@@ -263,7 +307,7 @@ else
                         Current="pageData.Page"
                         ShowSizeChanger
                         ShowQuickJumper
-                        OnChange="OnPageToDo" />
+                        OnChange="OnSearch" />
         </PaginationTemplate>
     </Table>
 
@@ -333,9 +377,12 @@ else
     //table
     ITable table;
     bool tableLoading;
-    string searchString;
     string selectionType = "checkbox";
     RenderFragment<PaginationTotalContext> showTotal = ctx => @<div class="showTotal">Total: <b>@ctx.Total</b></div>;
+
+    //search
+    SysSageKingMessage searchModel;
+    SysDictType SelectSearchModelType;
 
     PaginationEventArgs pageargs = new PaginationEventArgs(1, 10);
     PageBase<SysSageKingMessage> pageData;
@@ -400,6 +447,7 @@ else
         {
             await InitTabTitle();
             await InitSelectData();
+            await InitSeachMain();
             await Refresh(false);
             await InitTableHeight();
             await base.OnInitializedAsync();
@@ -408,6 +456,12 @@ else
         {
             Error?.ProcessError(ex);
         }
+    }
+
+    async Task InitSeachMain()
+    {
+        searchModel = new SysSageKingMessage();
+        SelectSearchModelType = await selectService.GetDetailCache(SysDictTypeConst.code_message_type);
     }
 
     async Task InitTabTitle()
@@ -480,7 +534,7 @@ else
     async Task Refresh(bool notice = true)
     {
         tableLoading = true;
-        await OnPageToDo(pageargs);
+        await OnSearch(pageargs);
         table?.CollapseAll();
         tableLoading = false;
         if (notice)
@@ -489,15 +543,31 @@ else
         }
     }
 
-    public async Task OnPageToDo(PaginationEventArgs args)
+    void ReSet()
     {
+        searchModel = new SysSageKingMessage();
+    }
+
+    public async Task OnSearch(PaginationEventArgs args)
+    {
+        tableLoading = true;
         pageargs.Page = args.Page;
         pageargs.PageSize = args.PageSize;
 
-        var page = new PageBaseInput() { Page = args.Page, PageSize = args.PageSize };
+        var page = new PageBaseInput() { Page = pageargs.Page, PageSize = pageargs.PageSize };
         Expression<Func<SysSageKingMessage, object>> orderbyfunc = a => a.Id;
 
-        pageData = await dataService.GetPage(page, orderbyfunc, false);
+        List<(bool, Expression<Func<SysSageKingMessage, bool>>)> whereIf = new List<(bool, Expression<Func<SysSageKingMessage, bool>>)>();
+
+        Expression<Func<SysSageKingMessage, bool>> whereIffunc1 = a => a.Name.Contains(searchModel.Name);
+        Expression<Func<SysSageKingMessage, bool>> whereIffunc2 = a => a.Type == searchModel.Type;
+
+        whereIf.Add((searchModel.Name.IsNotNullOrWhiteSpace(), whereIffunc1));
+        whereIf.Add((searchModel.Type > 0, whereIffunc2));
+
+        pageData = await dataService.GetPage(page, whereIf, orderbyfunc, false);
+
+        tableLoading = false;
     }
 
     public async Task<List<SysSageKingMessageAttribute>> QueryChildList(long ParentId)
@@ -527,7 +597,9 @@ else
 
     void OnChange(QueryModel<SysSageKingMessage> query)
     {
+        var dd = query;
     }
+
 
     #region crud
 
