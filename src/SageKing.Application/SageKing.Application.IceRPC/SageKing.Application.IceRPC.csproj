@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<RootNamespace>SageKing.Application.IceRPC</RootNamespace>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<Description>
+			提供SageKing.Application.IceRPC核心功能
+		</Description>
+		<PackageTags>SageKing module Core</PackageTags>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\SageKing.IceRPC.Client\SageKing.IceRPC.Client.csproj" />
+	  <ProjectReference Include="..\..\SageKing.IceRPC.Server\SageKing.IceRPC.Server.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Contracts\" />
+	</ItemGroup>
+</Project>
