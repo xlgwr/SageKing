@@ -12,6 +12,7 @@
 	</PropertyGroup> 
 
 	<ItemGroup>
+	  <ProjectReference Include="..\SageKing.Application\SageKing.Application.IceRPC\SageKing.Application.IceRPC.csproj" />
 	  <ProjectReference Include="..\SageKing.Application\SageKing.Application.SqlSugar\SageKing.Application.AspNetCore.SqlSugar.csproj" />
 	  <ProjectReference Include="..\SageKing.AspNetCore\SageKing.AspNetCore.csproj" />
 	  <ProjectReference Include="..\SageKing.IceRPC.Client\SageKing.IceRPC.Client.csproj" />

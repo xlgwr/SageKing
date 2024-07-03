@@ -17,6 +17,6 @@ public class SageKingApplicationIceRPCFeature : FeatureBase
     public override void Apply()
     {
         Services.Configure(SageKingApplicationIceRPCOptions)
-            .AddSingleton<SageKingApplicationIceRPCService>();
+            .AddSingleton<ISageKingPackagesService, SageKingPackagesService>();
     }
 }

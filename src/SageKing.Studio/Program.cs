@@ -2,8 +2,7 @@ using BlazorPro.BlazorSize;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Options;
-using SageKing.Studio.Data;
+using Microsoft.Extensions.Options; 
 using SageKing.Studio.Middleware;
 using System.Reflection;
 using static NewLife.Remoting.ApiHttpClient;
@@ -38,8 +37,12 @@ builder.Services.AddSageKing(sk =>
         configuration.Bind(options);
     });
 
+    //add ice application
+    sk.UseSageKingApplicationIceRPC();
+
     //add sqlsugar and database base
     sk.UseSageKingApplicationAspNetCoreSqlSugar(configuration);
+     
 
 });
 
@@ -52,8 +55,6 @@ builder.Services.AddServerSideBlazor();
 
 //other services
 builder.Services.AddTransient<ExceptionHandlingMiddleware>();
-builder.Services.AddSingleton<PackagesDataService>();
-builder.Services.AddSingleton<WeatherForecastService>();
 
 builder.Services.AddMediaQueryService();
 builder.Services.AddResizeListener(options =>

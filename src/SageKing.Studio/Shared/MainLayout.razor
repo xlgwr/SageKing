@@ -2,7 +2,7 @@
 
 @inject ILogger<MainLayout> Logger
 @inject NotificationService _notice
-@inject PackagesDataService _package
+@inject ISageKingPackagesService _package
 @inject ReuseTabsService TabService
 
 <PageTitle>SageKing.Studio</PageTitle>
@@ -113,13 +113,13 @@
         if (!isLoadNoticeAction)
         {
             _package.NoticeAction += (msg, desc, type) =>
-        {
-            _notice.Open(new NotificationConfig()
-                {
-                    Message = msg,
-                    Description = desc
-                });
-        };
+            {
+                _notice.Open(new NotificationConfig()
+                    {
+                        Message = msg,
+                        Description = desc
+                    });
+            };
             isLoadNoticeAction = true;
         }
 

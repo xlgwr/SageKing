@@ -7,7 +7,7 @@
 
 <PageTitle>@TabTitle</PageTitle>
 
-@inject PackagesDataService dataService
+@inject ISageKingPackagesService dataService
 @if (dic == null)
 {
     <Spin size="large" Tip="Loading..." />
@@ -116,8 +116,8 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        dic = dataService.DataDic.Select(a => new Items() { Key = a.Key, Value = a.Value });
-        serverNamelst = dataService.ClientConnectionProvider.GetServerNames().ToList();
+        dic = dataService.GetMessagesDic.Select(a => new Items() { Key = a.Key, Value = a.Value });
+        serverNamelst = dataService.GetServerNames;
         await base.OnInitializedAsync();
     }
     private async void Send()
@@ -133,7 +133,7 @@ else
 
         foreach (var item in model.ServerIds)
         {
-            var result = await dataService.SendMsg(model.Message, item);
+            var result = await dataService.SendMsgAsync(model.Message, item);
         }
 
         loading = false;
