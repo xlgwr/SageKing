@@ -2,8 +2,7 @@
 
 @namespace SageKing.Studio.Pages.SageKingMessage
 
-@inject IResizeListener listener
-@implements IDisposable
+@implements ITableAutoSize
 @implements IReuseTabsPage
 
 @inject IMessageService _message
@@ -330,14 +329,21 @@ else
     BaseRenderFragment baseRender;
 
     //table height
-    string ScrollY = BrowserConsts.ScrollY;
-    string ScrollY1080 = BrowserConsts.ScrollY1080;
-    int browserHeight = BrowserConsts.browserHeight;
-    int browserHeight1080 = BrowserConsts.browserHeight1080;
-    int ScrollYOffset = BrowserConsts.ScrollYOffset;
-    bool IsSmallMedia = false;
+    #region table auto size
+    [Inject]
+    public IResizeListener listener { get; set; }
+    public Action StateHasChangedAction { get; set; }
+    public string ScrollY { get; set; } = BrowserConsts.ScrollY;
+    public string ScrollY1080 { get; set; } = BrowserConsts.ScrollY1080;
+    public int browserHeight { get; set; } = BrowserConsts.browserHeight;
+    public int browserHeight1080 { get; set; } = BrowserConsts.browserHeight1080;
+    public int ScrollYOffset { get; set; } = BrowserConsts.ScrollYOffset;
+    public bool IsSmallMedia { get; set; } = false;
     // We can also capture the browser's width / height if needed. We hold the value here.
-    BrowserWindowSize browser = new BrowserWindowSize();
+    public BrowserWindowSize browser { get; set; } = new BrowserWindowSize();
+    public bool Islarge1080_800 { get; set; } = false;
+    public string large1080_800 { get; set; } = BrowserConsts.LargeHeight1080_800;
+    #endregion
 
     //table
     ITable table;
@@ -403,20 +409,19 @@ else
     [CascadingParameter]
     public Error? Error { get; set; }
 
-    bool Islarge1080_800 = false;
-    string large1080_800 = BrowserConsts.LargeHeight1080_800;
-
     protected override async Task OnInitializedAsync()
     {
         try
         {
             baseRender = new BaseRenderFragment();
+            StateHasChangedAction = StateHasChanged;
+
             await InitTabTitle();
             await InitSelectData();
             await InitSeachMain();
             await Refresh(false);
+            await ((ITableAutoSize)this).InitTableHeight();
             await base.OnInitializedAsync();
-            await InitTableHeight();
         }
         catch (Exception ex)
         {
@@ -471,35 +476,10 @@ else
         if (firstRender)
         {
             // Subscribe to the OnResized event. This will do work when the browser is resized.
-            listener.OnResized += WindowResized;
+            listener.OnResized += ((ITableAutoSize)this).WindowResized;
         }
-       
     }
 
-    void IDisposable.Dispose()
-    {
-        // Always use IDisposable in your component to unsubscribe from the event.
-        // Be a good citizen and leave things how you found them.
-        // This way event handlers aren't called when nobody is listening.
-        listener.OnResized -= WindowResized;
-    }
-
-    // This method will be called when the window resizes.
-    // It is ONLY called when the user stops dragging the window's edge. (It is already throttled to protect your app from perf. nightmares)
-    async void WindowResized(object _, BrowserWindowSize window)
-    {
-        // Get the browsers's width / height
-        browser = window;
-
-        // Check a media query to see if it was matched. We can do this at any time, but it's best to check on each resize
-        IsSmallMedia = await listener.MatchMedia(Breakpoints.SmallDown);
-
-        browserHeight = browser.Height <= 0 ? browserHeight : browser.Height;
-        ScrollY = $"{(browserHeight - ScrollYOffset)}px";
-
-        // We're outside of the component's lifecycle, be sure to let it know it has to re-render.
-        StateHasChanged();
-    }
     #endregion
 
     async Task Refresh(bool notice = true)
