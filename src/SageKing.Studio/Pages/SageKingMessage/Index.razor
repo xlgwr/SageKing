@@ -40,7 +40,7 @@
                 }
             }
             await Refresh(false);
-            await _message.Success($"{modelTitle}【{addModel.Name}】成功！");
+            _ = _message.Success($"{modelTitle}【{addModel.Name}】成功！");
             _visible = false;
             addloading = false;
         }
@@ -80,7 +80,7 @@
             {
                 getParent.Children = await QueryChildList(addchildModel.MessageId);
             }
-            await _message.Success($"{modelTitle}【{addchildModel.Name}】成功！");
+            _ = _message.Success($"{modelTitle}【{addchildModel.Name}】成功！");
             _visibleChild = false;
             addchildloading = false;
         }
@@ -116,7 +116,7 @@
 
                     if (result == 2)
                     {
-                        await _message.Warning("当前消息结构,已有对应属性，无需再次导入！");
+                        _ = _message.Warning("当前消息结构,已有对应属性，无需再次导入！");
                     }
                     return;
                 }
@@ -128,7 +128,7 @@
             {
                 getParent.Children = await QueryChildList(messageId);
             }
-            await _message.Success($"【{getParent?.Name}】{modelTitle}成功！");
+            _ = _message.Success($"【{getParent?.Name}】{modelTitle}成功！");
             _visibleImport = false;
             loadingImport = false;
         }
@@ -172,7 +172,7 @@ else
                     </Select>
                 </SpaceItem>
                 <SpaceItem>
-                    <Search Placeholder="消息名称" @bind-Value="searchModel.Name" OnSearch="()=>OnSearch(pageargs)" AllowClear="true" />
+                    <Search Placeholder="消息名称" @bind-Value="searchModel.Name" OnSearch="async ()=>{await OnSearch(pageargs);Message(); }" AllowClear="true" />
                 </SpaceItem>
 
                 <SpaceItem>
@@ -324,7 +324,7 @@ else
 @code {
 
     bool loading;
-    static bool IsfirstRender = false;
+    bool IsfirstRender = false;
 
     BaseRenderFragment baseRender;
 
@@ -349,6 +349,7 @@ else
     ITable table;
     bool tableLoading;
     string selectionType = "checkbox";
+    bool isOnRowExpand = false;
     RenderFragment<PaginationTotalContext> showTotal = ctx => @<div class="showTotal">Total: <b>@ctx.Total</b></div>;
 
     //search
@@ -471,12 +472,13 @@ else
         return SelectDataType?.Children?.FirstOrDefault(a => a.ValueInt == type)?.CodeValue;
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override void OnAfterRender(bool firstRender)
     {
         if (firstRender)
         {
             // Subscribe to the OnResized event. This will do work when the browser is resized.
             listener.OnResized += ((ITableAutoSize)this).WindowResized;
+            IsfirstRender = firstRender;
         }
     }
 
@@ -484,13 +486,15 @@ else
 
     async Task Refresh(bool notice = true)
     {
-        tableLoading = true;
         await OnSearch(pageargs);
-        table?.CollapseAll();
-        tableLoading = false;
+        if (isOnRowExpand)
+        {
+            table?.CollapseAll();
+            isOnRowExpand = false;
+        }
         if (notice)
         {
-            await _message.Success("刷新成功!");
+            _ = _message.Success("刷新成功!");
         }
     }
 
@@ -542,6 +546,7 @@ else
 
     private async void OnRowExpand(RowData<SysSageKingMessage> data)
     {
+        isOnRowExpand = true;
         data.Data.Children = await QueryChildList(data.Data.Id);
         attrNames = data.Data.Children.Select(a => a.Name).ToList();
     }
@@ -597,7 +602,7 @@ else
                 Expression<Func<SysSageKingMessage, object>> updatefunc = a => new { a.Status };
 
                 await dataService.Update(entity, updatefunc);
-                await _message.Success($"{content} 成功", 2);
+                _ = _message.Success($"{content} 成功", 2);
             }
             else
             {
@@ -617,7 +622,7 @@ else
         pageData.Total -= 1;
         table.ResetData();
         await dataService.Delete(row.Id);
-        await _message.Success($"删除【{row.Name}】成功", 2);
+        _ = _message.Success($"删除【{row.Name}】成功", 2);
     }
     #endregion
 
@@ -655,7 +660,7 @@ else
                 Expression<Func<SysSageKingMessageAttribute, object>> updatefunc = a => new { a.Status };
 
                 await dataDetailService.Update(entity, updatefunc);
-                await _message.Success($"{content} 成功", 2);
+                _ = _message.Success($"{content} 成功", 2);
             }
             else
             {
@@ -674,8 +679,12 @@ else
         await dataDetailService.Delete(row.Id);
         var result = parent.Children.Where(a => a.Id != row.Id).ToList();
         parent.Children = result;
-        await _message.Success($"删除【{row.Name}】成功", 2);
+        _ = _message.Success($"删除【{row.Name}】成功", 2);
     }
 
+    void Message(string msg = "查询成功")
+    {
+        _ = _message.Success(msg);
+    }
     #endregion
 }
