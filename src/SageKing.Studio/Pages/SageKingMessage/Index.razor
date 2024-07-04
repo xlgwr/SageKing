@@ -16,7 +16,7 @@
 
 @using SageKing.Studio.Pages.SysSageKingMessage.component
 
-<PageTitle>消息结构定义</PageTitle>
+<PageTitle>@TabTitle</PageTitle>
 
 @{
 
@@ -321,27 +321,6 @@ else
     .ant-table-body {
         height: @ScrollY;
     }
-
-    .showTotal {
-        margin: 3.5px 0 0 5px;
-    }
-
-    .childTable {
-        box-shadow: 0px 0px 0.5px 0.5px #aaa;
-    }
-
-    .my-custom-pagination {
-        margin: 12px 0 0 0;
-    }
-
-    .ant-table-pagination.ant-pagination {
-        margin: 12px 0 0 0;
-    }
-
-    .my-custom-pagination .ant-pagination-item,
-    .my-custom-pagination .ant-pagination-item-link {
-        border-radius: 100%;
-    }
 </style>
 @code {
 
@@ -351,11 +330,11 @@ else
     BaseRenderFragment baseRender;
 
     //table height
-    string ScrollY = "430px";
-    string ScrollY1080 = "650px";
-    int browserHeight = 700;
-    int browserHeight1080 = 924;
-    int ScrollYOffset = 280;
+    string ScrollY = BrowserConsts.ScrollY;
+    string ScrollY1080 = BrowserConsts.ScrollY1080;
+    int browserHeight = BrowserConsts.browserHeight;
+    int browserHeight1080 = BrowserConsts.browserHeight1080;
+    int ScrollYOffset = BrowserConsts.ScrollYOffset;
     bool IsSmallMedia = false;
     // We can also capture the browser's width / height if needed. We hold the value here.
     BrowserWindowSize browser = new BrowserWindowSize();

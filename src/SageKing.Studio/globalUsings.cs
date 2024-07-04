@@ -19,6 +19,7 @@ global using SageKing.IceRPC.Server.Options;
 
 global using SageKing.Cache.Contracts;
 global using SageKing.IceRPC.Contracts;
+global using SageKing.Studio.Contracts;
 
 global using SageKing.Database.Contracts;
 global using SageKing.Database.SqlSugar.Contracts;

@@ -2,70 +2,17 @@
 
 @namespace SageKing.Studio.Pages.ClientList
 
-@attribute [ReuseTabsPageTitle("客户端管理中心")]
+@inject IResizeListener listener
+@implements IDisposable
+@implements IReuseTabsPage
 
-<PageTitle>客户端管理中心</PageTitle>
+<PageTitle>TabTitle</PageTitle>
 
+@inject SysMenuService _sysMenuService
 @inject ISageKingPackagesService dataService
 
-@if (dic == null)
-{
-    <Spin size="large" Tip="Loading..." />
-}
-else
-{
-    <Card Title="消息推送">
-
-        <Form @ref="form"
-              Model="@model"
-              ValidateOnChange="true"
-              LabelColSpan="3">
-
-            <FormItem Label="推送内容">
-                <TextArea ShowCount MaxLength="200" Placeholder="输入推送内容" @ref="inputMessageRef" @bind-Value="@context.Message"></TextArea>
-            </FormItem>
-
-            <FormItem Label="客户端" HasFeedback>
-                <Select Mode="multiple"
-                        Placeholder="请选择客户端"
-                        @bind-Values="@context.ConnectIds"
-                        TItemValue="string"
-                        TItem="string"
-                        OnSelectedItemsChanged="OnSelectedItemsChangedHandler"
-                        Style="width: 100%; margin-bottom: 8px;"
-                        EnableSearch
-                        AllowClear>
-                    <SelectOptions>
-                        @foreach (var item in dic)
-                        {
-                            <SelectOption TItemValue="string" TItem="string" Value=@item.Key Label=@($"{item.Value.ClientId}:{item.Value.ClientTypeDesc}") />
-                        }
-                    </SelectOptions>
-                </Select>
-            </FormItem>
-
-            <FormItem WrapperColOffset="1">
-                <Button Type="@ButtonType.Primary" @onclick="Push" Loading="@loading">推送</Button>
-                <label class="validation-message">@Notice</label>
-            </FormItem>
-
-        </Form>
-
-    </Card>
-    <Card Title="客户端列表">
-        <Table @ref="table" TItem="Items" DataSource="@dic"
-               @bind-SelectedRows="@selectedRows" RowKey="a=>a.Key" OnRowClick="OnRowClick">
-
-            <Selection Key="@context.Key" Type="@selectionType"></Selection>
-
-            <PropertyColumn Property="c=>c.Key" Title="ConnectId"></PropertyColumn>
-            <PropertyColumn Property="c=>c.Value.ToString()" Title="Details"></PropertyColumn>
-        </Table>
-    </Card>
-}
-
 @code {
-    class Model
+    class PushModel
     {
         [Required]
         public string Message { get; set; }
@@ -73,45 +20,224 @@ else
         [RequiredList]
         public IEnumerable<string> ConnectIds { get; set; }
     }
-
-    class Items
-    {
-        public string Key { get; set; }
-        public ClientConnectionInfo<IConnectionContext> Value { get; set; }
-
-    }
 }
 
+@if (dic == null)
+{
+    <Spin size="large" Tip="Loading..." />
+}
+else
+{
+    <Table @ref="table" TItem="ClientConnectionInfo<IConnectionContext>"
+           DataSource="@dic" RowKey="a=>a.ConnectionId"
+           OnRowClick="OnRowClick" @bind-SelectedRows="@selectedRows"
+           Size="TableSize.Small" Loading="tableLoading" Resizable Bordered EnableVirtualization
+           ScrollY="@ScrollY" PageSize="20">
+
+        <TitleTemplate>
+            <Form @ref="form"
+                  Model="@model"
+                  ValidateOnChange="true">
+                <Space>
+                    <SpaceItem>
+                        <Select Mode="multiple"
+                                Placeholder="请选择客户端"
+                                @bind-Values="@model.ConnectIds"
+                                DataSource="@ConnectIdsSelect"
+                                LabelName="@nameof(KeyValue<string,string>.Value)"
+                                ValueName="@nameof(KeyValue<string,string>.Key)"
+                                Style="min-width:150px; width: auto;"
+                                TItemValue="string"
+                                TItem="KeyValue<string,string>"
+                                OnSelectedItemsChanged="OnSelectedItemsChangedHandler"
+                                EnableSearch
+                                AllowClear>
+                        </Select>
+                    </SpaceItem>
+                    <SpaceItem>
+                        <Input @ref=inputMessageRef Placeholder="输入推送内容" @bind-Value="model.Message" AllowClear="true" ShowCount MaxLength="200" />
+                    </SpaceItem>
+                    <SpaceItem>
+                        <Button Type="@ButtonType.Primary" @onclick="Push" Loading="@loading">推送</Button>
+                    </SpaceItem>
+                    <SpaceItem>
+                        <Button Type="@ButtonType.Primary" Icon="@IconType.Outline.Reload" OnClick="()=>ReSet()">重置</Button>
+                    </SpaceItem>
+                    <SpaceItem>
+                        <label class="validation-message">@Notice</label>
+                    </SpaceItem>
+                </Space>
+            </Form>
+        </TitleTemplate>
+
+        <ColumnDefinitions>
+            <Selection Key="@context.ConnectionId" Type="@selectionType"></Selection>
+
+            <PropertyColumn Property="c=>c.ClientId" Title="ClientId"></PropertyColumn>
+            <PropertyColumn Property="c=>c.ClientType" Title="ClientType"></PropertyColumn>
+            <PropertyColumn Property="c=>c.ClientTypeDesc" Title="Desc"></PropertyColumn>
+            <PropertyColumn Property="c=>c.RemoteAddress" Title="RemoteAddress"></PropertyColumn>
+            <PropertyColumn Property="c=>c.IceProxyId" Title="IceProxyId"></PropertyColumn>
+            <PropertyColumn Property="c=>c.LoginDateTime" Title="LoginDateTime"></PropertyColumn>
+            <PropertyColumn Property="c=>c.ConnectionId" Title="ConnectionId"></PropertyColumn>
+
+        </ColumnDefinitions>
+
+        <PaginationTemplate>
+            <Pagination ShowTotal="showTotal" Class="@(context.PaginationClass + " my-custom-pagination")"
+                        Total="context.Total"
+                        PageSize="context.PageSize"
+                        Current="context.PageIndex"
+                        ShowSizeChanger
+                        ShowQuickJumper />
+        </PaginationTemplate>
+    </Table>
+
+}
+<style>
+    .ant-table-body {
+        height: @ScrollY;
+    }
+</style>
 @code {
 
     bool loading;
+    static bool IsfirstRender = false;
 
-    Model model = new Model();
-    AntDesign.Form<Model> form;
+    PushModel model = new PushModel();
+    AntDesign.Form<PushModel> form;
 
     string Notice = string.Empty;
     AntDesign.Input<string> inputMessageRef;
 
+    //table height
+    string ScrollY = BrowserConsts.ScrollY;
+    string ScrollY1080 = BrowserConsts.ScrollY1080;
+    int browserHeight = BrowserConsts.browserHeight;
+    int browserHeight1080 = BrowserConsts.browserHeight1080;
+    int ScrollYOffset = BrowserConsts.ScrollYOffset;
+    bool IsSmallMedia = false;
+    // We can also capture the browser's width / height if needed. We hold the value here.
+    BrowserWindowSize browser = new BrowserWindowSize();
+
+    //table
     ITable table;
+    bool tableLoading;
     string selectionType = "checkbox";
-    IEnumerable<Items> dic;
-    IEnumerable<Items> selectedRows;
+    RenderFragment<PaginationTotalContext> showTotal = ctx => @<div class="showTotal">Total: <b>@ctx.Total</b></div>;
+
+    IEnumerable<ClientConnectionInfo<IConnectionContext>> dic;
+    IEnumerable<ClientConnectionInfo<IConnectionContext>> selectedRows;
+    IEnumerable<KeyValue<string, string>> ConnectIdsSelect;
+
+    #region init
+    #region menu
+    [SupplyParameterFromQuery(Name = "menuid")]
+    public long menuid { get; set; }
 
     [Parameter]
-    public long menuid { get; set; }
+    public string TabTitle { get; set; } = "客户端管理中心";
+
+    [Parameter]
+    public string TabIcon { get; set; } = "home";
+
+    public RenderFragment GetPageTitle() =>
+    @<div>
+        <Icon Type="@TabIcon" /> @TabTitle
+    </div>
+    ;
+    #endregion
+
+    [CascadingParameter]
+    public Error? Error { get; set; }
+
+    bool Islarge1080_800 = false;
+    string large1080_800 => Breakpoints.Between("(max-Height: 1080px)", "(min-Height: 800px)");
+
 
     protected override async Task OnInitializedAsync()
     {
-        dic = dataService.GetClientConnectionDic.Select(a => new Items() { Key = a.Key, Value = a.Value });
-        selectedRows = new List<Items>();
+        await InitTabTitle();
+        await InitSelectData();
+        await InitTableHeight();
+
         await base.OnInitializedAsync();
     }
 
-    private void OnSelectedItemsChangedHandler(IEnumerable<string> values)
+    async Task InitTabTitle()
+    {
+        if (menuid <= 0)
+        {
+            return;
+        }
+        var getmenu = await _sysMenuService.GetMenuCacheAsync(menuid);
+        if (getmenu == null)
+        {
+            return;
+        }
+        TabIcon = getmenu.Icon.NullOrWhiteSpaceToDefault("home");
+        TabTitle = getmenu.Title;
+    }
+
+    async Task InitTableHeight()
+    {
+        Islarge1080_800 = await listener.MatchMedia(large1080_800);
+        ScrollY = Islarge1080_800 ? ScrollY1080 : ScrollY;
+        browserHeight = Islarge1080_800 ? browserHeight1080 : browserHeight;
+    }
+
+    async Task InitSelectData()
+    {
+        dic = dataService.GetClientConnectionDic.Values.ToList();
+        selectedRows = new List<ClientConnectionInfo<IConnectionContext>>();
+        ConnectIdsSelect = dic.Select(a => new KeyValue<string, string>(a.ConnectionId, $"{a.ClientId}:{a.ClientTypeDesc}"));
+    }
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Subscribe to the OnResized event. This will do work when the browser is resized.
+            listener.OnResized += WindowResized;
+        }
+    }
+
+    void IDisposable.Dispose()
+    {
+        // Always use IDisposable in your component to unsubscribe from the event.
+        // Be a good citizen and leave things how you found them.
+        // This way event handlers aren't called when nobody is listening.
+        listener.OnResized -= WindowResized;
+    }
+
+    // This method will be called when the window resizes.
+    // It is ONLY called when the user stops dragging the window's edge. (It is already throttled to protect your app from perf. nightmares)
+    async void WindowResized(object _, BrowserWindowSize window)
+    {
+        // Get the browsers's width / height
+        browser = window;
+
+        // Check a media query to see if it was matched. We can do this at any time, but it's best to check on each resize
+        IsSmallMedia = await listener.MatchMedia(Breakpoints.SmallDown);
+
+        browserHeight = browser.Height <= 0 ? browserHeight : browser.Height;
+        ScrollY = $"{(browserHeight - ScrollYOffset)}px";
+
+        // We're outside of the component's lifecycle, be sure to let it know it has to re-render.
+        StateHasChanged();
+    }
+
+    #endregion
+
+    void ReSet()
+    {
+        model = new PushModel();
+    }
+
+    private void OnSelectedItemsChangedHandler(IEnumerable<KeyValue<string, string>> values)
     {
         if (values != null)
         {
-            table.SetSelection(values.Distinct().ToArray());
+            table.SetSelection(values.Select(a => a.Key).Distinct().ToArray());
         }
         else
         {
@@ -124,7 +250,10 @@ else
 
         if (!form.Validate())
         {
-            return;
+            if (!(model.Message.IsNotNullOrWhiteSpace() && selectedRows.Count() > 0))
+            {
+                return;
+            }
         };
 
         Notice = $"开始推送:{selectedRows.Count()}个客户端";
@@ -133,7 +262,7 @@ else
 
         foreach (var item in selectedRows)
         {
-            var result = await dataService.PushMsgAsync(model.Message, item.Key);
+            var result = await dataService.PushMsgAsync(model.Message, item.ConnectionId);
         }
 
         loading = false;
@@ -146,27 +275,27 @@ else
         StateHasChanged();
     }
 
-    void OnRowClick(RowData<Items> row)
+    void OnRowClick(RowData<ClientConnectionInfo<IConnectionContext>> row)
     {
-        if (selectedRows.Where(a => a.Key == row.Data.Key).Any())
+        if (selectedRows.Where(a => a.ConnectionId == row.Data.ConnectionId).Any())
         {
-            RemoveSelection(row.Data.Key);
+            RemoveSelection(row.Data.ConnectionId);
         }
         else
         {
-            AddSelection(row.Data.Key);
+            AddSelection(row.Data.ConnectionId);
         }
     }
 
     void RemoveSelection(string key)
     {
-        var selected = selectedRows.Where(x => x.Key != key).ToList();
-        table.SetSelection(selected.Select(x => x.Key).ToArray());
+        var selected = selectedRows.Where(x => x.ConnectionId != key).ToList();
+        table.SetSelection(selected.Select(x => x.ConnectionId).ToArray());
     }
 
     void AddSelection(string key)
     {
-        var currlist = selectedRows.Select(a => a.Key).ToList();
+        var currlist = selectedRows.Select(a => a.ConnectionId).ToList();
         currlist.Add(key);
         table.SetSelection(currlist.ToArray());
     }
