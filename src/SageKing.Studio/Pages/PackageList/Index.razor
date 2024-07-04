@@ -2,78 +2,20 @@
 
 @namespace SageKing.Studio.Pages.PackageList
 
-@implements IReuseTabsPage
 @attribute [ReuseTabsPage(Title = "消息管理中心", Closable = false, Pin = true)]
 
-<PageTitle>@TabTitle</PageTitle>
+@inject IResizeListener listener
+@implements IDisposable
+@implements IReuseTabsPage
 
+<PageTitle>TabTitle</PageTitle>
+
+@inject SysMenuService _sysMenuService
 @inject ISageKingPackagesService dataService
-@if (dic == null)
-{
-    <Spin size="large" Tip="Loading..." />
-}
-else
-{
-    <TagTwotone TwoToneColor="@(["red","yellow"])" />
-
-    <LoadingOutlined Spin />
-
-    <SmileOutlined Rotate="180" />
-    <Card Title="消息发送">
-
-        <Form @ref="form"
-              Model="@model"
-              ValidateOnChange="true"
-              LabelColSpan="3">
-
-            <FormItem Label="发送内容">
-                <TextArea ShowCount MaxLength="200" Placeholder="输入发送内容" @ref="inputMessageRef" @bind-Value="@context.Message"></TextArea>
-            </FormItem>
-
-            <FormItem Label="服务端" HasFeedback>
-                <Select DataSource="@serverNamelst"
-                        Mode="multiple"
-                        Placeholder="请选择服务端"
-                        @bind-Values="@context.ServerIds"
-                        TItemValue="string"
-                        TItem="string"
-                        Style="width: 100%; margin-bottom: 8px;"
-                        EnableSearch
-                        AllowClear>
-                </Select>
-            </FormItem>
-
-            <FormItem WrapperColOffset="1">
-                <Button Type="@ButtonType.Primary" @onclick="Send" Loading="@loading">发送</Button>
-                <label class="validation-message">@Notice</label>
-            </FormItem>
-
-        </Form>
-
-    </Card>
-    <Card Title="消息列表">
-
-        <Table @ref="table" TItem="Items" DataSource="@dic"
-               @bind-SelectedRows="@selectedRows" RowKey="a=>a.Key">
-
-            <Selection Key="@context.Key" Type="@selectionType"></Selection>
-            <PropertyColumn Property="c=>c.Key" Title="MsgType"></PropertyColumn>
-            <PropertyColumn Property="c=>c.Value.Count" Title="Count"></PropertyColumn>
-            <Column TData="Items" Title="Message">
-                <ul>
-                    @foreach (var item in context.Value)
-                    {
-                        <li>@item.GetString().FirstOrDefault()</li>
-                    }
-                </ul>
-            </Column>
-        </Table>
-    </Card>
-}
 
 @code {
 
-    class Model
+    class SendModel
     {
         [Required]
         public string Message { get; set; }
@@ -81,49 +23,229 @@ else
         [RequiredList]
         public IEnumerable<string> ServerIds { get; set; }
     }
-
-    class Items
-    {
-        public string Key { get; set; }
-        public List<StreamPackage[]> Value { get; set; }
-
-    }
 }
 
+@if (dic == null)
+{
+    <Spin size="large" Tip="Loading..." />
+}
+else
+{
+    <Table @ref="table" TItem="KeyValue<string,List<StreamPackage[]>>" DataSource="@dic"
+           @bind-SelectedRows="@selectedRows" RowKey="a=>a.Key" Size="TableSize.Small" Loading="tableLoading" Resizable Bordered EnableVirtualization ScrollY="@ScrollY" PageSize="20">
+        <TitleTemplate>
+            <Form @ref="form"
+                  Model="@model"
+                  ValidateOnChange="true">
+                <Space>
+                    <SpaceItem>
+                        <Select DataSource="@serverNamelst"
+                                Mode="multiple"
+                                Placeholder="请选择服务端"
+                                @bind-Values="@model.ServerIds"
+                                TItemValue="string"
+                                TItem="string"
+                                Style="min-width:150px; width: auto;"
+                                EnableSearch
+                                AllowClear>
+                        </Select>
+                    </SpaceItem>
+                    <SpaceItem>
+                        <Input @ref=inputMessageRef Placeholder="输入发送内容" @bind-Value="model.Message" AllowClear="true" ShowCount MaxLength="200" />
+                    </SpaceItem>
+                    <SpaceItem>
+                        <Button Type="@ButtonType.Primary" @onclick="Send" Loading="@loading">发送</Button>
+                    </SpaceItem>
+                    <SpaceItem>
+                        <Button Type="@ButtonType.Primary" Icon="@IconType.Outline.Reload" OnClick="()=>ReSet()">重置</Button>
+                    </SpaceItem>
+                    <SpaceItem>
+                        <label class="validation-message">@Notice</label>
+                    </SpaceItem>
+                </Space>
+            </Form>
+        </TitleTemplate>
+
+        <ColumnDefinitions>
+            <Selection Key="@context.Key" Type="@selectionType"></Selection>
+            <PropertyColumn Property="c=>c.Key" Title="消息类型"></PropertyColumn>
+            <PropertyColumn Property="c=>c.Value.Count" Title="计数"></PropertyColumn>
+            <Column TData="KeyValue<string,List<StreamPackage[]>>" Title="内容">
+                <ul>
+                    @foreach (var item in context.Value)
+                    {
+                        <li>@item.GetString().FirstOrDefault()</li>
+                    }
+                </ul>
+            </Column>
+        </ColumnDefinitions>
+        <PaginationTemplate>
+            <Pagination ShowTotal="showTotal" Class="@(context.PaginationClass + " my-custom-pagination")"
+                        Total="context.Total"
+                        PageSize="context.PageSize"
+                        Current="context.PageIndex"
+                        ShowSizeChanger
+                        ShowQuickJumper />
+        </PaginationTemplate>
+    </Table>
+}
+
+<style>
+    .ant-table-body {
+        height: @ScrollY;
+    }
+</style>
+
 @code {
-
     bool loading;
+    static bool IsfirstRender = false;
 
-    Model model = new Model();
-    AntDesign.Form<Model> form;
+    SendModel model = new SendModel();
+    AntDesign.Form<SendModel> form;
 
     string Notice = string.Empty;
     AntDesign.Input<string> inputMessageRef;
 
+    //table height
+    string ScrollY = BrowserConsts.ScrollY;
+    string ScrollY1080 = BrowserConsts.ScrollY1080;
+    int browserHeight = BrowserConsts.browserHeight;
+    int browserHeight1080 = BrowserConsts.browserHeight1080;
+    int ScrollYOffset = BrowserConsts.ScrollYOffset;
+    bool IsSmallMedia = false;
+    // We can also capture the browser's width / height if needed. We hold the value here.
+    BrowserWindowSize browser = new BrowserWindowSize();
+
+    //table
     ITable table;
+    bool tableLoading;
     string selectionType = "checkbox";
+    List<string> serverNamelst;
+    RenderFragment<PaginationTotalContext> showTotal = ctx => @<div class="showTotal">Total: <b>@ctx.Total</b></div>;
 
-    List<string> serverNamelst = new List<string>();
-    IEnumerable<Items> dic;
-    IEnumerable<Items> selectedRows;
+    IEnumerable<KeyValue<string, List<StreamPackage[]>>> dic;
+    IEnumerable<KeyValue<string, List<StreamPackage[]>>> selectedRows;
 
-    [Parameter]
+    #region init
+    #region menu
+    [SupplyParameterFromQuery(Name = "menuid")]
     public long menuid { get; set; }
 
     [Parameter]
     public string TabTitle { get; set; } = "消息管理中心";
 
+    [Parameter]
+    public string TabIcon { get; set; } = "home";
+
     public RenderFragment GetPageTitle() =>
     @<div>
-        <Icon Type="home" /> @TabTitle
+        <Icon Type="@TabIcon" /> @TabTitle
     </div>
     ;
+    #endregion
+
+    [CascadingParameter]
+    public Error? Error { get; set; }
+
+    bool Islarge1080_800 = false;
+    string large1080_800 = BrowserConsts.LargeHeight1080_800;
+
 
     protected override async Task OnInitializedAsync()
     {
-        dic = dataService.GetMessagesDic.Select(a => new Items() { Key = a.Key, Value = a.Value });
+        try
+        {
+            await InitSelectData();
+            await base.OnInitializedAsync();
+            await InitTableHeight();
+        }
+        catch (Exception ex)
+        {
+            Error?.ProcessError(ex, TabTitle);
+        }
+
+        // await InitTabTitle();
+    }
+
+    async Task InitTabTitle()
+    {
+        if (menuid <= 0)
+        {
+            return;
+        }
+        var getmenu = await _sysMenuService.GetMenuCacheAsync(menuid);
+        if (getmenu == null)
+        {
+            return;
+        }
+        TabIcon = getmenu.Icon.NullOrWhiteSpaceToDefault("home");
+        TabTitle = getmenu.Title;
+    }
+    /// <summary>
+    /// 首次加载无效
+    /// </summary>
+    /// <returns></returns>
+    async Task InitTableHeight()
+    {
+        try
+        {
+            if (Islarge1080_800)
+            {
+                return;
+            }
+            Islarge1080_800 = await listener.MatchMedia(large1080_800);
+            ScrollY = Islarge1080_800 ? ScrollY1080 : ScrollY;
+            browserHeight = Islarge1080_800 ? browserHeight1080 : browserHeight;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+    }
+
+    async Task InitSelectData()
+    {
+        dic = dataService.GetMessagesDic.Select(a => new KeyValue<string, List<StreamPackage[]>>(a.Key, a.Value));
         serverNamelst = dataService.GetServerNames;
-        await base.OnInitializedAsync();
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Subscribe to the OnResized event. This will do work when the browser is resized.
+            listener.OnResized += WindowResized;
+        }
+    }
+
+    void IDisposable.Dispose()
+    {
+        // Always use IDisposable in your component to unsubscribe from the event.
+        // Be a good citizen and leave things how you found them.
+        // This way event handlers aren't called when nobody is listening.
+        listener.OnResized -= WindowResized;
+    }
+
+    // This method will be called when the window resizes.
+    // It is ONLY called when the user stops dragging the window's edge. (It is already throttled to protect your app from perf. nightmares)
+    async void WindowResized(object _, BrowserWindowSize window)
+    {
+        // Get the browsers's width / height
+        browser = window;
+
+        // Check a media query to see if it was matched. We can do this at any time, but it's best to check on each resize
+        IsSmallMedia = await listener.MatchMedia(Breakpoints.SmallDown);
+
+        browserHeight = browser.Height <= 0 ? browserHeight : browser.Height;
+        ScrollY = $"{(browserHeight - ScrollYOffset)}px";
+
+        // We're outside of the component's lifecycle, be sure to let it know it has to re-render.
+        StateHasChanged();
+    }
+
+    #endregion
+    void ReSet()
+    {
+        model = new SendModel();
     }
     private async void Send()
     {
@@ -148,16 +270,6 @@ else
 
         await inputMessageRef.Focus();
 
-        StateHasChanged();
-    }
-
-    async Task OnRowExpand(RowData<KeyValuePair<string, List<StreamPackage[]>>> rowData)
-    {
-        if (rowData.Data.Value != null)
-        {
-            return;
-        }
-        await Task.CompletedTask;
         StateHasChanged();
     }
 }

@@ -152,16 +152,21 @@ else
     public Error? Error { get; set; }
 
     bool Islarge1080_800 = false;
-    string large1080_800 => Breakpoints.Between("(max-Height: 1080px)", "(min-Height: 800px)");
-
+    string large1080_800 = BrowserConsts.LargeHeight1080_800;
 
     protected override async Task OnInitializedAsync()
     {
-        await InitTabTitle();
-        await InitSelectData();
-        await InitTableHeight();
-
-        await base.OnInitializedAsync();
+        try
+        {
+            await InitTabTitle();
+            await InitSelectData();
+            await base.OnInitializedAsync();
+            await InitTableHeight();
+        }
+        catch (Exception ex)
+        {
+            Error?.ProcessError(ex);
+        }
     }
 
     async Task InitTabTitle()
@@ -181,6 +186,10 @@ else
 
     async Task InitTableHeight()
     {
+        if (Islarge1080_800)
+        {
+            return;
+        }
         Islarge1080_800 = await listener.MatchMedia(large1080_800);
         ScrollY = Islarge1080_800 ? ScrollY1080 : ScrollY;
         browserHeight = Islarge1080_800 ? browserHeight1080 : browserHeight;
@@ -192,7 +201,7 @@ else
         selectedRows = new List<ClientConnectionInfo<IConnectionContext>>();
         ConnectIdsSelect = dic.Select(a => new KeyValue<string, string>(a.ConnectionId, $"{a.ClientId}:{a.ClientTypeDesc}"));
     }
-    protected override void OnAfterRender(bool firstRender)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {

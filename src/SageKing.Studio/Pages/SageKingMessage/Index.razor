@@ -404,7 +404,7 @@ else
     public Error? Error { get; set; }
 
     bool Islarge1080_800 = false;
-    string large1080_800 => Breakpoints.Between("(max-Height: 1080px)", "(min-Height: 800px)");
+    string large1080_800 = BrowserConsts.LargeHeight1080_800;
 
     protected override async Task OnInitializedAsync()
     {
@@ -415,8 +415,8 @@ else
             await InitSelectData();
             await InitSeachMain();
             await Refresh(false);
-            await InitTableHeight();
             await base.OnInitializedAsync();
+            await InitTableHeight();
         }
         catch (Exception ex)
         {
@@ -447,6 +447,10 @@ else
 
     async Task InitTableHeight()
     {
+        if (Islarge1080_800)
+        {
+            return;
+        }
         Islarge1080_800 = await listener.MatchMedia(large1080_800);
         ScrollY = Islarge1080_800 ? ScrollY1080 : ScrollY;
         browserHeight = Islarge1080_800 ? browserHeight1080 : browserHeight;
@@ -462,13 +466,14 @@ else
         return SelectDataType?.Children?.FirstOrDefault(a => a.ValueInt == type)?.CodeValue;
     }
 
-    protected override void OnAfterRender(bool firstRender)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             // Subscribe to the OnResized event. This will do work when the browser is resized.
             listener.OnResized += WindowResized;
         }
+       
     }
 
     void IDisposable.Dispose()
