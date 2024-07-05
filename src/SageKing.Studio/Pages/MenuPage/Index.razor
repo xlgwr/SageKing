@@ -2,12 +2,12 @@
 
 @namespace SageKing.Studio.Pages.MenuPage
 
-<PageTitle>菜单配置</PageTitle>
+@implements IReuseTabsPage
 
+<PageTitle>TabTitle</PageTitle>
+
+@inject IMessageService _message
 @inject SysMenuService dataService
-
-<h2>菜单配置</h2>
-<br />
 
 @if (data == null)
 {
@@ -15,56 +15,164 @@
 }
 else
 {
-    <Table @ref="table" TItem="SysMenu" DataSource="@data"
-           @bind-SelectedRows="@selectedRows" RowKey="a=>a.Id" OnRowClick="OnRowClick">
-
-        <Selection Key="@context.Id.ToString()" Type="@selectionType"></Selection>
-
-        <PropertyColumn Property="c=>c.Id" Title="Id"></PropertyColumn>
-        <PropertyColumn Property="c=>c.Name" Title="Name"></PropertyColumn>
-    </Table>
+    <Search @bind-Value="@searchKey" Placeholder="Search.." BindOnInput />
+    <Tree TItem="SysMenu"
+          DataSource="data" @ref="_tree" Draggable BlockNode ShowIcon ShowLine
+          SwitcherIcon="down"
+          TitleExpression="x => x.DataItem.Title"
+          ChildrenExpression="x => x.DataItem.Children"
+          IconExpression="x => x.DataItem.Icon"
+          IsLeafExpression="x => x.TreeLevel > 2"
+          KeyExpression="x => x.DataItem.Id.ToString()"
+          OnNodeLoadDelayAsync="OnNodeLoadDelayAsync" 
+          SearchValue="@searchKey" MatchedClass="site-tree-search-value" HideUnmatched
+          OnDrop="onDrop" OnDragEnd="OnDragEnd" OnClick="OnClick">
+        <SwitcherIconTemplate>
+            <Icon Type="down" />
+        </SwitcherIconTemplate>
+      </Tree>
 }
-
-
+<style>
+    .site-tree-search-value {
+        color: #f50;
+    }
+</style>
 @code {
 
     bool loading;
+    static bool IsfirstRender = false;
 
-    ITable table;
-    string selectionType = "checkbox";
-    IEnumerable<SysMenu>? data;
+    //tree
+    Tree<SysMenu> _tree;
+    string searchKey;
+
+    IEnumerable<SysMenu> data;
     IEnumerable<SysMenu> selectedRows;
+
+    //search
+    SysMenu searchModel;
+
+    PaginationEventArgs pageargs = new PaginationEventArgs(1, 10);
+    PageBase<SysMenu> pageData;
+
+    #region init
+    #region menu
+    [SupplyParameterFromQuery(Name = "menuid")]
+    public long menuid { get; set; }
+
+    [Parameter]
+    public string TabTitle { get; set; } = "菜单配置";
+
+    [Parameter]
+    public string TabIcon { get; set; } = "home";
+
+    public RenderFragment GetPageTitle() =>
+    @<div>
+        <Icon Type="@TabIcon" /> @TabTitle
+    </div>
+    ;
+    #endregion
+
+    [CascadingParameter]
+    public Error? Error { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        var result = await dataService.GetPage(new Database.Contracts.PageBaseInput() { Page = 1, PageSize = 20 });
-        data = result.Items;
+        try
+        {
+            await InitTabTitle();
+            await InitSelectData();
+            await Refresh(false);
+            await base.OnInitializedAsync();
+        }
+        catch (Exception ex)
+        {
+            Error?.ProcessError(ex, TabTitle);
+        }
+    }
+    async Task InitTabTitle()
+    {
+        if (menuid <= 0)
+        {
+            return;
+        }
+        var getmenu = await dataService.GetMenuCacheAsync(menuid);
+        if (getmenu == null)
+        {
+            return;
+        }
+        TabIcon = getmenu.Icon.NullOrWhiteSpaceToDefault("home");
+        TabTitle = getmenu.Title;
+    }
+    async Task InitSelectData()
+    {
+        data = await dataService.GetToTreeCacheAsync(); 
         selectedRows = new List<SysMenu>();
-        await base.OnInitializedAsync();
+        searchModel = new SysMenu();
     }
 
-    public void OnRowClick(RowData<SysMenu> row)
+    #endregion
+
+    #region tree
+    private void ExpandAll()
     {
-        if (selectedRows.Where(a => a.Id == row.Data.Id).Any())
-        {
-            RemoveSelection(row.Data.Id);
-        }
-        else
-        {
-            AddSelection(row.Data.Id);
-        }
+        _tree.ExpandAll();
     }
 
-    public void RemoveSelection(long id)
+    private void ExpandAllChild()
     {
-        var selected = selectedRows.Where(x => x.Id != id).ToList();
-        table.SetSelection(selected.Select(x => x.Id.ToString()).ToArray());
+        _tree.ExpandAll();
     }
 
-    public void AddSelection(long id)
-    {
-        var currlist = selectedRows.Select(a => a.Id.ToString()).ToList();
-        currlist.Add(id.ToString());
-        table.SetSelection(currlist.ToArray());
+    public async Task OnNodeLoadDelayAsync(TreeEventArgs<SysMenu> args)
+    { 
+        var dataItem = ((SysMenu)args.Node.DataItem);
+        // dataItem.Children.Clear();
+        //load children
     }
+
+    void OnClick(TreeEventArgs<SysMenu> e)
+    {
+        
+    }
+
+    void onDrop(TreeEventArgs<SysMenu> e)
+    {
+
+    }
+
+    void OnDragEnd(TreeEventArgs<SysMenu> e)
+    {
+
+    }
+    #endregion
+
+    async Task Refresh(bool notice = true)
+    {
+
+    }
+    void ReSet()
+    {
+        searchModel = new SysMenu();
+    }
+
+    void Message(string msg = "查询成功")
+    {
+        _ = _message.Success(msg);
+    }
+
+    #region crud
+
+    void AddData()
+    {
+        // addModel = new SysSageKingMessage();
+        // modelTitle = "消息结构新增";
+        // modelOkTitle = "保存";
+        // _visible = true;
+        // addloading = false;
+    }
+
+    #endregion
+
+
 }
