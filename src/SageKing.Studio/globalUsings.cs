@@ -22,6 +22,7 @@ global using SageKing.IceRPC.Contracts;
 global using SageKing.Studio.Contracts;
 
 global using SageKing.Database.Contracts;
+global using SageKing.Database.SqlSugar.Service;
 global using SageKing.Database.SqlSugar.Contracts;
 global using SageKing.Application.AspNetCore.SqlSugar.Contracts;
 global using SageKing.Application.AspNetCore.SqlSugar.Contracts.Entity;

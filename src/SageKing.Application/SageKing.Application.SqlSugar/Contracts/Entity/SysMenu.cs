@@ -114,7 +114,7 @@ public partial class SysMenu : EntityBase
     /// 状态
     /// </summary>
     [SugarColumn(ColumnDescription = "状态")]
-    public StatusEnum Status { get; set; } = StatusEnum.Enable;
+    public bool Status { get; set; } = true;
 
     /// <summary>
     /// 备注

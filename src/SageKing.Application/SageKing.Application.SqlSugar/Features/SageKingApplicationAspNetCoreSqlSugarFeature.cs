@@ -4,6 +4,7 @@ using SageKing.Cache.Features;
 using SageKing.Database.SqlSugar.AspNetCore;
 using SageKing.Database.SqlSugar.AspNetCore.Features;
 using SageKing.Database.SqlSugar.Features;
+using SageKing.Database.SqlSugar.Service;
 
 namespace SageKing.Application.AspNetCore.SqlSugar.Features;
 

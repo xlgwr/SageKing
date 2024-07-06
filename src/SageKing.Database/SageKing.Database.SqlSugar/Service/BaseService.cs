@@ -5,7 +5,7 @@
 /// </summary>
 /// <typeparam name="TEntity"></typeparam>
 public class BaseService<TEntity> : IBaseService<TEntity>
-    where TEntity : class, new()
+    where TEntity : EntityBase, new()
 {
     private readonly SageKingRepository<TEntity> _rep;
 

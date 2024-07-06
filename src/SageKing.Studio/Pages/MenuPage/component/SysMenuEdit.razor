@@ -1,0 +1,71 @@
+﻿@namespace SageKing.Studio.Pages.MenuPage.component
+
+@implements IAddEdit<SysMenu>
+@inject SysMenuService _dataService
+@inject SysDictTypeService selectService
+
+<Form @ref="form"
+      Model="@model" ValidateMode="FormValidateMode.Complex"
+      ValidateOnChange="true"
+      LabelColSpan="8" WrapperColSpan="16">
+
+    <Row Gutter="24">
+        <Col Span="12">
+        <FormItem Label="名称">
+            <Input ShowCount MaxLength="64" @bind-Value="@context.Name" />
+        </FormItem>
+        </Col>
+        <Col Span="12">
+        <FormItem Label="类型">
+            <EnumSelect @bind-Value="@context.Type"
+                        TEnum="MenuTypeEnum"
+                        Style="width: 100%;"
+                        Placeholder="请选菜单类型"
+                        DefaultActiveFirstOption="true"
+                        EnableSearch>
+            </EnumSelect>
+        </FormItem>
+        </Col>
+    </Row>
+    <Row Gutter="24">
+        <Col Span="12">
+        <FormItem Label="是否启用" LabelColSpan="6" WrapperColSpan="6" WrapperColOffset="4">
+            <Switch @bind-Value="@context.Status" CheckedChildren="开" UnCheckedChildren="关"></Switch>
+        </FormItem>
+        </Col>
+    </Row>
+    <Row Gutter="24">
+        <Col Span="24">
+        <FormItem Label="备注" LabelColSpan="4" WrapperColSpan="20">
+            <TextArea ShowCount MaxLength="200" Width="100%" Placeholder="备注" @bind-Value="@context.Remark"></TextArea>
+        </FormItem>
+        </Col>
+    </Row>
+</Form>
+
+@code {
+
+    #region IAddEdit
+    [Parameter]
+    public string Title { get; set; }
+
+    [Parameter]
+    public SysMenu model { get; set; }
+
+    public BaseService<SysMenu> DataService
+    { get { return _dataService; } }
+
+    public AntDesign.Form<SysMenu> form { get; set; }
+    #endregion
+
+    bool loading;
+
+    //select data
+    SysDictType SelectType;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+    }
+
+}

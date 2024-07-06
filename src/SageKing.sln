@@ -61,7 +61,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SageKing.Application.AspNet
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SageKing.AspNetCore", "SageKing.AspNetCore\SageKing.AspNetCore.csproj", "{7995D9BD-BE75-4D7E-9026-1076D5874AD3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SageKing.Application.IceRPC", "SageKing.Application\SageKing.Application.IceRPC\SageKing.Application.IceRPC.csproj", "{EE57B981-B759-4F3E-872E-A507F54006F9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SageKing.Application.IceRPC", "SageKing.Application\SageKing.Application.IceRPC\SageKing.Application.IceRPC.csproj", "{EE57B981-B759-4F3E-872E-A507F54006F9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
