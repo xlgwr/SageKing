@@ -76,9 +76,9 @@ public partial class SysMenu : EntityBase
     /// <summary>
     /// 图标
     /// </summary>
-    [SugarColumn(ColumnDescription = "图标", Length = 128)]
-    [MaxLength(128)]
-    public string? Icon { get; set; }
+    [SugarColumn(ColumnDescription = "图标", Length = 64)]
+    [Required, MaxLength(64)]
+    public string Icon { get; set; } = "home";
 
     /// <summary>
     /// 是否内嵌
@@ -115,7 +115,7 @@ public partial class SysMenu : EntityBase
     /// 排序
     /// </summary>
     [SugarColumn(ColumnDescription = "排序")]
-    public int OrderNo { get; set; } = 100; 
+    public int OrderNo { get; set; } = 100;
 
     /// <summary>
     /// 备注

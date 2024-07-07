@@ -121,7 +121,7 @@ else
                 dataService.CacheRefresh(0);
             }
             await Refresh(false);
-            _ = _message.Success($"{modelTitle}【{addModel.Name}】成功！");
+            _ = _message.Success($"{modelTitle}【{addModel.Title}】成功！");
             _visible = false;
             addloading = false;
             EditData(addModel);
@@ -129,7 +129,7 @@ else
         }
         catch (Exception ex)
         {
-            Error?.ProcessError(ex, $"{modelTitle}【{addModel.Name}】失败！");
+            Error?.ProcessError(ex, $"{modelTitle}【{addModel.Title}】失败！");
         }
     }
 
