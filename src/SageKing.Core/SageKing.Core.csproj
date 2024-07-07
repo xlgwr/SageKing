@@ -19,6 +19,7 @@
 		<PackageReference Include="Newtonsoft.Json" />
 		<PackageReference Include="System.Linq.Dynamic.Core" />
 		<PackageReference Include="System.Text.RegularExpressions" />
+		<PackageReference Include="System.Net.Http" />
 		<PackageReference Include="Microsoft.Extensions.Options" />
 		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
 		<PackageReference Include="Microsoft.Extensions.Logging" />

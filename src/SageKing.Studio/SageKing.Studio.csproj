@@ -14,16 +14,9 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\SageKing.Application\SageKing.Application.IceRPC\SageKing.Application.IceRPC.csproj" />
 	  <ProjectReference Include="..\SageKing.Application\SageKing.Application.SqlSugar\SageKing.Application.AspNetCore.SqlSugar.csproj" />
-	  <ProjectReference Include="..\SageKing.AspNetCore\SageKing.AspNetCore.csproj" />
 	  <ProjectReference Include="..\SageKing.IceRPC.Client\SageKing.IceRPC.Client.csproj" />
 	  <ProjectReference Include="..\SageKing.IceRPC.Server\SageKing.IceRPC.Server.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <PackageReference Include="AntDesign" />
-	  <PackageReference Include="AntDesign.Icons" />
-	  <PackageReference Include="BlazorPro.BlazorSize" />
-		<PackageReference Include="System.Net.Http" />
+	  <ProjectReference Include="..\SageKing.UI\SageKing.UI.Blazor.AntDesign\SageKing.UI.Blazor.SageKingAntDesign.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

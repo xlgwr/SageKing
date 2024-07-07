@@ -1,0 +1,55 @@
+﻿@namespace AntDesign
+@using AntDesign.Internal
+@inherits AntDomComponentBase
+<CascadingValue Value='$"ant-mentions-dropdown"' Name="PrefixCls" IsFixed>
+    <OverlayTrigger @ref="_overlayTrigger"
+                    Trigger="new[] { Trigger.None }"
+                    OverlayLeaveCls=""
+                    OverlayEnterCls=""
+                    HiddenMode=true
+                    InlineFlexMode=false>
+        <Overlay>
+            <CascadingValue Value=this>
+                @if (ShowOptions.Count > 0)
+                {
+                    <ul class="ant-mentions-dropdown-menu ant-mentions-dropdown-menu-root ant-mentions-dropdown-menu-vertical">
+                        @foreach (var item in ShowOptions)
+                        {
+                            <MentionsOption Value="@item.Value">@item.Display</MentionsOption>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    @ChildContent
+                }
+            </CascadingValue>
+        </Overlay>
+
+        <Unbound>
+            <div class="@ClassMapper.Class">
+                @if (TextareaTemplate == null)
+                {
+                    <textarea value="@Value"
+                          @ref="context.Current"
+                          @attributes="@Attributes"
+                          @onkeydown="OnKeyDown"
+                          @oninput="OnInput"
+                          style="@Style"
+                          class="rc-textarea"
+                          placeholder="@Placeholder"
+                          rows="@Rows" />
+                }
+                else
+                {
+                    @TextareaTemplate(new MentionsTextareaTemplateOptions{
+                        Value = Value,
+                        OnInput = OnInput,
+                        OnKeyDown = OnKeyDown,
+                        RefBack = context
+                    });
+                }
+            </div>
+        </Unbound>
+    </OverlayTrigger>
+</CascadingValue>

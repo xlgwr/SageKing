@@ -9,6 +9,13 @@ using static NewLife.Remoting.ApiHttpClient;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+// Add services to the container.
+builder.Services.AddRazorPages();
+builder.Services.AddRazorComponents(options =>
+    options.DetailedErrors = builder.Environment.IsDevelopment());
+builder.Services.AddServerSideBlazor();
+
 //配置 本地 Configuration 目录下json文件
 builder.Configuration.AddConfigurationJsonFiles(builder.Environment);
 
@@ -42,31 +49,15 @@ builder.Services.AddSageKing(sk =>
 
     //add sqlsugar and database base
     sk.UseSageKingApplicationAspNetCoreSqlSugar(configuration);
-     
 
+    //add ui Blazor.AntDesign
+    sk.UseSageKingAntDesign();
 });
-
-
-// Add services to the container.
-builder.Services.AddRazorPages();
-builder.Services.AddRazorComponents(options =>
-    options.DetailedErrors = builder.Environment.IsDevelopment());
-builder.Services.AddServerSideBlazor();
 
 //other services
 builder.Services.AddTransient<ExceptionHandlingMiddleware>();
 
-builder.Services.AddMediaQueryService();
-builder.Services.AddResizeListener(options =>
-                            {
-                                options.ReportRate = 300;
-                                options.EnableLogging = true;
-                                options.SuppressInitEvent = true;
-                            });
-builder.Services.AddAntDesign();
-
 var app = builder.Build();
-
 
 app.UseSageKing();
 

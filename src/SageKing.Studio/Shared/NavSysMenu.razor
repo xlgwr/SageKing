@@ -38,6 +38,10 @@ else
 
 @code {
 
+    [CascadingParameter]
+    public Error? Error { get; set; }
+
+
     RenderFragment GetRenderFragment(string title, string iceType = "setting")
     {
         return
@@ -57,11 +61,18 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        menuListAll ??= await dataService.GetToTreeCacheAsync();
-        defaultSelectedKeys = menuListAll.FirstOrDefault()?.Id.ToString();
-        defaultOpenKeys = menuListAll.Where(a => a.Children.Any()).FirstOrDefault()?.Name;
+        try
+        {
+            menuListAll ??= await dataService.GetToTreeCacheAsync();
+            defaultSelectedKeys = menuListAll.FirstOrDefault()?.Id.ToString();
+            defaultOpenKeys = menuListAll.Where(a => a.Children.Any()).FirstOrDefault()?.Name;
 
-        await base.OnInitializedAsync();
+            await base.OnInitializedAsync();
+        }
+        catch (Exception ex)
+        {
+            Error?.ProcessError(ex, TabTitle);
+        }
     }
 
 }

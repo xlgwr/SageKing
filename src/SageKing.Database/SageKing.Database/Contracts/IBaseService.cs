@@ -82,6 +82,14 @@ public interface IBaseService<TEntity> where TEntity : class, new()
     /// <param name="entity"></param>
     /// <returns></returns>
     [DisplayName("增加")]
+    public Task<TEntity> AddReturnEntityAsync(TEntity entity);
+
+    /// <summary>
+    /// 增加 🔖
+    /// </summary>
+    /// <param name="entity"></param>
+    /// <returns></returns>
+    [DisplayName("增加")]
     public Task<bool> Add(IList<TEntity> entitys);
 
     /// <summary>

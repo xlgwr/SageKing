@@ -1,0 +1,53 @@
+﻿@namespace AntDesign
+@inherits OverlayTrigger
+
+@using AntDesign.Internal
+
+@if (ChildContent != null)
+{
+    <div class="@ClassMapper.Class" @ref="@Ref" Id="@Id" style="display: inline-block; @Style"
+     @onclick="OnClickDiv"
+     @onmouseenter="OnTriggerMouseEnter"
+     @onmouseleave="OnTriggerMouseLeave"
+     @oncontextmenu="OnTriggerContextmenu"
+     @onfocusin="OnTriggerFocusIn"
+     @onfocusout="OnTriggerFocusOut"
+     @oncontextmenu:preventDefault
+     tabindex="@TabIndex">
+        @ChildContent
+    </div>
+}
+@if (Unbound != null)
+{
+    @Unbound(RefBack)
+}
+
+<CascadingValue Value="this" Name="Trigger">
+    <CascadingValue Value="@ArrowPointAtCenter" Name="ArrowPointAtCenter">
+        <Overlay @ref="_overlay"
+                 HideMillisecondsDelay="10"
+                 WaitForHideAnimMilliseconds="100"
+                 OnOverlayMouseEnter="OnOverlayMouseEnter"
+                 OnOverlayMouseLeave="OnOverlayMouseLeave"
+                 OnOverlayMouseUp="OnOverlayMouseUp">
+            @if (TitleTemplate != null || !string.IsNullOrWhiteSpace(Title))
+            {
+                <div class="ant-tooltip-content">
+                    <div class="ant-tooltip-arrow">
+                        <span class="ant-tooltip-arrow-content"></span>
+                    </div>
+                    <div class="ant-tooltip-inner" role="tooltip">
+                        @if (TitleTemplate != null)
+                        {
+                            @TitleTemplate
+                        }
+                        else
+                        {
+                            @Title
+                        }
+                    </div>
+                </div>
+            }
+        </Overlay>
+    </CascadingValue>
+</CascadingValue>

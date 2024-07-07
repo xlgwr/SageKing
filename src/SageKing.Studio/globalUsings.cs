@@ -24,6 +24,10 @@ global using SageKing.Studio.Contracts;
 global using SageKing.Database.Contracts;
 global using SageKing.Database.SqlSugar.Service;
 global using SageKing.Database.SqlSugar.Contracts;
+
+global using SageKing.UI.Blazor.SageKingAntDesign;
+global using SageKing.UI.Blazor.SageKingAntDesign.Services; 
+
 global using SageKing.Application.AspNetCore.SqlSugar.Contracts;
 global using SageKing.Application.AspNetCore.SqlSugar.Contracts.Entity;
 global using SageKing.Application.AspNetCore.SqlSugar.Service;

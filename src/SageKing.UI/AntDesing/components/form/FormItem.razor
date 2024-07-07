@@ -1,0 +1,58 @@
+﻿@namespace AntDesign
+@inherits AntDomComponentBase
+@using AntDesign.Internal;
+
+@{
+    var realLabel = Label ?? _propertyReflector?.DisplayName;
+}
+<div class="@ClassMapper.Class" style="@Style" id="@Id">
+    <Row Class="ant-form-item-row">
+        @if (!string.IsNullOrEmpty(realLabel) || LabelTemplate != null)
+        {
+            <AntDesign.Col @attributes="GetLabelColAttributes()" Class="@_labelClassMapper.Class">
+                @if (LabelTemplate != null)
+                {
+                    @LabelTemplate
+                }
+                else
+                {
+                    <label class=@GetLabelClass() style="@LabelStyle">
+                        @realLabel
+                        @if (Form?.RequiredMark == FormRequiredMark.Optional && !IsRequired)
+                        {
+                            <span class="ant-form-item-optional">@_locale.Optional</span>
+                        }
+                    </label>
+                }
+            </AntDesign.Col>
+        }
+
+        <AntDesign.Col @attributes="GetWrapperColAttributes()" Class=@($"{_prefixCls}-control")>
+            <div class=@($"{_prefixCls}-control-input")>
+                <div class=@($"{_prefixCls}-control-input-content")>
+                     <CascadingValue Value="null" Name="Form" TValue="IForm" IsFixed="@true">
+                        <CascadingValue Value="this" Name="FormItem" TValue="IFormItem" IsFixed="@true">
+                            @ChildContent
+                        </CascadingValue>
+                    </CascadingValue>
+                </div>
+            </div>
+
+            @foreach (var message in _validationMessages)
+            {
+                <div style="display: flex; flex-wrap: nowrap;">
+                    <div class="ant-form-item-explain ant-form-item-explain-connected" role="alert">
+                        <div class=@($"{_prefixCls}-explain-{ValidateStatus.ToString().ToLower()}")>
+                            @message
+                        </div>
+                    </div>
+                    <div style="width: 0px; height: 24px;"></div>
+                </div>
+            }
+        </AntDesign.Col>
+    </Row>
+    @if (_validationMessages.Any())
+    {
+        <div class="ant-form-item-margin-offset" style="margin-bottom: -24px;"></div>
+    }
+</div>

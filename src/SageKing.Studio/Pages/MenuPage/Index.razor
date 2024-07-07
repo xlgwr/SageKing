@@ -22,45 +22,65 @@
 }
 else
 {
-    <Search @bind-Value="@searchKey" Placeholder="Search.." BindOnInput />
-    <Tree TItem="SysMenu"
-          DataSource="data" @ref="_tree" Draggable BlockNode ShowIcon ShowLine
-          SwitcherIcon="down"
-          TitleExpression="x => x.DataItem.Title"
-          ChildrenExpression="x => x.DataItem.Children"
-          IconExpression="x => x.DataItem.Icon"
-          IsLeafExpression="x => x.TreeLevel > 2"
-          KeyExpression="x => x.DataItem.Id.ToString()"
-          OnNodeLoadDelayAsync="OnNodeLoadDelayAsync"
-          SearchValue="@searchKey" MatchedClass="site-tree-search-value" HideUnmatched
-          OnDrop="onDrop" OnDragEnd="OnDragEnd" OnClick="OnClick">
-        <SwitcherIconTemplate>
-            <Icon Type="down" />
-        </SwitcherIconTemplate>
-        <TitleTemplate>
-            <Dropdown Trigger="new Trigger[] { Trigger.ContextMenu }">
-                <Overlay>
-                    <Menu>
-                        <MenuItem OnClick="()=>AddData(context)">新增</MenuItem>
-                        <MenuItem OnClick="()=>EditData(context)">修改</MenuItem>
-                        <MenuItem OnClick="()=>DeleteData(context)">删除</MenuItem>
-                    </Menu>
-                </Overlay>
+    <GridRow>
+        <GridCol Span="6">
+            <Search @bind-Value="@searchKey" Placeholder="Search.." BindOnInput />
+            <Tree TItem="SysMenu"
+                  DataSource="data" @ref="_tree" Draggable BlockNode ShowIcon ShowLeafIcon="false" ShowLine
+                  SwitcherIcon="down"
+                  TitleExpression="x => x.DataItem.Title"
+                  ChildrenExpression="x => x.DataItem.Children"
+                  IconExpression="x => x.DataItem.Icon"
+                  IsLeafExpression="x => x.DataItem.Children?.Count==0"
+                  KeyExpression="x => x.DataItem.Id.ToString()"
+                  OnNodeLoadDelayAsync="OnNodeLoadDelayAsync"
+                  SearchValue="@searchKey" MatchedClass="site-tree-search-value" HideUnmatched
+                  OnDrop="onDrop" OnDragEnd="OnDragEnd" OnClick="OnClick">
+                <SwitcherIconTemplate>
+                    <Icon Type="down" />
+                </SwitcherIconTemplate>
+                <TitleTemplate>
+                    <Dropdown Trigger="new Trigger[] { Trigger.ContextMenu }">
+                        <Overlay>
+                            <Menu>
+                                <MenuItem OnClick="()=>AddData(context)">新增</MenuItem>
+                                <MenuItem OnClick="()=>EditData(context)">修改</MenuItem>
+                                <MenuItem OnClick="()=>DeleteData(context)">删除</MenuItem>
+                            </Menu>
+                        </Overlay>
+                        <ChildContent>
+                            <div class="menu-title">
+                                @context.DataItem.Title
+                            </div>
+                        </ChildContent>
+                    </Dropdown>
+                </TitleTemplate>
+            </Tree>
+        </GridCol>
+        <GridCol Span="18">
+            <Card Title="@modelTitle">
                 <ChildContent>
-                    <div class="menu-title">
-                        @context.DataItem.Title
-                    </div>
+                    <SysMenuEdit @ref=@edit Title="@modelTitle" model="@addModel"></SysMenuEdit>
                 </ChildContent>
-            </Dropdown>
-        </TitleTemplate>
-    </Tree>
+                <ActionTemplate>
+                    <CardAction>
+                        <Button Type="@ButtonType.Primary" Icon="@IconType.Outline.Save" OnClick=@((e)=> HandleOk(e))>@modelOkTitle</Button>
+                        @if (addModel.Id > 0)
+                        {
+                            <Button Type="@ButtonType.Default" Danger Icon="@IconType.Outline.Delete" OnClick=@((e)=> DeleteData(addModel))>删除</Button>
+                        }
+                    </CardAction>
+                </ActionTemplate>
+            </Card>
+        </GridCol>
+    </GridRow>
 
-    <Modal Title="@modelTitle"
+    @*   <Modal Title="@modelTitle"
            @bind-Visible="@_visible" Draggable="@(true)" Centered Closable="false" Style="min-width:820px;" Width="830"
            OnOk="HandleOk" ConfirmLoading="addloading" OkText="modelOkTitle" CancelText="modelCancelText">
 
         @FormParentTemplate()
-    </Modal>
+    </Modal> *@
 }
 
 @code {
@@ -104,7 +124,8 @@ else
             _ = _message.Success($"{modelTitle}【{addModel.Name}】成功！");
             _visible = false;
             addloading = false;
-            addEdit?.Reset();
+            EditData(addModel);
+            // addEdit?.Reset();
         }
         catch (Exception ex)
         {
@@ -119,33 +140,52 @@ else
         var row = treeNode.DataItem;
         addModel = new SysMenu();
         addModel.Pid = row.Id;
-        modelTitle = $"{TabTitle}->新增";
+        modelTitle = $"{TabTitle}-{row.Title}->新增";
         modelOkTitle = "保存";
-        _visible = true;
-        addloading = false;
+        // _visible = true;
+        // addloading = false;
     }
 
     void EditData(TreeNode<SysMenu> treeNode)
     {
         var row = treeNode.DataItem;
-        addModel = row.Clone<SysMenu>();
-        modelTitle = $"{TabTitle}->编辑";
-        modelOkTitle = "保存";
-        _visible = true;
-        addloading = false;
+        EditData(row);
+        // _visible = true;
+        // addloading = false;
     }
 
     async void DeleteData(TreeNode<SysMenu> treeNode)
     {
         var row = treeNode.DataItem;
+        await DeleteData(row);
+    }
+
+    void EditData(SysMenu row)
+    {
+        addModel = row.Clone<SysMenu>();
+        modelTitle = $"{TabTitle}-{row.Title}->编辑";
+        modelOkTitle = "保存";
+        // _visible = true;
+        // addloading = false;
+    }
+    async Task DeleteData(SysMenu row)
+    {
+        if (row.Id <= 0)
+        {
+            return;
+        }
         string content = $"确认删除【{row.Title}】";
         var confirmResult = await _confirmService.Show(content + "?", "提示", ConfirmButtons.OKCancel);
         if (confirmResult == ConfirmResult.OK)
         {
 
             await dataService.Delete(row.Id);
+            dataService.CacheRefresh(0);
+            await Refresh(false);
             _ = _message.Success($"删除【{row.Name}】成功", 2);
-
+            addModel = new SysMenu();
+            modelTitle = "新增";
+            StateHasChanged();
         }
     }
     #endregion
@@ -154,6 +194,11 @@ else
 <style>
     .site-tree-search-value {
         color: #f50;
+    }
+
+    .ant-card-actions > li {
+        margin: 5px;
+        text-align: right;
     }
 
     .menu-title {
@@ -221,9 +266,11 @@ else
     }
     async Task InitSelectData()
     {
-        data = await dataService.GetToTreeCacheAsync();
+        addModel = new SysMenu();
         selectedRows = new List<SysMenu>();
         searchModel = new SysMenu();
+
+        await Task.CompletedTask;
     }
 
     #endregion
@@ -244,11 +291,12 @@ else
         var dataItem = ((SysMenu)args.Node.DataItem);
         // dataItem.Children.Clear();
         //load children
+        await Task.CompletedTask;
     }
 
     void OnClick(TreeEventArgs<SysMenu> e)
     {
-
+        EditData(e.Node);
     }
 
     void onDrop(TreeEventArgs<SysMenu> e)
@@ -264,8 +312,9 @@ else
 
     async Task Refresh(bool notice = true)
     {
-
+        data = await dataService.GetToTreeCacheAsync();
     }
+
     void ReSet()
     {
         searchModel = new SysMenu();

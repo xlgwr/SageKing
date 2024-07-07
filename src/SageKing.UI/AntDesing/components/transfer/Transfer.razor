@@ -1,0 +1,160 @@
+﻿@namespace AntDesign
+@inherits AntDomComponentBase
+
+<div class="@ClassMapper.Class" @ref="Ref" style="@Style" id="@Id">
+    <div class="ant-transfer-list @((FooterTemplate != null || Footer != null)?FooterClass:"")" @onscroll="@(e=>HandleScroll(TransferDirection.Left,e))" style="@(ListStyle(TransferDirection.Left))">
+        <div class="ant-transfer-list-header">
+            @if (ShowSelectAll)
+            {
+                <Checkbox Checked="_leftCheckAllState" Indeterminate="_leftCheckAllIndeterminate" Disabled="@Disabled" CheckedChange="@(checkedState => SelectAll(checkedState, TransferDirection.Left))" />
+            }
+            <span class="ant-transfer-list-header-selected">
+                @_leftCountText
+            </span>
+            @if (Titles[0] != "")
+            {
+                <span class="ant-transfer-list-header-title">@Titles[0]</span>
+            }
+        </div>
+        <div class="ant-transfer-list-body @(ShowSearch ? "ant-transfer-list-body-with-search" : "")">
+            @if (ShowSearch)
+            {
+                <div class="ant-transfer-list-body-search-wrapper">
+                    <div>
+                        <CascadingValue TValue="AntDesign.Internal.IFormItem" Value="null" IsFixed>
+                            <AntDesign.Input Class="ant-transfer-list-search" Value="@_leftFilterValue" Placeholder="@Locale.SearchPlaceholder" OnInput="@(e => HandleSearch(e, TransferDirection.Left))" OnClear="() => ClearFilterValueAsync(TransferDirection.Left)" TValue="string" AllowClear>
+                                <Prefix>
+                                    <Icon Type="search" />
+                                </Prefix>
+                            </AntDesign.Input>
+                        </CascadingValue>
+                    </div>
+                </div>
+            }
+            @if (!_leftDataSource.Any())
+            {
+                <div class="ant-transfer-list-body-not-found">
+                    <Empty Simple Small />
+                </div>
+            }
+            else
+            {
+                <ul class="ant-transfer-list-content">
+                    @foreach (var item in _leftDataSource)
+                    {
+                        <li @key="item" class="ant-transfer-list-content-item @(item.Disabled || Disabled ? DisabledClass : "")">
+                            <Checkbox Label="@item.Key" Checked="_sourceSelectedKeys.Contains(item.Key)" CheckedChange="@(checkedState => SelectItem(checkedState, TransferDirection.Left, item.Key))" Disabled="@(item.Disabled || Disabled)">
+                                @if (Render == null)
+                                {
+                                    @item.Title
+                                }
+                                else
+                                {
+                                    var text = Render(item);
+                                    @if (text.IsT0)
+                                    {
+                                        @text.AsT0
+                                    }
+                                    else
+                                    {
+                                        @text.AsT1
+                                    }
+                                }
+                            </Checkbox>
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+        <div class="ant-transfer-list-footer">
+            @if (FooterTemplate != null)
+            {
+                @FooterTemplate
+            }
+            else
+            {
+                @Footer
+            }
+        </div>
+    </div>
+    <div class="ant-transfer-operation">
+        <Button Disabled="@(_leftButtonDisabled||Disabled)" Size="@AntSizeLDSType.Small" Icon="left" Type="@ButtonType.Primary" OnClick="@(e=>MoveItem(e,TransferDirection.Left))" NoSpanWrap="@(String.IsNullOrEmpty(Operations[0]))">@Operations[0]</Button>
+        <Button Disabled="@(_rightButtonDisabled||Disabled)" Size="@AntSizeLDSType.Small" Icon="right" Type="@ButtonType.Primary" OnClick="@(e=>MoveItem(e,TransferDirection.Right))" NoSpanWrap="@(String.IsNullOrEmpty(Operations[1]))">@Operations[1]</Button>
+    </div>
+    <div class="ant-transfer-list @((FooterTemplate != null || Footer != null)?FooterClass:"")" @onscroll="@(e => HandleScroll(TransferDirection.Right, e))" style="@(ListStyle(TransferDirection.Right))">
+        <div class="ant-transfer-list-header">
+            @if (ShowSelectAll)
+            {
+                <Checkbox Checked="_rightCheckAllState" Indeterminate="_rightCheckAllIndeterminate " Disabled="@Disabled" CheckedChange="@(checkedState => SelectAll(checkedState, TransferDirection.Right))" />
+            }
+            <span class="ant-transfer-list-header-selected">
+                @_rightCountText
+            </span>
+            @if (Titles[1] != "")
+            {
+                <span class="ant-transfer-list-header-title">@Titles[1]</span>
+            }
+        </div>
+        <div class="ant-transfer-list-body @(ShowSearch ? "ant-transfer-list-body-with-search" : "")">
+            @if (ShowSearch)
+            {
+                <div class="ant-transfer-list-body-search-wrapper">
+                    <div>
+                        <CascadingValue TValue="AntDesign.Internal.IFormItem" Value="null" IsFixed>
+                            <AntDesign.Input Class="ant-transfer-list-search" Value="@_rightFilterValue" Placeholder="@Locale.SearchPlaceholder" OnInput="@(e => HandleSearch(e, TransferDirection.Right))" OnClear="() => ClearFilterValueAsync(TransferDirection.Right)" TValue="string" AllowClear>
+                                <Prefix>
+                                    <Icon Type="search" />
+                                </Prefix>
+                            </AntDesign.Input>
+                        </CascadingValue>
+                    </div>
+                </div>
+            }
+            @if (!_rightDataSource.Any())
+            {
+                <div class="ant-transfer-list-body-not-found">
+                    <Empty Simple Small />
+                </div>
+            }
+            else
+            {
+                <ul class="ant-transfer-list-content">
+                    @foreach (var item in _rightDataSource)
+                    {
+                        <li @key="item" class="ant-transfer-list-content-item @(item.Disabled || Disabled ? DisabledClass : "")">
+                            <Checkbox Label="@item.Key" Checked="_targetSelectedKeys.Contains(item.Key)" CheckedChange="@(checkedState => SelectItem(checkedState, TransferDirection.Right, item.Key))" Disabled="@(item.Disabled || Disabled)">
+                                @if (Render == null)
+                                {
+                                    @item.Title
+                                }
+                                else
+                                {
+                                    var text = Render(item);
+                                    @if (text.IsT0)
+                                    {
+                                        @text.AsT0
+                                    }
+                                    else
+                                    {
+                                        @text.AsT1
+                                    }
+                                }
+                            </Checkbox>
+                        </li>
+                    }
+
+                </ul>
+            }
+        </div>
+        <div class="ant-transfer-list-footer">
+            @if (FooterTemplate != null)
+            {
+                @FooterTemplate
+            }
+            else
+            {
+                @Footer
+            }
+        </div>
+    </div>
+</div>

@@ -103,6 +103,17 @@ public class BaseService<TEntity> : IBaseService<TEntity>
     {
         return await _rep.InsertAsync(entity);
     }
+    
+    /// <summary>
+    /// 增加
+    /// </summary>
+    /// <param name="entity"></param>
+    /// <returns></returns>
+    [DisplayName("增加")]
+    public virtual async Task<TEntity> AddReturnEntityAsync(TEntity entity)
+    {
+        return await _rep.InsertReturnEntityAsync(entity);
+    }
 
     /// <summary>
     /// 增加

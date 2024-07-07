@@ -5,11 +5,11 @@ namespace SageKing.Studio.Pages.Base;
 public interface IAddEdit<T> where
     T : EntityBase, new()
 {
-    public BaseService<T> DataService { get;  }
+    public BaseService<T> DataService { get; }
 
     public string Title { get; set; }
 
-    public T model { get; set; } 
+    public T model { get; set; }
 
     public AntDesign.Form<T> form { get; set; }
 
@@ -22,7 +22,8 @@ public interface IAddEdit<T> where
 
         if (model.Id <= 0)
         {
-            await DataService.Add(model);
+            var getSave = await DataService.AddReturnEntityAsync(model);
+            model.Id = getSave.Id;
         }
         else
         {
