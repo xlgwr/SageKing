@@ -2,7 +2,7 @@
 
 @implements IAddEdit<SysMenu>
 
-@* @inject AntDesignIconListService _iconListService *@
+@inject AntDesignIconListService _iconListService
 @inject SysMenuService _dataService
 @inject SysDictTypeService selectService
 
@@ -42,7 +42,28 @@
         </Col>
         <Col Span="8">
         <FormItem Label="图标">
-            <Input ShowCount MaxLength="64" @bind-Value="@context.Icon" />
+            <Select Context="cicon"
+                    Style="width: 100%;" EnableSearch @bind-Value="@context.Icon"
+                    ItemValue="c=>c" OnSearch="OnSearchIcon"
+                    DataSource="_currentNames"
+                    DropdownMatchSelectWidth="false"
+                    ListboxStyle="display:flex;height: 200px;flex-flow: wrap; max-width: 500px; align-content: baseline;">
+                <ItemTemplate>
+                    <Icon Type="@cicon" />
+                </ItemTemplate>
+                <LabelTemplate>
+                    <p style="line-height: 30px;"><Icon Type="@cicon" /> @cicon</p>
+                </LabelTemplate>
+                <DropdownRender>
+                    <Tabs @bind-ActiveKey="@TabIconactiveKey" OnChange="OnChange">
+                            @foreach (var item in _lstIcons)
+                            {
+                            <TabPane Key="@item.Key" Tab="@item.Key"> </TabPane>
+                            }
+                    </Tabs>
+                        @cicon
+                </DropdownRender>
+            </Select>
         </FormItem>
         </Col>
 
@@ -137,11 +158,37 @@
     bool loading;
 
     //select data
-    SysDictType SelectType;
+    SysDictType SelectType; 
+
+    private string TabIconactiveKey { get; set; }
+    private Dictionary<string, List<string>> _lstIcons;
+
+    private List<string> _currentNames;
 
     protected override async Task OnInitializedAsync()
     {
+        _lstIcons = _iconListService.GetIcons().ToDictionary(x => x.Category, x => x.IconNames);
         await base.OnInitializedAsync();
     }
 
+    private void OnChange(string tab)
+    {
+        _currentNames = _lstIcons[tab];
+    }
+
+    public void OnSearchIcon(string value)
+    {
+        if (value.IsNullOrEmpty())
+        {
+            _currentNames.Clear();
+            return;
+        }
+        var find = _lstIcons.Where(a => a.Value.Contains(value)).FirstOrDefault();
+        if (find.Key.IsNotNullOrWhiteSpace())
+        {
+            TabIconactiveKey = find.Key;
+            var currList = find.Value.Where(a => a.Contains(value)).ToList();
+            _currentNames = currList.Concat(find.Value).Distinct().ToList();
+        }
+    }
 }

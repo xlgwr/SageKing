@@ -165,6 +165,7 @@ else
         addModel = row.Clone<SysMenu>();
         modelTitle = $"{TabTitle}-{row.Title}->编辑";
         modelOkTitle = "保存";
+        edit?.OnSearchIcon(addModel.Icon);
         // _visible = true;
         // addloading = false;
     }

@@ -8,14 +8,7 @@ using System.Reflection;
 using static NewLife.Remoting.ApiHttpClient;
 
 var builder = WebApplication.CreateBuilder(args);
-
-
-// Add services to the container.
-builder.Services.AddRazorPages();
-builder.Services.AddRazorComponents(options =>
-    options.DetailedErrors = builder.Environment.IsDevelopment());
-builder.Services.AddServerSideBlazor();
-
+ 
 //配置 本地 Configuration 目录下json文件
 builder.Configuration.AddConfigurationJsonFiles(builder.Environment);
 
@@ -56,6 +49,12 @@ builder.Services.AddSageKing(sk =>
 
 //other services
 builder.Services.AddTransient<ExceptionHandlingMiddleware>();
+
+// Add services to the container.
+builder.Services.AddRazorPages();
+builder.Services.AddRazorComponents(options =>
+    options.DetailedErrors = builder.Environment.IsDevelopment());
+builder.Services.AddServerSideBlazor();
 
 var app = builder.Build();
 
