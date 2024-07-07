@@ -49,7 +49,14 @@
                     DropdownMatchSelectWidth="false"
                     ListboxStyle="display:flex;height: 200px;flex-flow: wrap; max-width: 500px; align-content: baseline;">
                 <ItemTemplate>
-                    <Icon Type="@cicon" />
+                    <Tooltip ArrowPointAtCenter="true">
+                        <TitleTemplate>
+                            <Icon Type="@cicon" /> @cicon
+                        </TitleTemplate>
+                        <ChildContent>
+                            <Icon Type="@cicon" />
+                        </ChildContent>
+                    </Tooltip>
                 </ItemTemplate>
                 <LabelTemplate>
                     <p style="line-height: 30px;"><Icon Type="@cicon" /> @cicon</p>
