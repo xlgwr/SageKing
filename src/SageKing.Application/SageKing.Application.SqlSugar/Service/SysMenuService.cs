@@ -1,4 +1,5 @@
 ﻿using SageKing.Cache.Service;
+using System.Reflection.Emit;
 
 namespace SageKing.Application.AspNetCore.SqlSugar.Service;
 
@@ -7,7 +8,7 @@ namespace SageKing.Application.AspNetCore.SqlSugar.Service;
 /// </summary>
 /// <param name="repository"></param>
 public class SysMenuService(SageKingRepository<SysMenu> repository, SageKingCacheService _cache)
-    : BaseService<SysMenu>(repository)
+    : BaseService<SysMenu>(repository), IBaseServiceCache<SysMenu,long>
 {
     /// <summary>
     /// 获取集合
@@ -27,12 +28,18 @@ public class SysMenuService(SageKingRepository<SysMenu> repository, SageKingCach
         return result;
     }
 
+    public void CacheRefresh(long id)
+    {
+        var cacheKey = CachePrefixConst.MenuCache + id;
+        _cache.Remove(cacheKey);
+    }
+
     /// <summary>
     /// 获取菜单
     /// </summary>
     /// <returns></returns>
     [DisplayName("获取菜单")]
-    public virtual async Task<SysMenu> GetMenuCacheAsync(long id)
+    public virtual async Task<SysMenu> GetDetailCache(long id)
     {
         var cacheKey = CachePrefixConst.MenuCache + id;
         var result = _cache.Get<SysMenu>(cacheKey);

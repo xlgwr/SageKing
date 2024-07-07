@@ -2,6 +2,7 @@
 
 @namespace SageKing.Studio.Pages.ClientList
 
+@implements IMenuTab
 @implements ITableAutoSize
 @implements IReuseTabsPage
 
@@ -138,6 +139,9 @@ else
 
     #region init
     #region menu
+    public SysMenuService MenuService
+    { get { return _sysMenuService; } }
+
     [SupplyParameterFromQuery(Name = "menuid")]
     public long menuid { get; set; }
 
@@ -163,8 +167,8 @@ else
         {
             StateHasChangedAction = StateHasChanged;
 
-            await InitTabTitle();
             await InitSelectData();
+            await ((IMenuTab)this).InitTabTitle();
             await ((ITableAutoSize)this).InitTableHeight();
             await base.OnInitializedAsync();
         }
@@ -173,22 +177,6 @@ else
             Error?.ProcessError(ex);
         }
     }
-
-    async Task InitTabTitle()
-    {
-        if (menuid <= 0)
-        {
-            return;
-        }
-        var getmenu = await _sysMenuService.GetMenuCacheAsync(menuid);
-        if (getmenu == null)
-        {
-            return;
-        }
-        TabIcon = getmenu.Icon.NullOrWhiteSpaceToDefault("home");
-        TabTitle = getmenu.Title;
-    }
-
 
     async Task InitSelectData()
     {

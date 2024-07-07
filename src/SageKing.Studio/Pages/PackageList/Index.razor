@@ -172,21 +172,6 @@ else
         // await InitTabTitle();
     }
 
-    async Task InitTabTitle()
-    {
-        if (menuid <= 0)
-        {
-            return;
-        }
-        var getmenu = await _sysMenuService.GetMenuCacheAsync(menuid);
-        if (getmenu == null)
-        {
-            return;
-        }
-        TabIcon = getmenu.Icon.NullOrWhiteSpaceToDefault("home");
-        TabTitle = getmenu.Title;
-    }
-
     async Task InitSelectData()
     {
         dic = dataService.GetMessagesDic.Select(a => new KeyValue<string, List<StreamPackage[]>>(a.Key, a.Value));

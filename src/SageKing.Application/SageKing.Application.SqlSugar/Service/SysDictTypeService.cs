@@ -9,7 +9,7 @@ namespace SageKing.Application.AspNetCore.SqlSugar.Service;
 /// </summary>
 /// <param name="repository"></param>
 public class SysDictTypeService(SageKingRepository<SysDictType> repository, SageKingCacheService sageKingCache)
-    : BaseService<SysDictType>(repository), IBaseServiceCache<SysDictType>
+    : BaseService<SysDictType>(repository), IBaseServiceCache<SysDictType,string>
 {
     public void CacheRefresh(string codeType)
     {

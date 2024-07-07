@@ -25,6 +25,19 @@ public partial class SysMenu : EntityBase
     public MenuTypeEnum Type { get; set; }
 
     /// <summary>
+    /// 菜单名称
+    /// </summary>
+    [SugarColumn(ColumnDescription = "菜单名称", Length = 64)]
+    [Required, MaxLength(64)]
+    public virtual string Title { get; set; }
+
+    /// <summary>
+    /// 状态
+    /// </summary>
+    [SugarColumn(ColumnDescription = "状态")]
+    public bool Status { get; set; } = true;
+
+    /// <summary>
     /// 路由名称
     /// </summary>
     [SugarColumn(ColumnDescription = "路由名称", Length = 64)]
@@ -59,12 +72,6 @@ public partial class SysMenu : EntityBase
     [MaxLength(128)]
     public string? Permission { get; set; }
 
-    /// <summary>
-    /// 菜单名称
-    /// </summary>
-    [SugarColumn(ColumnDescription = "菜单名称", Length = 64)]
-    [Required, MaxLength(64)]
-    public virtual string Title { get; set; }
 
     /// <summary>
     /// 图标
@@ -108,13 +115,7 @@ public partial class SysMenu : EntityBase
     /// 排序
     /// </summary>
     [SugarColumn(ColumnDescription = "排序")]
-    public int OrderNo { get; set; } = 100;
-
-    /// <summary>
-    /// 状态
-    /// </summary>
-    [SugarColumn(ColumnDescription = "状态")]
-    public bool Status { get; set; } = true;
+    public int OrderNo { get; set; } = 100; 
 
     /// <summary>
     /// 备注

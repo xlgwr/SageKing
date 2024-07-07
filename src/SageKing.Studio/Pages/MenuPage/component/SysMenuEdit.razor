@@ -10,12 +10,12 @@
       LabelColSpan="8" WrapperColSpan="16">
 
     <Row Gutter="24">
-        <Col Span="12">
-        <FormItem Label="名称">
-            <Input ShowCount MaxLength="64" @bind-Value="@context.Name" />
+        <Col Span="8">
+        <FormItem Label="父Id">
+            <Input ShowCount MaxLength="64" @bind-Value="@context.Pid" Disabled />
         </FormItem>
         </Col>
-        <Col Span="12">
+        <Col Span="8">
         <FormItem Label="类型">
             <EnumSelect @bind-Value="@context.Type"
                         TEnum="MenuTypeEnum"
@@ -26,18 +26,98 @@
             </EnumSelect>
         </FormItem>
         </Col>
+        <Col Span="8">
+        <FormItem Label="路由名称">
+            <Input ShowCount MaxLength="64" @bind-Value="@context.Name" />
+        </FormItem>
+        </Col>
     </Row>
     <Row Gutter="24">
-        <Col Span="12">
-        <FormItem Label="是否启用" LabelColSpan="6" WrapperColSpan="6" WrapperColOffset="4">
+
+        <Col Span="8">
+        <FormItem Label="路由地址">
+            <Input ShowCount MaxLength="128" @bind-Value="@context.Path" />
+        </FormItem>
+        </Col>
+        <Col Span="8">
+        <FormItem Label="菜单名称">
+            <Input ShowCount MaxLength="128" @bind-Value="@context.Title" />
+        </FormItem>
+        </Col>
+        <Col Span="8">
+        <FormItem Label="图标">
+            <Input ShowCount MaxLength="64" @bind-Value="@context.Icon" />
+        </FormItem>
+        </Col>
+    </Row>
+
+    <Row Gutter="24">
+        <Col Span="8">
+        <FormItem Label="组件路径">
+            <Input ShowCount MaxLength="128" @bind-Value="@context.Component" />
+        </FormItem>
+        </Col>
+        <Col Span="8">
+        <FormItem Label="权限标识">
+            <Input ShowCount MaxLength="128" @bind-Value="@context.Permission" />
+        </FormItem>
+        </Col>
+        <Col Span="8">
+        <FormItem Label="路由地址">
+            <Input ShowCount MaxLength="128" @bind-Value="@context.Path" />
+        </FormItem>
+        </Col>
+    </Row>
+    <Row Gutter="24">
+        <Col Span="8">
+        <FormItem Label="是否内嵌">
+            <Switch @bind-Value="@context.IsIframe" CheckedChildren="是" UnCheckedChildren="否"></Switch>
+        </FormItem>
+        </Col>
+        <Col Span="8">
+        <FormItem Label="是否启用">
             <Switch @bind-Value="@context.Status" CheckedChildren="开" UnCheckedChildren="关"></Switch>
+        </FormItem>
+        </Col>
+        <Col Span="8">
+        <FormItem Label="重定向">
+            <Input ShowCount MaxLength="128" @bind-Value="@context.Redirect" />
+        </FormItem>
+        </Col>
+    </Row>
+    <Row Gutter="24">
+        <Col Span="8">
+        <FormItem Label="是否固定">
+            <Switch @bind-Value="@context.IsAffix" CheckedChildren="是" UnCheckedChildren="否"></Switch>
+        </FormItem>
+        </Col>
+        <Col Span="8">
+        <FormItem Label="是否隐藏">
+            <Switch @bind-Value="@context.IsHide" CheckedChildren="是" UnCheckedChildren="否"></Switch>
+        </FormItem>
+        </Col>
+        <Col Span="8">
+        <FormItem Label="是否缓存">
+            <Switch @bind-Value="@context.IsKeepAlive" CheckedChildren="是" UnCheckedChildren="否"></Switch>
+        </FormItem>
+        </Col>
+    </Row>
+    <Row Gutter="24">
+        <Col Span="8">
+        <FormItem Label="排序">
+            <AntDesign.InputNumber @bind-Value="@context.OrderNo" Min="1" Max="9999" DefaultValue="100" Width="100%" PlaceHolder="排序"></AntDesign.InputNumber>
+        </FormItem>
+        </Col>
+        <Col Span="16">
+        <FormItem Label="外链链接" LabelColSpan="4" WrapperColSpan="22">
+            <Input ShowCount MaxLength="256" @bind-Value="@context.OutLink" />
         </FormItem>
         </Col>
     </Row>
     <Row Gutter="24">
         <Col Span="24">
-        <FormItem Label="备注" LabelColSpan="4" WrapperColSpan="20">
-            <TextArea ShowCount MaxLength="200" Width="100%" Placeholder="备注" @bind-Value="@context.Remark"></TextArea>
+        <FormItem Label="备注" LabelColSpan="2" WrapperColSpan="22" Style="margin-left:15px;">
+            <TextArea ShowCount MaxLength="256" Width="100%" Placeholder="备注" @bind-Value="@context.Remark"></TextArea>
         </FormItem>
         </Col>
     </Row>

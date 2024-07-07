@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 
 namespace SageKing.Cache.Contracts
 {
-    public interface IBaseServiceCache<TEntity> where TEntity : class, new()
+    public interface IBaseServiceCache<TEntity, TId> where TEntity : class, new()
     {
         /// <summary>
         /// 刷新缓存
         /// </summary>
-        /// <param name="codeType"></param>
-        public void CacheRefresh(string codeType);
+        /// <param name="Id"></param>
+        public void CacheRefresh(TId Id);
 
         /// <summary>
         /// 获取详情缓存 🔖
@@ -22,7 +22,7 @@ namespace SageKing.Cache.Contracts
         /// <param name="id"></param>
         /// <returns></returns>
         [DisplayName("获取详情")]
-        public Task<TEntity> GetDetailCache(string codeType);
+        public Task<TEntity> GetDetailCache(TId Id);
 
     }
 }

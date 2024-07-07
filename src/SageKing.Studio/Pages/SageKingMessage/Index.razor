@@ -2,6 +2,7 @@
 
 @namespace SageKing.Studio.Pages.SageKingMessage
 
+@implements IMenuTab
 @implements ITableAutoSize
 @implements IReuseTabsPage
 
@@ -391,6 +392,9 @@ else
 
     #region init
     #region menu
+    public SysMenuService MenuService
+    { get { return _sysMenuService; } }
+
     [SupplyParameterFromQuery(Name = "menuid")]
     public long menuid { get; set; }
 
@@ -417,10 +421,10 @@ else
             baseRender = new BaseRenderFragment();
             StateHasChangedAction = StateHasChanged;
 
-            await InitTabTitle();
             await InitSelectData();
             await InitSeachMain();
             await Refresh(false);
+            await ((IMenuTab)this).InitTabTitle();
             await ((ITableAutoSize)this).InitTableHeight();
             await base.OnInitializedAsync();
         }
@@ -434,32 +438,6 @@ else
     {
         searchModel = new SysSageKingMessage();
         SelectSearchModelType = await selectService.GetDetailCache(SysDictTypeConst.code_message_type);
-    }
-
-    async Task InitTabTitle()
-    {
-        if (menuid <= 0)
-        {
-            return;
-        }
-        var getmenu = await _sysMenuService.GetMenuCacheAsync(menuid);
-        if (getmenu == null)
-        {
-            return;
-        }
-        TabIcon = getmenu.Icon.NullOrWhiteSpaceToDefault("home");
-        TabTitle = getmenu.Title;
-    }
-
-    async Task InitTableHeight()
-    {
-        if (Islarge1080_800)
-        {
-            return;
-        }
-        Islarge1080_800 = await listener.MatchMedia(large1080_800);
-        ScrollY = Islarge1080_800 ? ScrollY1080 : ScrollY;
-        browserHeight = Islarge1080_800 ? browserHeight1080 : browserHeight;
     }
 
     async Task InitSelectData()
