@@ -56,7 +56,7 @@ else
     </Tree>
 
     <Modal Title="@modelTitle"
-           @bind-Visible="@_visible" Draggable="@(true)" Centered Closable="false" Style="min-width:800px;" Width="800"
+           @bind-Visible="@_visible" Draggable="@(true)" Centered Closable="false" Style="min-width:820px;" Width="830"
            OnOk="HandleOk" ConfirmLoading="addloading" OkText="modelOkTitle" CancelText="modelCancelText">
 
         @FormParentTemplate()
@@ -98,6 +98,7 @@ else
                     addloading = false;
                     return;
                 }
+                dataService.CacheRefresh(0);
             }
             await Refresh(false);
             _ = _message.Success($"{modelTitle}【{addModel.Name}】成功！");
