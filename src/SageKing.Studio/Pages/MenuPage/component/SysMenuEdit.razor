@@ -165,7 +165,7 @@
     bool loading;
 
     //select data
-    SysDictType SelectType; 
+    SysDictType SelectType;
 
     private string TabIconactiveKey { get; set; }
     private Dictionary<string, List<string>> _lstIcons;
@@ -189,13 +189,14 @@
         {
             _currentNames.Clear();
             return;
-        }
+        } 
         var find = _lstIcons.Where(a => a.Value.Contains(value)).FirstOrDefault();
         if (find.Key.IsNotNullOrWhiteSpace())
         {
             TabIconactiveKey = find.Key;
             var currList = find.Value.Where(a => a.Contains(value)).ToList();
-            _currentNames = currList.Concat(find.Value).Distinct().ToList();
+            _currentNames = currList;//.Concat(find.Value).Distinct().ToList();
         }
+
     }
 }

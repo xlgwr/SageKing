@@ -26,8 +26,8 @@ else
         <GridCol Span="6">
             <Search @bind-Value="@searchKey" Placeholder="Search.." BindOnInput />
             <Tree TItem="SysMenu"
-                  DataSource="data" @ref="_tree" Draggable BlockNode ShowIcon ShowLeafIcon="false" ShowLine="true"
-                  SwitcherIcon="down" DefaultExpandedKeys="@defaultExpandedKeys"
+                  DataSource="data" @ref="_tree" Draggable BlockNode ShowIcon ShowLeafIcon="false" ShowLine="true" DefaultExpandParent="true"
+                  SwitcherIcon="down" DefaultExpandedKeys="@defaultExpandedKeys" @bind-SelectedKey="treeSelectedKey"
                   TitleExpression="x => x.DataItem.Title"
                   ChildrenExpression="x => x.DataItem.Children"
                   IconExpression="x => x.DataItem.Icon"
@@ -135,26 +135,34 @@ else
 
     #region crud
 
-    void AddData(TreeNode<SysMenu> treeNode)
+    async void AddData(TreeNode<SysMenu> treeNode)
     {
         var row = treeNode.DataItem;
-        treeTitle = GetTitleTree(treeNode);
+        treeTitle = getNodeTitleAll(treeNode);
+        var allParentId = getNodeIdAll(treeNode);
+        defaultExpandedKeys = allParentId.Split(',');
         addModel = new SysMenu();
         addModel.Pid = row.Id;
         modelTitle = $"#{treeTitle}-:>新增";
         modelOkTitle = "保存";
         // _visible = true;
         // addloading = false;
+        await Task.CompletedTask;
 
     }
 
-    void EditData(TreeNode<SysMenu> treeNode)
+    async void EditData(TreeNode<SysMenu> treeNode)
     {
         var row = treeNode.DataItem;
-        treeTitle = GetTitleTree(treeNode);
+        treeTitle = getNodeTitleAll(treeNode);
+
+        var allParentId = getNodeIdAll(treeNode);
+        defaultExpandedKeys = allParentId.Split(',');
+
         EditData(row);
         // _visible = true;
         // addloading = false;
+        await Task.CompletedTask;
     }
 
     async void DeleteData(TreeNode<SysMenu> treeNode)
@@ -219,6 +227,7 @@ else
 
     //tree
     Tree<SysMenu> _tree;
+    string treeSelectedKey;
     string[] defaultExpandedKeys = Array.Empty<string>();
     string treeTitle = string.Empty;
     string searchKey;
@@ -297,13 +306,7 @@ else
         _tree.ExpandAll();
     }
 
-    private void ExpandCurrAddModel()
-    {
-        if (addModel?.Id > 0)
-        {
-            defaultExpandedKeys = new string[] { addModel.Id.ToString(), addModel.Pid.ToString() };
-        }
-    }
+
 
     public async Task OnNodeLoadDelayAsync(TreeEventArgs<SysMenu> args)
     {
@@ -323,12 +326,17 @@ else
     {
         if (e.TargetNode.DataItem.Id != e.Node.DataItem.Pid)
         {
+            var allNodeParentId = getNodeIdAll(e.Node);
+            var allTargetParentId = getNodeIdAll(e.TargetNode);
+
             e.Node.DataItem.Pid = e.TargetNode.DataItem.Id;
             await dataService.Update(e.Node.DataItem);
             dataService.CacheRefresh(0);
             treeTitleCache.Remove(e.Node.DataItem.Id);
-            defaultExpandedKeys = new string[] { e.Node.DataItem.Id.ToString(), e.Node.DataItem.Pid.ToString() };
+            addModel = e.Node.DataItem.Clone<SysMenu>();
             await Refresh(false);
+            treeSelectedKey = e.Node.DataItem.Id.ToString();
+            defaultExpandedKeys = allNodeParentId.Split(',').Concat(allTargetParentId.Split(',')).ToArray();
         }
     }
 
@@ -337,16 +345,6 @@ else
 
     }
 
-    string GetTitleTree(TreeNode<SysMenu> treeNode)
-    {
-        if (treeTitleCache.TryGetValue(treeNode.DataItem.Id, out string title))
-        {
-            return title;
-        }
-        title = getNodeTitleAll(treeNode);
-        treeTitleCache[treeNode.DataItem.Id] = title;
-        return title;
-    }
     string getNodeTitleAll(TreeNode<SysMenu> treeNode)
     {
         var currTitle = treeNode.DataItem.Title;
@@ -359,12 +357,23 @@ else
         return currTitle;
 
     }
+    string getNodeIdAll(TreeNode<SysMenu> treeNode)
+    {
+        var id = treeNode.DataItem.Id.ToString();
+        if (treeNode.ParentNode == null)
+        {
+            return id;
+        }
+        id = getNodeIdAll(treeNode.ParentNode) + "," + id;
+
+        return id;
+
+    }
     #endregion
 
     async Task Refresh(bool notice = true)
     {
         data = await dataService.GetToTreeCacheAsync();
-        ExpandCurrAddModel();
     }
 
     void ReSet()
