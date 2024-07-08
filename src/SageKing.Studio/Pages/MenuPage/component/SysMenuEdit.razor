@@ -44,7 +44,7 @@
         <FormItem Label="图标">
             <Select Context="cicon"
                     Style="width: 100%;" EnableSearch @bind-Value="@context.Icon"
-                    ItemValue="c=>c" OnSearch="OnSearchIcon"
+                    ItemValue="c=>c" OnSearch="OnSearchIcon" AllowClear="true" OnClearSelected="()=>IconClearSelected()"
                     DataSource="_currentNames"
                     DropdownMatchSelectWidth="false"
                     ListboxStyle="display:flex;height: 200px;flex-flow: wrap; max-width: 500px; align-content: baseline;">
@@ -183,13 +183,19 @@
         _currentNames = _lstIcons[tab];
     }
 
+    private void IconClearSelected()
+    {
+        TabIconactiveKey = _lstIcons.Keys.First();
+        _currentNames = _lstIcons[TabIconactiveKey];
+    }
+
     public void OnSearchIcon(string value)
     {
         if (value.IsNullOrEmpty())
         {
             _currentNames.Clear();
             return;
-        } 
+        }
         var find = _lstIcons.Where(a => a.Value.Contains(value)).FirstOrDefault();
         if (find.Key.IsNotNullOrWhiteSpace())
         {

@@ -45,6 +45,7 @@ else
                             <Menu>
                                 <MenuItem OnClick="()=>AddData(context)">新增</MenuItem>
                                 <MenuItem OnClick="()=>EditData(context)">修改</MenuItem>
+                                <MenuItem OnClick="()=>CopyData(context)">复制</MenuItem>
                                 <MenuItem OnClick="()=>DeleteData(context)">删除</MenuItem>
                             </Menu>
                         </Overlay>
@@ -125,6 +126,7 @@ else
             _visible = false;
             addloading = false;
             EditData(addModel);
+            treeSelectedKey = addModel.Id.ToString();
             // addEdit?.Reset();
         }
         catch (Exception ex)
@@ -144,6 +146,23 @@ else
         addModel = new SysMenu();
         addModel.Pid = row.Id;
         modelTitle = $"#{treeTitle}-:>新增";
+        modelOkTitle = "保存";
+        // _visible = true;
+        // addloading = false;
+        await Task.CompletedTask;
+
+    }  
+    
+    async void CopyData(TreeNode<SysMenu> treeNode)
+    {
+        var row = treeNode.DataItem;
+        treeTitle = getNodeTitleAll(treeNode);
+        var allParentId = getNodeIdAll(treeNode);
+        defaultExpandedKeys = allParentId.Split(',');
+        addModel = row.Clone<SysMenu>();
+        addModel.Id = 0;
+        addModel.Pid = row.Pid;
+        modelTitle = $"#{treeTitle}-:>复制";
         modelOkTitle = "保存";
         // _visible = true;
         // addloading = false;
