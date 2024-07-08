@@ -26,8 +26,8 @@ else
         <GridCol Span="6">
             <Search @bind-Value="@searchKey" Placeholder="Search.." BindOnInput />
             <Tree TItem="SysMenu"
-                  DataSource="data" @ref="_tree" Draggable BlockNode ShowIcon ShowLeafIcon="false" ShowLine
-                  SwitcherIcon="down"
+                  DataSource="data" @ref="_tree" Draggable BlockNode ShowIcon ShowLeafIcon="false" ShowLine="true"
+                  SwitcherIcon="down" DefaultExpandedKeys="@defaultExpandedKeys"
                   TitleExpression="x => x.DataItem.Title"
                   ChildrenExpression="x => x.DataItem.Children"
                   IconExpression="x => x.DataItem.Icon"
@@ -138,10 +138,10 @@ else
     void AddData(TreeNode<SysMenu> treeNode)
     {
         var row = treeNode.DataItem;
-        TabTitle = GetTitleTree(treeNode);
+        treeTitle = GetTitleTree(treeNode);
         addModel = new SysMenu();
         addModel.Pid = row.Id;
-        modelTitle = $"#{TabTitle}-:>新增";
+        modelTitle = $"#{treeTitle}-:>新增";
         modelOkTitle = "保存";
         // _visible = true;
         // addloading = false;
@@ -151,6 +151,7 @@ else
     void EditData(TreeNode<SysMenu> treeNode)
     {
         var row = treeNode.DataItem;
+        treeTitle = GetTitleTree(treeNode);
         EditData(row);
         // _visible = true;
         // addloading = false;
@@ -165,7 +166,7 @@ else
     void EditData(SysMenu row)
     {
         addModel = row.Clone<SysMenu>();
-        modelTitle = $"#{TabTitle}-:>编辑";
+        modelTitle = $"#{treeTitle}-:>编辑";
         modelOkTitle = "保存";
         edit?.OnSearchIcon(addModel.Icon);
         // _visible = true;
@@ -218,6 +219,8 @@ else
 
     //tree
     Tree<SysMenu> _tree;
+    string[] defaultExpandedKeys = Array.Empty<string>();
+    string treeTitle = string.Empty;
     string searchKey;
 
     IEnumerable<SysMenu> data;
@@ -294,6 +297,14 @@ else
         _tree.ExpandAll();
     }
 
+    private void ExpandCurrAddModel()
+    {
+        if (addModel?.Id > 0)
+        {
+            defaultExpandedKeys = new string[] { addModel.Id.ToString(), addModel.Pid.ToString() };
+        }
+    }
+
     public async Task OnNodeLoadDelayAsync(TreeEventArgs<SysMenu> args)
     {
         var dataItem = ((SysMenu)args.Node.DataItem);
@@ -304,26 +315,35 @@ else
 
     void OnClick(TreeEventArgs<SysMenu> e)
     {
-        TabTitle = GetTitleTree(e.Node);
         EditData(e.Node);
 
     }
 
-    void onDrop(TreeEventArgs<SysMenu> e)
+    async void onDrop(TreeEventArgs<SysMenu> e)
     {
-
+        showLine = false;
+        if (e.TargetNode.DataItem.Id != e.Node.DataItem.Pid)
+        {
+            e.Node.DataItem.Pid = e.TargetNode.DataItem.Id;
+            await dataService.Update(e.Node.DataItem);
+            dataService.CacheRefresh(0);
+            treeTitleCache.Remove(e.Node.DataItem.Id);
+            defaultExpandedKeys = new string[] { e.Node.DataItem.Id.ToString(), e.Node.DataItem.Pid.ToString() };
+            await Refresh(false);
+        }
     }
 
     void OnDragEnd(TreeEventArgs<SysMenu> e)
     {
 
     }
+
     string GetTitleTree(TreeNode<SysMenu> treeNode)
     {
-        if (treeTitleCache.TryGetValue(treeNode.DataItem.Id,out string title))
+        if (treeTitleCache.TryGetValue(treeNode.DataItem.Id, out string title))
         {
             return title;
-        }   
+        }
         title = getNodeTitleAll(treeNode);
         treeTitleCache[treeNode.DataItem.Id] = title;
         return title;
@@ -345,6 +365,7 @@ else
     async Task Refresh(bool notice = true)
     {
         data = await dataService.GetToTreeCacheAsync();
+        ExpandCurrAddModel();
     }
 
     void ReSet()
