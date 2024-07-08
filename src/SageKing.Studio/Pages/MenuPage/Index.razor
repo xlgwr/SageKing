@@ -138,12 +138,14 @@ else
     void AddData(TreeNode<SysMenu> treeNode)
     {
         var row = treeNode.DataItem;
+        TabTitle = GetTitleTree(treeNode);
         addModel = new SysMenu();
         addModel.Pid = row.Id;
-        modelTitle = $"{TabTitle}-{row.Title}->新增";
+        modelTitle = $"#{TabTitle}-:>新增";
         modelOkTitle = "保存";
         // _visible = true;
         // addloading = false;
+
     }
 
     void EditData(TreeNode<SysMenu> treeNode)
@@ -163,7 +165,7 @@ else
     void EditData(SysMenu row)
     {
         addModel = row.Clone<SysMenu>();
-        modelTitle = $"{TabTitle}-{row.Title}->编辑";
+        modelTitle = $"#{TabTitle}-:>编辑";
         modelOkTitle = "保存";
         edit?.OnSearchIcon(addModel.Icon);
         // _visible = true;
@@ -221,6 +223,9 @@ else
     IEnumerable<SysMenu> data;
     IEnumerable<SysMenu> selectedRows;
 
+    //local cache
+    Dictionary<long, string> treeTitleCache;
+
     //search
     SysMenu searchModel;
 
@@ -271,6 +276,8 @@ else
         selectedRows = new List<SysMenu>();
         searchModel = new SysMenu();
 
+        treeTitleCache = new Dictionary<long, string>();
+
         await Task.CompletedTask;
     }
 
@@ -297,7 +304,9 @@ else
 
     void OnClick(TreeEventArgs<SysMenu> e)
     {
+        TabTitle = GetTitleTree(e.Node);
         EditData(e.Node);
+
     }
 
     void onDrop(TreeEventArgs<SysMenu> e)
@@ -307,6 +316,28 @@ else
 
     void OnDragEnd(TreeEventArgs<SysMenu> e)
     {
+
+    }
+    string GetTitleTree(TreeNode<SysMenu> treeNode)
+    {
+        if (treeTitleCache.TryGetValue(treeNode.DataItem.Id,out string title))
+        {
+            return title;
+        }   
+        title = getNodeTitleAll(treeNode);
+        treeTitleCache[treeNode.DataItem.Id] = title;
+        return title;
+    }
+    string getNodeTitleAll(TreeNode<SysMenu> treeNode)
+    {
+        var currTitle = treeNode.DataItem.Title;
+        if (treeNode.ParentNode == null)
+        {
+            return currTitle;
+        }
+        currTitle = getNodeTitleAll(treeNode.ParentNode) + "->" + currTitle;
+
+        return currTitle;
 
     }
     #endregion
