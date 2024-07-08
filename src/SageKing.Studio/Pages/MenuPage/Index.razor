@@ -321,7 +321,6 @@ else
 
     async void onDrop(TreeEventArgs<SysMenu> e)
     {
-        showLine = false;
         if (e.TargetNode.DataItem.Id != e.Node.DataItem.Pid)
         {
             e.Node.DataItem.Pid = e.TargetNode.DataItem.Id;
