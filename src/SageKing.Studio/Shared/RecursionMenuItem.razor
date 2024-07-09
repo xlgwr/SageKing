@@ -1,0 +1,38 @@
+﻿@if (ChildContent != null)
+{
+    @if (menu.Children.Count > 0)
+    {
+        <SubMenu Key="@menu.Name" TitleTemplate=@GetRenderFragment(menu.Title,menu.Icon)>
+            @ChildContent
+        </SubMenu>
+    }
+    else
+    {
+        <MenuItem Key="@menu.Name" Title="@menu.Title" OnClick="()=>OnClick(menu.PathWithId)" Icon="@menu.Icon">
+        </MenuItem>
+    }
+
+}
+@inject NavigationManager nav;
+@code {
+
+    [Parameter]
+    public SysMenu menu { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    RenderFragment GetRenderFragment(string title, string iceType = "setting")
+    {
+        return
+    @<span>
+        <Icon Type=@iceType Theme="outline"></Icon>
+        <span>@title</span>
+    </span>
+    ;
+    }
+    public void OnClick(string url)
+    {
+        nav.NavigateTo(url);
+    }
+}

@@ -1,4 +1,5 @@
 ﻿using SageKing.Cache.Service;
+using System.Linq.Expressions;
 using System.Reflection.Emit;
 
 namespace SageKing.Application.AspNetCore.SqlSugar.Service;
@@ -15,16 +16,24 @@ public class SysMenuService(SageKingRepository<SysMenu> repository, SageKingCach
     /// </summary>
     /// <returns></returns>
     [DisplayName("获取集合")]
-    public virtual async Task<List<SysMenu>> GetToTreeCacheAsync()
+    public virtual async Task<List<SysMenu>> GetToTreeCacheAsync(Expression<Func<SysMenu, bool>> func = null)
     {
         var cacheKey = CachePrefixConst.MenuCache + "AllTree";
         var result = _cache.Get<List<SysMenu>>(cacheKey);
+        if (func != null)
+        {
+            result = result.AsQueryable().Where(func).ToList();
+        }
         if (result != null)
         {
             return result;
         }
         result = await repository.AsQueryable().Where(a => a.Path != "/").OrderBy(u => u.OrderNo).ToTreeAsync(u => u.Children, u => u.Pid, 0);
         _cache.Set(cacheKey, result);
+        if (func != null)
+        {
+            result = result.AsQueryable().Where(func).ToList();
+        }
         return result;
     }
     /// <summary>
