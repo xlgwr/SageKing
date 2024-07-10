@@ -1,5 +1,6 @@
-﻿using StackExchange.Profiling.Internal;
-using System.Text.Json.Serialization;
+﻿
+
+using StackExchange.Profiling.Internal;
 
 namespace SageKing.Application.AspNetCore.SqlSugar.Contracts.Entity;
 
@@ -8,7 +9,8 @@ namespace SageKing.Application.AspNetCore.SqlSugar.Contracts.Entity;
 /// </summary>
 [SugarTable(null, "系统字典值表")]
 [SysTable]
-[SugarIndex("index_{table}_C", nameof(Code), OrderByType.Asc)]
+[SugarIndex("index_{table}_DictTypeId", nameof(DictTypeId), OrderByType.Asc)]
+[SugarIndex("index_{table}_Code", nameof(Code), OrderByType.Asc)]
 public partial class SysDictData : EntityBase
 {
     /// <summary>
@@ -26,6 +28,13 @@ public partial class SysDictData : EntityBase
     public SysDictType DictType { get; set; }
 
     /// <summary>
+    /// 编码
+    /// </summary>
+    [SugarColumn(ColumnDescription = "编码", Length = 128)]
+    [Required, MaxLength(128)]
+    public virtual string Code { get; set; }
+
+    /// <summary>
     /// 值
     /// </summary>
     [SugarColumn(ColumnDescription = "值", Length = 128)]
@@ -37,12 +46,6 @@ public partial class SysDictData : EntityBase
     [SugarColumn(ColumnDescription = "值int")]
     public virtual int ValueInt { get; set; }
 
-    /// <summary>
-    /// 编码
-    /// </summary>
-    [SugarColumn(ColumnDescription = "编码", Length = 128)]
-    [Required, MaxLength(128)]
-    public virtual string Code { get; set; }
 
     /// <summary>
     /// 名称
@@ -95,7 +98,7 @@ public partial class SysDictData : EntityBase
     /// 状态
     /// </summary>
     [SugarColumn(ColumnDescription = "状态")]
-    public StatusEnum Status { get; set; } = StatusEnum.Enable;
+    public bool Status { get; set; } = true;
 
 
     [Newtonsoft.Json.JsonIgnore]

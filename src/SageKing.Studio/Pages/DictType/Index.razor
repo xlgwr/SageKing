@@ -14,6 +14,7 @@
 <PageTitle>@TabTitle</PageTitle>
 
 @inject SysDictTypeService dataService
+@inject SysDictDataService dataChildService
 @inject SysMenuService _menuService
 
 @if (pageData == null)
@@ -22,7 +23,7 @@
 }
 else
 {
-    <Table @ref="table" TItem="SysDictType" DataSource="@pageData.Items"
+    <Table @ref="table" TItem="SysDictType" DataSource="@pageData.Items" OnExpand="OnRowExpand" OnRowClick="OnRowClick"
            RowKey="x=>x.Id" Size="TableSize.Small"
            Loading="tableLoading"
            @bind-SelectedRows="@selectedRows" Resizable Bordered EnableVirtualization
@@ -77,6 +78,63 @@ else
                 </Space>
             </ActionColumn>
         </ColumnDefinitions>
+
+        <ExpandTemplate Context="rowData">
+            <Table Class="childTable" TItem="SysDictData" DataSource="rowData.Data.Children" Loading="rowData.Data.Children==null" Size=@TableSize.Small EnableVirtualization PageSize="10" ScrollY="200px" PaginationPosition="bottomCenter"
+                   @bind-SelectedRows="@selectedRowsChild" RowKey="a=>a.Id.ToString()" Resizable Bordered>
+                <TitleTemplate>
+                    <Space>
+                        <SpaceItem>
+                            <Button Type="@ButtonType.Primary" Icon="@IconType.Outline.AppstoreAdd" OnClick="(e)=>AddDataChild(rowData.Data.Id)">新增字典值</Button>
+                        </SpaceItem>
+                    </Space>
+
+                </TitleTemplate>
+                <ColumnDefinitions>
+                    <Selection Key="@rowData.Data.Id.ToString()" Type="@selectionType"></Selection>
+                    <PropertyColumn Property="c=>c.Name" Title="名称" Sortable="true" Filterable />
+                    <PropertyColumn Property="c=>c.Code" Title="编码" Sortable="true" Filterable />
+                    <PropertyColumn Property="c=>c.Status" Title="Status" Sortable="true" Align="ColumnAlign.Center" Filterable>
+                        <Switch @bind-Value="@context.Status" OnClick="()=>editChildOnStatusSwitch(context)" CheckedChildren="开" UnCheckedChildren="关"></Switch>
+                    </PropertyColumn>
+                    <PropertyColumn Property="c=>c.Value" Title="值" Ellipsis />
+                    <PropertyColumn Property="c=>c.ValueInt" Title="值Int"></PropertyColumn>
+                    <PropertyColumn Property="c=>c.Id" Title="Id" Sortable="true" Filterable />
+                    <PropertyColumn Title="时间相关" Property="c=>c.CreateUserName" Align="ColumnAlign.Center">
+                        <Popover ContentTemplate="@baseRender.GetDetails(context)" Title="时间相关">
+                            <Button Icon="@IconType.Outline.OrderedList" Shape="@ButtonShape.Circle" />
+                        </Popover>
+                    </PropertyColumn>
+                    <ActionColumn Title="Action" Fixed="right">
+                        <Space>
+                            <SpaceItem>
+                                <Tooltip Title="@IconType.Outline.Edit">
+                                    <Button OnClick="(e)=>editChildData(context)" Shape="@ButtonShape.Circle" Icon="@IconType.Outline.Edit" />
+                                </Tooltip>
+                            </SpaceItem>
+                            <SpaceItem>
+                                <Popconfirm Title="确认删除?"
+                                            OnConfirm="() => DeleteDataChild(context,rowData.Data)"
+                                            OkText="Yes"
+                                            CancelText="No">
+                                    <Button Icon="@IconType.Outline.Delete" Shape="@ButtonShape.Circle" Danger></Button>
+                                </Popconfirm>
+
+                            </SpaceItem>
+                        </Space>
+                    </ActionColumn>
+                </ColumnDefinitions>
+                <PaginationTemplate>
+                    <Pagination Class="@(context.PaginationClass + " my-custom-pagination")"
+                                Total="context.Total"
+                                ShowTotal="showTotal"
+                                PageSize="context.PageSize"
+                                Current="context.PageIndex"
+                                ShowSizeChanger
+                                OnChange="context.HandlePageChange" />
+                </PaginationTemplate>
+            </Table>
+        </ExpandTemplate>
         <PaginationTemplate>
             <Pagination ShowTotal="showTotal" Class="@(context.PaginationClass + " my-custom-pagination")"
                         Total="pageData.Total"
@@ -88,11 +146,18 @@ else
         </PaginationTemplate>
     </Table>
 
-    <Modal Title="@modelTitle"
+    <Modal Title="@modelTitle" Class="modelDefault"
            @bind-Visible="@_visible" Draggable="true" Centered Closable="false"
            OnOk="HandleOk" ConfirmLoading="addloading" OkText="modelOkTitle" CancelText="modelCancelText">
 
         @FormParentTemplate()
+    </Modal>
+
+    <Modal Title="@modelTitle" Class="modelDefault"
+           @bind-Visible="@_visibleChild" Draggable="true" Centered Closable="false"
+           OnOk="HandleOkChild" ConfirmLoading="addloadingChild" OkText="modelOkTitle" CancelText="modelCancelText">
+
+        @FormParentTemplateChild()
     </Modal>
 }
 
@@ -111,7 +176,7 @@ else
     SysDictType addModel;
     DictTypeEdit edit;
 
-    //add
+    //add main
     RenderFragment FormParentTemplate()
     {
         return@<DictTypeEdit @ref=@edit Title="@modelTitle" model="@addModel"></DictTypeEdit>;
@@ -217,6 +282,121 @@ else
 
 }
 
+@code {
+    //Child
+    //add
+    bool _visibleChild = false;
+    bool addloadingChild = false;
+    SysDictData addModelChild;
+    DictDataEdit editChild;
+
+    //add main
+    RenderFragment FormParentTemplateChild()
+    {
+        return@<DictDataEdit @ref=@editChild Title="@modelTitle" model="@addModelChild"></DictDataEdit>;
+    }
+
+    async Task HandleOkChild(MouseEventArgs e)
+    {
+        try
+        {
+            IAddEdit<SysDictData> addeditChild = null;
+            addloadingChild = true;
+            if (editChild != null)
+            {
+                addeditChild = ((IAddEdit<SysDictData>)editChild);
+                var result = await addeditChild.Save();
+                if (!result)
+                {
+                    _visibleChild = true;
+                    addloadingChild = false;
+                    return;
+                }
+            }
+            await Refresh(false);
+            _ = _message.Success($"{modelTitle}【{addModelChild.Name}】成功！");
+            _visibleChild = false;
+            addloadingChild = false;
+            // addeditChild?.Reset();
+        }
+        catch (Exception ex)
+        {
+            Error?.ProcessError(ex, $"{modelTitle}【{addModelChild.Name}】失败！");
+        }
+    }
+
+    #region crud
+
+    void AddDataChild(long id)
+    {
+        addModelChild = new SysDictData();
+        addModelChild.DictTypeId = id;
+        modelTitle = $"#{TabTitle}-:>新增";
+        modelOkTitle = "保存";
+        _visibleChild = true;
+        addloadingChild = false;
+
+    }
+
+    void editChildData(SysDictData row)
+    {
+        addModelChild = row.Clone<SysDictData>();
+        modelTitle = $"#{TabTitle}-:>编辑";
+        modelOkTitle = "保存";
+        _visibleChild = true;
+        addloadingChild = false;
+    }
+    async void editChildOnStatusSwitch(SysDictData entity)
+    {
+        try
+        {
+            var id = entity.Id;
+            var state = entity.Status;
+            string content = !state ? $"确认关闭【{entity.Name}】" : $"确认开启【{entity.Name}】";
+
+            var confirmResult = await _confirmService.Show(content + "?", "提示", ConfirmButtons.OKCancel);
+            if (confirmResult == ConfirmResult.OK)
+            {
+                Expression<Func<SysDictData, bool>> wherefunc = a => a.Id == id;
+                Expression<Func<SysDictData, object>> updatefunc = a => new { a.Status };
+
+                await dataChildService.Update(entity, updatefunc);
+                _ = _message.Success($"{content} 成功", 2);
+            }
+            else
+            {
+                entity.Status = !state;
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            Error?.ProcessError(ex);
+        }
+    }
+
+    async Task DeleteDataChild(SysDictData row , SysDictType parent)
+    {
+        if (row.Id <= 0)
+        {
+            return;
+        }
+        string content = $"确认删除【{row.Name}】";
+        var confirmResult = await _confirmService.Show(content + "?", "提示", ConfirmButtons.OKCancel);
+        if (confirmResult == ConfirmResult.OK)
+        {
+            await dataChildService.Delete(row.Id);
+            var result = parent.Children.Where(a => a.Id != row.Id).ToList();
+            parent.Children = result;
+            _ = _message.Success($"删除【{row.Name}】成功", 2);
+        }
+    }
+    #endregion
+
+}
+
+
+
 <style>
     .ant-table-body {
         height: @ScrollY;
@@ -262,6 +442,7 @@ else
     PageBase<SysDictType> pageData;
 
     IEnumerable<SysDictType> selectedRows;
+    IEnumerable<SysDictData> selectedRowsChild;
 
     #region menu
     public SysMenuService MenuService
@@ -309,6 +490,7 @@ else
     async Task InitSelectData()
     {
         selectedRows = new List<SysDictType>();
+        selectedRowsChild = new List<SysDictData>();
 
         await Task.CompletedTask;
     }
@@ -360,7 +542,26 @@ else
 
         tableLoading = false;
     }
+    
+    private async void OnRowClick(RowData<SysDictType> data)
+    {
+        var row = data.Data;
+        await QueryChildList(row.Id);
+    }
 
+    private async void OnRowExpand(RowData<SysDictType> data)
+    {
+        isOnRowExpand = true;
+        data.Data.Children = await QueryChildList(data.Data.Id);
+    }
+
+    public async Task<List<SysDictData>> QueryChildList(long ParentId)
+    {
+        Expression<Func<SysDictData, bool>> func = a => a.DictTypeId == ParentId;
+        Expression<Func<SysDictData, object>> orderbyfunc = a => a.Id;
+
+        return await dataChildService.GetList(func, orderbyfunc, false);
+    }
 
     void Message(string msg = "查询成功")
     {

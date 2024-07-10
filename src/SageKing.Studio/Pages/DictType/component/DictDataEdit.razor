@@ -1,0 +1,101 @@
+﻿@namespace SageKing.Studio.Pages.DictType.component
+
+@implements IAddEdit<SysDictData>
+
+@inject SysDictDataService _dataService
+
+<Form @ref="form"
+      Model="@model" ValidateMode="FormValidateMode.Complex"
+      ValidateOnChange="true"
+      LabelColSpan="8" WrapperColSpan="16">
+
+    <Row Gutter="24">
+        <Col Span="24">
+        <FormItem Label="名称" LabelColSpan="4" WrapperColSpan="20">
+            <Input ShowCount MaxLength="64" Width="100%" @bind-Value="@context.Name" />
+        </FormItem>
+        </Col>
+    </Row>
+    <Row Gutter="24">
+        <Col Span="24">
+        <FormItem Label="编码" LabelColSpan="4" WrapperColSpan="20">
+            <Input ShowCount MaxLength="64" Width="100%" @bind-Value="@context.Code" />
+        </FormItem>
+        </Col>
+    </Row>
+    <Row Gutter="24">
+        <Col Span="12">
+        <FormItem Label="值">
+            <Input ShowCount MaxLength="64" Width="100%" @bind-Value="@context.Value" />
+        </FormItem>
+        </Col>
+        <Col Span="12">
+        <FormItem Label="值int">
+            <AntDesign.InputNumber @bind-Value="@context.ValueInt" Min="1" Max="999999999" DefaultValue="100" Width="100%" PlaceHolder="值int"></AntDesign.InputNumber>
+        </FormItem>
+        </Col>
+    </Row>
+    <Row Gutter="24">
+        <Col Span="12">
+        <FormItem Label="是否启用">
+            <Switch @bind-Value="@context.Status" CheckedChildren="开" UnCheckedChildren="关"></Switch>
+        </FormItem>
+        </Col>
+        <Col Span="12">
+        <FormItem Label="排序">
+            <AntDesign.InputNumber @bind-Value="@context.OrderNo" Min="1" Max="9999" DefaultValue="100" Width="100%" PlaceHolder="排序"></AntDesign.InputNumber>
+        </FormItem>
+        </Col>
+    </Row>
+@*     <Row Gutter="24">
+        <Col Span="24">
+        <FormItem Label="显示样式-Style" LabelColSpan="4" WrapperColSpan="20">
+            <TextArea ShowCount MaxLength="512" Width="100%" Placeholder="显示样式-Style(控制显示样式)" @bind-Value="@context.StyleSetting"></TextArea>
+        </FormItem>
+        </Col>
+    </Row>
+    <Row Gutter="24">
+        <Col Span="24">
+        <FormItem Label="显示样式-Class" LabelColSpan="4" WrapperColSpan="20">
+            <TextArea ShowCount MaxLength="512" Width="100%" Placeholder="显示样式-Class(控制显示样式)" @bind-Value="@context.ClassSetting"></TextArea>
+        </FormItem>
+        </Col>
+    </Row> *@
+    <Row Gutter="24">
+        <Col Span="24">
+        <FormItem Label="拓展数据" LabelColSpan="4" WrapperColSpan="20">
+            <TextArea ShowCount MaxLength="512" Width="100%" Placeholder="拓展数据(保存业务功能的配置项)" @bind-Value="@context.ExtData"></TextArea>
+        </FormItem>
+        </Col>
+    </Row>
+    <Row Gutter="24">
+        <Col Span="24">
+        <FormItem Label="备注" LabelColSpan="4" WrapperColSpan="20">
+            <TextArea ShowCount MaxLength="200" Width="100%" Placeholder="备注" @bind-Value="@context.Remark"></TextArea>
+        </FormItem>
+        </Col>
+    </Row>
+</Form>
+
+@code {
+
+    #region IAddEdit
+    [Parameter]
+    public string Title { get; set; }
+
+    [Parameter]
+    public SysDictData model { get; set; }
+
+    public BaseService<SysDictData> DataService
+    { get { return _dataService; } }
+
+    public AntDesign.Form<SysDictData> form { get; set; }
+    #endregion
+
+    bool loading;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+    }
+}

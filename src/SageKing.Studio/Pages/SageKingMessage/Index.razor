@@ -302,14 +302,14 @@ else
         @FormParentTemplate()
     </Modal>
 
-    <Modal Title="@modelTitle"
+    <Modal Title="@modelTitle" Class="modelDefault"
            @bind-Visible="@_visibleChild" Draggable="@(true)" Centered Closable="false"
            OnOk="HandleChilcOk" ConfirmLoading="addchildloading" OkText="modelOkTitle" CancelText="modelCancelText">
 
         @FormChildTemplate()
     </Modal>
 
-    <Modal Title="@modelTitle"
+    <Modal Title="@modelTitle" Class="modelDefault"
            @bind-Visible="@_visibleImport" Draggable="@(true)" Centered Closable="false"
            OnOk="HandleOkImportDataAtt" ConfirmLoading="loadingImport" OkText="modelOkTitle" CancelText="modelCancelText">
 
