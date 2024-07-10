@@ -14,6 +14,7 @@
 
 }
 @inject NavigationManager nav;
+@inject ReuseTabsService tab;
 @code {
 
     [Parameter]
@@ -33,6 +34,20 @@
     }
     public void OnClick(string url)
     {
-        nav.NavigateTo(url,false,true);
+        nav.NavigateTo(url, new NavigationOptions() { HistoryEntryState = url, ReplaceHistoryEntry = true });
+        try
+        {
+            var isExist = tab.Pages.Where(a => a.Url == url).Any();
+            if (isExist)
+            {
+                tab.Update();
+                tab.ReloadPage(url);
+
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
     }
 }
