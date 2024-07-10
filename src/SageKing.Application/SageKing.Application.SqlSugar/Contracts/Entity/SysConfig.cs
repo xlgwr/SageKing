@@ -6,9 +6,16 @@ namespace SageKing.Application.AspNetCore.SqlSugar.Contracts.Entity;
 [SugarTable(null, "系统参数配置表")]
 [SysTable]
 [SugarIndex("index_{table}_N", nameof(Name), OrderByType.Asc)]
-[SugarIndex("index_{table}_C", nameof(Code), OrderByType.Asc)]
+[SugarIndex("index_{table}_C", nameof(Code), OrderByType.Asc, IsUnique = true)]
 public partial class SysConfig : EntityBase
 {
+    /// <summary>
+    /// 编码
+    /// </summary>
+    [SugarColumn(ColumnDescription = "编码", Length = 64)]
+    [MaxLength(64)]
+    public virtual string Code { get; set; }
+
     /// <summary>
     /// 名称
     /// </summary>
@@ -17,18 +24,11 @@ public partial class SysConfig : EntityBase
     public virtual string Name { get; set; }
 
     /// <summary>
-    /// 编码
-    /// </summary>
-    [SugarColumn(ColumnDescription = "编码", Length = 64)]
-    [MaxLength(64)]
-    public string? Code { get; set; }
-
-    /// <summary>
     /// 属性值
     /// </summary>
-    [SugarColumn(ColumnDescription = "属性值", Length = 64)]
-    [MaxLength(64)]
     [IgnoreUpdateSeedColumn]
+    [SugarColumn(ColumnDescription = "属性值", Length = 128)]
+    [MaxLength(128)]
     public string? Value { get; set; }
 
     /// <summary>

@@ -1,0 +1,83 @@
+﻿@namespace SageKing.Studio.Pages.Config.component
+
+@implements IAddEdit<SysConfig>
+
+@inject SysConfigService _dataService
+
+<Form @ref="form"
+      Model="@model" ValidateMode="FormValidateMode.Complex"
+      ValidateOnChange="true"
+      LabelColSpan="8" WrapperColSpan="16">
+
+    <Row Gutter="24">
+        <Col Span="12">
+        <FormItem Label="名称">
+            <Input ShowCount MaxLength="64" @bind-Value="@context.Name" />
+        </FormItem>
+        </Col>
+        <Col Span="12">
+        <FormItem Label="编码">
+            <Input ShowCount MaxLength="64" @bind-Value="@context.Code" />
+        </FormItem>
+        </Col>
+    </Row>
+    <Row Gutter="24">
+        <Col Span="12">
+        <FormItem Label="属性值">
+            <Input ShowCount MaxLength="64" @bind-Value="@context.Value" />
+        </FormItem>
+        </Col>
+        <Col Span="12">
+        <FormItem Label="内置参数">
+            <EnumSelect @bind-Value="@context.SysFlag"
+                        TEnum="YesNoEnum"
+                        Placeholder="内置参数"
+                        DefaultActiveFirstOption="true"
+                        EnableSearch>
+            </EnumSelect>
+        </FormItem>
+        </Col>
+    </Row>
+    <Row Gutter="24">
+        <Col Span="12">
+        <FormItem Label="分组编码">
+            <Input ShowCount MaxLength="64" @bind-Value="@context.GroupCode" />
+        </FormItem>
+        </Col>
+        <Col Span="12">
+        <FormItem Label="排序">
+            <AntDesign.InputNumber @bind-Value="@context.OrderNo" Min="1" Max="9999" DefaultValue="100" Width="100%" PlaceHolder="排序"></AntDesign.InputNumber>
+        </FormItem>
+        </Col>
+    </Row>
+    <Row Gutter="24">
+        <Col Span="24">
+        <FormItem Label="备注" LabelColSpan="4" WrapperColSpan="20">
+            <TextArea ShowCount MaxLength="200" Width="100%" Placeholder="备注" @bind-Value="@context.Remark"></TextArea>
+        </FormItem>
+        </Col>
+    </Row>
+</Form>
+
+@code {
+
+    #region IAddEdit
+    [Parameter]
+    public string Title { get; set; }
+
+    [Parameter]
+    public SysConfig model { get; set; }
+
+    public BaseService<SysConfig> DataService
+    { get { return _dataService; } }
+
+    public AntDesign.Form<SysConfig> form { get; set; }
+    #endregion
+
+    bool loading;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+    }
+}

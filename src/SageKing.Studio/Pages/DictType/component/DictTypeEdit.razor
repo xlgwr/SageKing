@@ -1,0 +1,68 @@
+﻿@namespace SageKing.Studio.Pages.DictType.component
+
+@implements IAddEdit<SysDictType>
+
+@inject SysDictTypeService _dataService
+
+<Form @ref="form"
+      Model="@model" ValidateMode="FormValidateMode.Complex"
+      ValidateOnChange="true"
+      LabelColSpan="8" WrapperColSpan="16">
+
+    <Row Gutter="24">
+        <Col Span="24">
+        <FormItem Label="名称" LabelColSpan="4" WrapperColSpan="20">
+            <Input ShowCount MaxLength="64" Width="100%" @bind-Value="@context.Name" />
+        </FormItem>
+        </Col>
+    </Row>
+    <Row Gutter="24">
+        <Col Span="24">
+        <FormItem Label="编码" LabelColSpan="4" WrapperColSpan="20">
+            <Input ShowCount MaxLength="64" Width="100%" @bind-Value="@context.Code" />
+        </FormItem>
+        </Col>
+    </Row>
+    <Row Gutter="24">
+        <Col Span="12">
+        <FormItem Label="是否启用">
+            <Switch @bind-Value="@context.Status" CheckedChildren="开" UnCheckedChildren="关"></Switch>
+        </FormItem>
+        </Col>
+        <Col Span="12">
+        <FormItem Label="排序">
+            <AntDesign.InputNumber @bind-Value="@context.OrderNo" Min="1" Max="9999" DefaultValue="100" Width="100%" PlaceHolder="排序"></AntDesign.InputNumber>
+        </FormItem>
+        </Col>
+    </Row>
+    <Row Gutter="24">
+        <Col Span="24">
+        <FormItem Label="备注" LabelColSpan="4" WrapperColSpan="20">
+            <TextArea ShowCount MaxLength="200" Width="100%" Placeholder="备注" @bind-Value="@context.Remark"></TextArea>
+        </FormItem>
+        </Col>
+    </Row>
+</Form>
+
+@code {
+
+    #region IAddEdit
+    [Parameter]
+    public string Title { get; set; }
+
+    [Parameter]
+    public SysDictType model { get; set; }
+
+    public BaseService<SysDictType> DataService
+    { get { return _dataService; } }
+
+    public AntDesign.Form<SysDictType> form { get; set; }
+    #endregion
+
+    bool loading;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+    }
+}

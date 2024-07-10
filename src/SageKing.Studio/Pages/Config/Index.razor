@@ -2,69 +2,341 @@
 
 @namespace SageKing.Studio.Pages.Config
 
-<PageTitle>配置参数中心</PageTitle>
+@implements IMenuTab
+@implements ITableAutoSize
+@implements IReuseTabsPage
+
+@inject IMessageService _message
+@inject IConfirmService _confirmService
+
+@using SageKing.Studio.Pages.Config.component
+<PageTitle>@TabTitle</PageTitle>
 
 @inject SysConfigService dataService
+@inject SysMenuService _menuService
 
-<h2>配置参数中心</h2>
-<br />
-
-@if (data == null)
+@if (pageData == null)
 {
     <Spin size="large" Tip="Loading..." />
 }
 else
 {
-    <Table @ref="table" TItem="SysConfig" DataSource="@data"
-           @bind-SelectedRows="@selectedRows" RowKey="a=>a.Id" OnRowClick="OnRowClick">
+    <Table @ref="table" TItem="SysConfig" DataSource="@pageData.Items"
+           RowKey="x=>x.Id" Size="TableSize.Small"
+           Loading="tableLoading"
+           @bind-SelectedRows="@selectedRows" Resizable Bordered EnableVirtualization
+           ScrollY="@ScrollY" PageSize="pageData.PageSize">
 
-        <Selection Key="@context.Id.ToString()" Type="@selectionType"></Selection>
+        <TitleTemplate>
+            <Space>
+                <SpaceItem>
+                    <Search Placeholder="名称" @bind-Value="searchModel.Name" OnSearch="async ()=>{await OnSearch(pageargs);Message(); }" AllowClear="true" />
+                </SpaceItem>
 
-        <PropertyColumn Property="c=>c.Id" Title="Id"></PropertyColumn>
-        <PropertyColumn Property="c=>c.Name" Title="Name"></PropertyColumn>
+                <SpaceItem>
+                    <Button Type="@ButtonType.Primary" Icon="@IconType.Outline.Reload" OnClick="()=>ReSet()">重置</Button>
+                </SpaceItem>
+
+                <SpaceItem>
+                    <Button Type="@ButtonType.Primary" Icon="@IconType.Outline.AppstoreAdd" OnClick="@AddData">新增</Button>
+                </SpaceItem>
+            </Space>
+        </TitleTemplate>
+        <ColumnDefinitions>
+            <Selection Type="@selectionType"></Selection>
+            <PropertyColumn Property="c=>c.Name" Title="名称" Sortable="true" Filterable />
+            <PropertyColumn Property="c=>c.Code" Title="编码" Sortable="true" Filterable />
+            <PropertyColumn Property="c=>c.Value" Title="属性值" Sortable="true" Filterable />
+            <PropertyColumn Property="c=>c.SysFlag" Title="内置参数" Sortable="true" Align="ColumnAlign.Center" Filterable>
+            </PropertyColumn>
+            <PropertyColumn Property="c=>c.GroupCode" Title="分组编码" Align="ColumnAlign.Center" Sortable="true" Filterable>
+            </PropertyColumn>
+            <PropertyColumn Property="c=>c.OrderNo" Title="排序" Align="ColumnAlign.Center" Sortable="true" Filterable>
+            </PropertyColumn>
+            <PropertyColumn Property="c=>c.Remark" Title="备注" Ellipsis />
+            <PropertyColumn Property="c=>c.Id" Title="Id" Sortable="true" Filterable />
+            <PropertyColumn Title="时间相关" Property="c=>c.CreateUserName" Align="ColumnAlign.Center">
+                <Popover ContentTemplate="@baseRender.GetDetails(context)" Title="时间相关">
+                    <Button Icon="@IconType.Outline.OrderedList" Shape="@ButtonShape.Circle" />
+                </Popover>
+            </PropertyColumn>
+            <ActionColumn Title="Action" Fixed="right">
+                <Space>
+                    <SpaceItem>
+                        <Tooltip Title="@IconType.Outline.Edit">
+                            <Button OnClick="(e)=>EditData(context)" Shape="@ButtonShape.Circle" Icon="@IconType.Outline.Edit" />
+                        </Tooltip>
+                    </SpaceItem>
+                    <SpaceItem>
+                        <Popconfirm Title="确认删除?"
+                                    OnConfirm="(e) => DeleteData(context)"
+                                    OkText="Yes"
+                                    CancelText="No">
+                            <Button Icon="@IconType.Outline.Delete" Disabled="@(context.SysFlag == YesNoEnum.Y)" Shape="@ButtonShape.Circle" Danger></Button>
+                        </Popconfirm>
+                    </SpaceItem>
+                </Space>
+            </ActionColumn>
+        </ColumnDefinitions>
+        <PaginationTemplate>
+            <Pagination ShowTotal="showTotal" Class="@(context.PaginationClass + " my-custom-pagination")"
+                        Total="pageData.Total"
+                        PageSize="pageData.PageSize"
+                        Current="pageData.Page"
+                        ShowSizeChanger
+                        ShowQuickJumper
+                        OnChange="OnSearch" />
+        </PaginationTemplate>
     </Table>
+
+    <Modal Title="@modelTitle"
+           @bind-Visible="@_visible" Draggable="true" Centered Closable="false"
+           OnOk="HandleOk" ConfirmLoading="addloading" OkText="modelOkTitle" CancelText="modelCancelText">
+
+        @FormParentTemplate()
+    </Modal>
 }
+
 
 
 @code {
 
-    bool loading;
+    //model base btn title
+    string modelTitle = "新增";
+    string modelOkTitle = "保存";
+    string modelCancelText = "取消";
 
+    //add
+    bool _visible = false;
+    bool addloading = false;
+    SysConfig addModel;
+    SysConfigEdit edit;
+
+    //add
+    RenderFragment FormParentTemplate()
+    {
+        return@<SysConfigEdit @ref=@edit Title="@modelTitle" model="@addModel"></SysConfigEdit>;
+    }
+
+    async Task HandleOk(MouseEventArgs e)
+    {
+        try
+        {
+            IAddEdit<SysConfig> addEdit = null;
+            addloading = true;
+            if (edit != null)
+            {
+                addEdit = ((IAddEdit<SysConfig>)edit);
+                var result = await addEdit.Save();
+                if (!result)
+                {
+                    _visible = true;
+                    addloading = false;
+                    return;
+                }
+            }
+            await Refresh(false);
+            _ = _message.Success($"{modelTitle}【{addModel.Name}】成功！");
+            _visible = false;
+            addloading = false;
+            // addEdit?.Reset();
+        }
+        catch (Exception ex)
+        {
+            Error?.ProcessError(ex, $"{modelTitle}【{addModel.Name}】失败！");
+        }
+    }
+
+    #region crud
+
+    void AddData()
+    {
+        addModel = new SysConfig();
+        modelTitle = $"#{TabTitle}-:>新增";
+        modelOkTitle = "保存";
+        _visible = true;
+        addloading = false;
+
+    }
+
+    void EditData(SysConfig row)
+    {
+        addModel = row.Clone<SysConfig>();
+        modelTitle = $"#{TabTitle}-:>编辑";
+        modelOkTitle = "保存";
+        _visible = true;
+        addloading = false;
+    }
+    async Task DeleteData(SysConfig row)
+    {
+        if (row.Id <= 0)
+        {
+            return;
+        }
+        string content = $"确认删除【{row.Name}】";
+        var confirmResult = await _confirmService.Show(content + "?", "提示", ConfirmButtons.OKCancel);
+        if (confirmResult == ConfirmResult.OK)
+        {
+            await dataService.Delete(row.Id);
+            await Refresh(false);
+            _ = _message.Success($"删除【{row.Name}】成功", 2);
+            addModel = new SysConfig();
+            modelTitle = "新增";
+            StateHasChanged();
+        }
+    }
+    #endregion
+
+}
+
+<style>
+    .ant-table-body {
+        height: @ScrollY;
+    }
+</style>
+
+@code {
+
+    bool loading;
+    bool IsfirstRender = false;
+
+    BaseRenderFragment baseRender;
+
+    //table height
+    #region table auto size
+    [Inject]
+    public IResizeListener listener { get; set; }
+    public Action StateHasChangedAction { get; set; }
+    public string ScrollY { get; set; } = BrowserConsts.ScrollY;
+    public string ScrollY1080 { get; set; } = BrowserConsts.ScrollY1080;
+    public int browserHeight { get; set; } = BrowserConsts.browserHeight;
+    public int browserHeight1080 { get; set; } = BrowserConsts.browserHeight1080;
+    public int ScrollYOffset { get; set; } = BrowserConsts.ScrollYOffset;
+    public bool IsSmallMedia { get; set; } = false;
+    // We can also capture the browser's width / height if needed. We hold the value here.
+    public BrowserWindowSize browser { get; set; } = new BrowserWindowSize();
+    public bool Islarge1080_800 { get; set; } = false;
+    public string large1080_800 { get; set; } = BrowserConsts.LargeHeight1080_800;
+    #endregion
+
+
+    //table
     ITable table;
+    bool tableLoading;
     string selectionType = "checkbox";
-    IEnumerable<SysConfig>? data;
+    bool isOnRowExpand = false;
+    RenderFragment<PaginationTotalContext> showTotal = ctx => @<div class="showTotal">Total: <b>@ctx.Total</b></div>;
+
+    //search
+    SysConfig searchModel;
+
+    PaginationEventArgs pageargs = new PaginationEventArgs(1, 10);
+    PageBase<SysConfig> pageData;
+
     IEnumerable<SysConfig> selectedRows;
+
+    #region menu
+    public SysMenuService MenuService
+    { get { return _menuService; } }
+
+    [SupplyParameterFromQuery(Name = "menuid")]
+    public long menuid { get; set; }
+
+    [Parameter]
+    public string TabTitle { get; set; } = "参数配置";
+
+    [Parameter]
+    public string TabIcon { get; set; } = "home";
+
+    public RenderFragment GetPageTitle() =>
+    @<div>
+        <Icon Type="@TabIcon" /> @TabTitle
+    </div>
+    ;
+    #endregion
+
+    [CascadingParameter]
+    public Error? Error { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        var result = await dataService.GetPage(new Database.Contracts.PageBaseInput() { Page = 1, PageSize = 20 });
-        data = result.Items;
+        try
+        {
+            baseRender = new BaseRenderFragment();
+            StateHasChangedAction = StateHasChanged;
+
+            await InitSelectData();
+            await InitSeachMain();
+            await Refresh(false);
+            await ((IMenuTab)this).InitTabTitle();
+            await ((ITableAutoSize)this).InitTableHeight();
+            await base.OnInitializedAsync();
+        }
+        catch (Exception ex)
+        {
+            Error?.ProcessError(ex);
+        }
+
+    }
+    async Task InitSelectData()
+    {
         selectedRows = new List<SysConfig>();
-        await base.OnInitializedAsync();
+
+        await Task.CompletedTask;
+    }
+    async Task InitSeachMain()
+    {
+        searchModel = new SysConfig();
+        await Task.CompletedTask;
     }
 
-    public void OnRowClick(RowData<SysConfig> row)
+    protected override void OnAfterRender(bool firstRender)
     {
-        if (selectedRows.Where(a => a.Id == row.Data.Id).Any())
+        if (firstRender)
         {
-            RemoveSelection(row.Data.Id);
+            // Subscribe to the OnResized event. This will do work when the browser is resized.
+            listener.OnResized += ((ITableAutoSize)this).WindowResized;
+            IsfirstRender = firstRender;
         }
-        else
+    }
+
+    void ReSet()
+    {
+        searchModel = new SysConfig();
+    }
+    async Task Refresh(bool notice = true)
+    {
+        await OnSearch(pageargs);
+        if (notice)
         {
-            AddSelection(row.Data.Id);
+            _ = _message.Success("刷新成功!");
         }
     }
 
-    public void RemoveSelection(long id)
+    public async Task OnSearch(PaginationEventArgs args)
     {
-        var selected = selectedRows.Where(x => x.Id != id).ToList();
-        table.SetSelection(selected.Select(x => x.Id.ToString()).ToArray());
+        tableLoading = true;
+        pageargs.Page = args.Page;
+        pageargs.PageSize = args.PageSize;
+
+        var page = new PageBaseInput() { Page = pageargs.Page, PageSize = pageargs.PageSize };
+        Expression<Func<SysConfig, object>> orderbyfunc = a => a.Id;
+
+        List<(bool, Expression<Func<SysConfig, bool>>)> whereIf = new List<(bool, Expression<Func<SysConfig, bool>>)>();
+
+        Expression<Func<SysConfig, bool>> whereIffunc1 = a => a.Name.Contains(searchModel.Name);
+
+        whereIf.Add((searchModel.Name.IsNotNullOrWhiteSpace(), whereIffunc1));
+
+        pageData = await dataService.GetPage(page, whereIf, orderbyfunc, false);
+
+        tableLoading = false;
     }
 
-    public void AddSelection(long id)
+
+    void Message(string msg = "查询成功")
     {
-        var currlist = selectedRows.Select(a => a.Id.ToString()).ToList();
-        currlist.Add(id.ToString());
-        table.SetSelection(currlist.ToArray());
+        _ = _message.Success(msg);
     }
+
 }

@@ -35,7 +35,7 @@ else
                   KeyExpression="x => x.DataItem.Id.ToString()"
                   OnNodeLoadDelayAsync="OnNodeLoadDelayAsync"
                   SearchValue="@searchKey" MatchedClass="site-tree-search-value" HideUnmatched
-                  OnDrop="onDrop" OnDragEnd="OnDragEnd" OnClick="OnClick">
+                  OnDrop="onDrop" OnDragEnd="OnDragEnd" OnClick="OnClick" OnDblClick="OnDBClick">
                 <SwitcherIconTemplate>
                     <Icon Type="down" />
                 </SwitcherIconTemplate>
@@ -339,6 +339,11 @@ else
     {
         EditData(e.Node);
 
+    }
+
+    void OnDBClick(TreeEventArgs<SysMenu> e)
+    {
+        e.Node.Expand(!e.Node.Expanded);
     }
 
     async void onDrop(TreeEventArgs<SysMenu> e)
