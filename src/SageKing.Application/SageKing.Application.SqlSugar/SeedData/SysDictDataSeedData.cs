@@ -1,3 +1,5 @@
+using NewLife;
+
 namespace SageKing.Application.AspNetCore.SqlSugar;
 
 /// <summary>
@@ -23,13 +25,13 @@ public class SysDictDataSeedData : ISqlSugarEntitySeedData<SysDictData>
             new SysDictData{ Id=crrrStarId+5, DictTypeId=crrrStarDictTypeId, Code="行情类", ValueInt=4, OrderNo=100, Remark=""},
 
             //ValueInt 请参照 DataStreamTypeEnumExts
-            new SysDictData{ Id=crrrStarId+100, DictTypeId=crrrStarDictTypeId+ParentStep*2, Code="status", ValueInt=21, OrderNo=100, Remark=""},
-             new SysDictData{ Id=crrrStarId+101, DictTypeId=crrrStarDictTypeId+ParentStep*2, Code="enable", ValueInt=21, OrderNo=100, Remark=""},
-             new SysDictData{ Id=crrrStarId+102, DictTypeId=crrrStarDictTypeId+ParentStep*2, Code="number", ValueInt=25, OrderNo=100, Remark=""},
-             new SysDictData{ Id=crrrStarId+103, DictTypeId=crrrStarDictTypeId+ParentStep*2, Code="date", ValueInt=25, OrderNo=100, Remark=""},
-             new SysDictData{ Id=crrrStarId+104, DictTypeId=crrrStarDictTypeId+ParentStep*2, Code="time", ValueInt=25, OrderNo=100, Remark=""},
-             new SysDictData{ Id=crrrStarId+105, DictTypeId=crrrStarDictTypeId+ParentStep*2, Code="price", ValueInt=29, OrderNo=100, Remark=""},
-            new SysDictData{ Id=crrrStarId+106, DictTypeId=crrrStarDictTypeId+ParentStep*2, Code="type", ValueInt=25, OrderNo=100, Remark=""},
+            new SysDictData{ Id=crrrStarId+100, DictTypeId=crrrStarDictTypeId+ParentStep*2, Code="status", ValueInt=21, Name= DataStreamTypeEnum.Int8.GetDescription(), OrderNo=100, Remark=""},
+             new SysDictData{ Id=crrrStarId+101, DictTypeId=crrrStarDictTypeId+ParentStep*2, Code="enable", ValueInt=21, Name= DataStreamTypeEnum.Int8.GetDescription(), OrderNo=100, Remark=""},
+             new SysDictData{ Id=crrrStarId+102, DictTypeId=crrrStarDictTypeId+ParentStep*2, Code="number", ValueInt=25, Name= DataStreamTypeEnum.Int32.GetDescription(), OrderNo=100, Remark=""},
+             new SysDictData{ Id=crrrStarId+103, DictTypeId=crrrStarDictTypeId+ParentStep*2, Code="date", ValueInt=25, Name= DataStreamTypeEnum.Int32.GetDescription(), OrderNo=100, Remark=""},
+             new SysDictData{ Id=crrrStarId+104, DictTypeId=crrrStarDictTypeId+ParentStep*2, Code="time", ValueInt=25, Name= DataStreamTypeEnum.Int32.GetDescription(), OrderNo=100, Remark=""},
+             new SysDictData{ Id=crrrStarId+105, DictTypeId=crrrStarDictTypeId+ParentStep*2, Code="price", ValueInt=29, Name= DataStreamTypeEnum.Float32.GetDescription(), OrderNo=100, Remark=""},
+            new SysDictData{ Id=crrrStarId+106, DictTypeId=crrrStarDictTypeId+ParentStep*2, Code="type", ValueInt=25, Name= DataStreamTypeEnum.Int32.GetDescription(), OrderNo=100, Remark=""},
         };
     }
 }
