@@ -8,7 +8,7 @@
     }
     else
     {
-        <MenuItem Key="@menu.Name" Title="@menu.Title" OnClick="()=>OnClick(menu.PathWithId)" Icon="@menu.Icon">
+        <MenuItem RouterLink="@menu.PathWithId" RouterMatch="NavLinkMatch.All" Key="@menu.Name" Title="@menu.Title" Icon="@menu.Icon">
         </MenuItem>
     }
 
@@ -31,23 +31,5 @@
         <span>@title</span>
     </span>
     ;
-    }
-    public void OnClick(string url)
-    {
-        nav.NavigateTo(url, new NavigationOptions() { HistoryEntryState = url, ReplaceHistoryEntry = true });
-        try
-        {
-            var isExist = tab.Pages.Where(a => a.Url == url).Any();
-            if (isExist)
-            {
-                tab.Update();
-                tab.ReloadPage(url);
-
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-        }
     }
 }
