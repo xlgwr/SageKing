@@ -1,5 +1,7 @@
 ﻿@namespace SageKing.Studio.Pages.SysSageKingMessage.component
 
+@implements IAddEdit<SysSageKingMessage>
+
 @inject SysSageKingMessageService dataService
 @inject SysDictTypeService selectService
 
@@ -24,7 +26,7 @@
                     TItemValue="int"
                     TItem="SysDictData"
                     Placeholder="请选消息类型"
-                    DefaultActiveFirstOption="true" 
+                    DefaultActiveFirstOption="true"
                     EnableSearch>
             </Select>
         </FormItem>
@@ -47,14 +49,19 @@
 </Form>
 
 @code {
+
+    #region IAddEdit
     [Parameter]
     public string Title { get; set; }
 
     [Parameter]
     public SysSageKingMessage model { get; set; }
 
-    bool loading;
-    AntDesign.Form<SysSageKingMessage> form;
+    public BaseService<SysSageKingMessage> DataService
+    { get { return dataService; } }
+
+    public AntDesign.Form<SysSageKingMessage> form { get; set; }
+    #endregion
 
     //select data
     SysDictType SelectType;
@@ -63,30 +70,6 @@
     {
         SelectType = await selectService.GetDetailCache(SysDictTypeConst.code_message_type);
         await base.OnInitializedAsync();
-    }
-
-    public async Task<bool> Save()
-    {
-        if (!form.Validate())
-        {
-            return false;
-        };
-
-        if (model.Id <= 0)
-        {
-            await dataService.Add(model);
-        }
-        else
-        {
-            await dataService.Update(model);
-        }
-        return true;
-    }
-
-    public void Reset()
-    {
-        model = new SysSageKingMessage();
-        form.Reset();
     }
 
 }

@@ -1,5 +1,7 @@
 ﻿@namespace SageKing.Studio.Pages.SysSageKingMessage.component
 
+@implements IAddEdit<SysSageKingMessageAttribute>
+
 @inject SysSageKingMessageAttributeService dataService
 @inject SelectMenuCacheService<DataStreamTypeEnum> selectCacheService
 
@@ -35,15 +37,19 @@
     </FormItem>
 </Form>
 @code {
+
+    #region IAddEdit
     [Parameter]
     public string Title { get; set; }
 
     [Parameter]
     public SysSageKingMessageAttribute model { get; set; }
 
-    bool loading;
-    AntDesign.Form<SysSageKingMessageAttribute> form;
+    public BaseService<SysSageKingMessageAttribute> DataService
+    { get { return dataService; } }
 
+    public AntDesign.Form<SysSageKingMessageAttribute> form { get; set; }
+    #endregion
 
     //select data
     IList<KeyValue<string, DataStreamTypeEnum>> SelectType;
@@ -54,27 +60,4 @@
         await base.OnInitializedAsync();
     }
 
-    public async Task<bool> Save()
-    {
-        if (!form.Validate())
-        {
-            return false;
-        };
-
-        if (model.Id <= 0)
-        {
-            await dataService.Add(model);
-        }
-        else
-        {
-            await dataService.Update(model);
-        }
-        return true;
-    }
-
-    public void Reset()
-    {
-        model = new SysSageKingMessageAttribute();
-        form.Reset();
-    }
 }

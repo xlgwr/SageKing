@@ -29,10 +29,12 @@
     {
         try
         {
+            IAddEdit<SysSageKingMessage> addEdit = null;
             addloading = true;
             if (edit != null)
             {
-                var result = await edit.Save();
+                addEdit = ((IAddEdit<SysSageKingMessage>)edit);
+                var result = await addEdit.Save();
                 if (!result)
                 {
                     _visible = true;
@@ -64,10 +66,15 @@
     {
         try
         {
+            IAddEdit<SysSageKingMessageAttribute> addEdit = null;
+
             addchildloading = true;
             if (editchild != null)
             {
-                var result = await editchild.Save();
+
+                addEdit = ((IAddEdit<SysSageKingMessageAttribute>)editchild);
+
+                var result = await addEdit.Save();
                 if (!result)
                 {
                     _visibleChild = true;
@@ -87,8 +94,8 @@
         }
         catch (Exception ex)
         {
-            // Error?.ProcessError(ex, $"{modelTitle}【{addchildModel.Name}】失败！");
-            throw ex;
+            Error?.ProcessError(ex, $"{modelTitle}【{addchildModel.Name}】失败！");
+            // throw ex;
         }
     }
 
@@ -143,178 +150,178 @@
 
 @if (pageData == null)
 {
-    <Spin size="large" Tip="Loading..." />
+        <Spin size="large" Tip="Loading..." />
 }
 else
 {
-    <Table @ref="table" TItem="SysSageKingMessage"
-           DataSource="@pageData.Items"
-           RowKey="x=>x.Id"
-           OnRowClick="OnRowClick"
-           @bind-SelectedRows="@selectedRows"
-           Size="TableSize.Small"
-           OnChange="OnChange"
-           OnExpand="OnRowExpand" Loading="tableLoading"
-           Resizable Bordered EnableVirtualization
-           ScrollY="@ScrollY" PageSize="pageData.PageSize">
-        <TitleTemplate>
-            <Space>
-                <SpaceItem>
-                    <Select @bind-Value="@searchModel.Type"
-                            DataSource="@SelectSearchModelType.Children"
-                            LabelName="@nameof(SysDictData.CodeValue)"
-                            ValueName="@nameof(SysDictData.ValueInt)"
-                            Style="min-width:150px; width: auto;"
-                            TItemValue="int"
-                            TItem="SysDictData"
-                            Placeholder="请选消息类型"
-                            AllowClear
-                            EnableSearch>
-                    </Select>
-                </SpaceItem>
-                <SpaceItem>
-                    <Search Placeholder="消息名称" @bind-Value="searchModel.Name" OnSearch="async ()=>{await OnSearch(pageargs);Message(); }" AllowClear="true" />
-                </SpaceItem>
-
-                <SpaceItem>
-                    <Button Type="@ButtonType.Primary" Icon="@IconType.Outline.Reload" OnClick="()=>ReSet()">重置</Button>
-                </SpaceItem>
-
-                <SpaceItem>
-                    <Button Type="@ButtonType.Primary" Icon="@IconType.Outline.AppstoreAdd" OnClick="@AddData">新增</Button>
-                </SpaceItem>
-            </Space>
-        </TitleTemplate>
-        <ColumnDefinitions>
-            <Selection Type="@selectionType"></Selection>
-            <PropertyColumn Property="c=>c.Name" Title="消息名称" Sortable="true" Filterable />
-            <PropertyColumn Property="c=>c.Type" Title="类型" Sortable="true" Align="ColumnAlign.Center" Filterable>
-                <Text>@GetTypeDesc(context.Type)</Text>
-            </PropertyColumn>
-            <PropertyColumn Property="c=>c.Status" Title="状态" Align="ColumnAlign.Center" Sortable="true" Filterable>
-                <Switch @bind-Value="@context.Status" OnClick="()=>EditOnStatusSwitch(context)" CheckedChildren="开" UnCheckedChildren="关"></Switch>
-            </PropertyColumn>
-            <PropertyColumn Property="c=>c.Description" Title="描述信息" Ellipsis />
-            <PropertyColumn Property="c=>c.Version" Title="Version" Sortable="true" Filterable></PropertyColumn>
-            <PropertyColumn Property="c=>c.Id" Title="Id" Sortable="true" Filterable />
-            <PropertyColumn Title="时间相关" Property="c=>c.CreateUserName" Align="ColumnAlign.Center">
-                <Popover ContentTemplate="@baseRender.GetDetails(context)" Title="时间相关">
-                    <Button Icon="@IconType.Outline.OrderedList" Shape="@ButtonShape.Circle" />
-                </Popover>
-            </PropertyColumn>
-            <ActionColumn Title="Action" Fixed="right">
+        <Table @ref="table" TItem="SysSageKingMessage"
+               DataSource="@pageData.Items"
+               RowKey="x=>x.Id"
+               OnRowClick="OnRowClick"
+               @bind-SelectedRows="@selectedRows"
+               Size="TableSize.Small"
+               OnChange="OnChange"
+               OnExpand="OnRowExpand" Loading="tableLoading"
+               Resizable Bordered EnableVirtualization
+               ScrollY="@ScrollY" PageSize="pageData.PageSize">
+            <TitleTemplate>
                 <Space>
                     <SpaceItem>
-                        <Tooltip Title="@IconType.Outline.Edit">
-                            <Button OnClick="(e)=>EditData(context)" Shape="@ButtonShape.Circle" Icon="@IconType.Outline.Edit" />
-                        </Tooltip>
+                        <Select @bind-Value="@searchModel.Type"
+                                DataSource="@SelectSearchModelType.Children"
+                                LabelName="@nameof(SysDictData.CodeValue)"
+                                ValueName="@nameof(SysDictData.ValueInt)"
+                                Style="min-width:150px; width: auto;"
+                                TItemValue="int"
+                                TItem="SysDictData"
+                                Placeholder="请选消息类型"
+                                AllowClear
+                                EnableSearch>
+                        </Select>
                     </SpaceItem>
                     <SpaceItem>
-                        <Popconfirm Title="确认删除?"
-                                    OnConfirm="(e) => DeleteData(context)"
-                                    OkText="Yes"
-                                    CancelText="No">
-                            <Button Icon="@IconType.Outline.Delete" Shape="@ButtonShape.Circle" Danger></Button>
-                        </Popconfirm>
+                        <Search Placeholder="消息名称" @bind-Value="searchModel.Name" OnSearch="async ()=>{await OnSearch(pageargs);Message(); }" AllowClear="true" />
+                    </SpaceItem>
+
+                    <SpaceItem>
+                        <Button Type="@ButtonType.Primary" Icon="@IconType.Outline.Reload" OnClick="()=>ReSet()">重置</Button>
+                    </SpaceItem>
+
+                    <SpaceItem>
+                        <Button Type="@ButtonType.Primary" Icon="@IconType.Outline.AppstoreAdd" OnClick="@AddData">新增</Button>
                     </SpaceItem>
                 </Space>
-            </ActionColumn>
-        </ColumnDefinitions>
-        <ExpandTemplate Context="rowData">
-            <Table Class="childTable" TItem="SysSageKingMessageAttribute" DataSource="rowData.Data.Children" Loading="rowData.Data.Children==null" Size=@TableSize.Small EnableVirtualization PageSize="10" ScrollY="200px" PaginationPosition="bottomCenter"
-                   @bind-SelectedRows="@selectedRowsAttr" RowKey="a=>a.Id.ToString()" OnRowClick="OnRowAttrClick" Resizable Bordered>
-                <TitleTemplate>
+            </TitleTemplate>
+            <ColumnDefinitions>
+                <Selection Type="@selectionType"></Selection>
+                <PropertyColumn Property="c=>c.Name" Title="消息名称" Sortable="true" Filterable />
+                <PropertyColumn Property="c=>c.Type" Title="类型" Sortable="true" Align="ColumnAlign.Center" Filterable>
+                    <Text>@GetTypeDesc(context.Type)</Text>
+                </PropertyColumn>
+                <PropertyColumn Property="c=>c.Status" Title="状态" Align="ColumnAlign.Center" Sortable="true" Filterable>
+                    <Switch @bind-Value="@context.Status" OnClick="()=>EditOnStatusSwitch(context)" CheckedChildren="开" UnCheckedChildren="关"></Switch>
+                </PropertyColumn>
+                <PropertyColumn Property="c=>c.Description" Title="描述信息" Ellipsis />
+                <PropertyColumn Property="c=>c.Version" Title="Version" Sortable="true" Filterable></PropertyColumn>
+                <PropertyColumn Property="c=>c.Id" Title="Id" Sortable="true" Filterable />
+                <PropertyColumn Title="时间相关" Property="c=>c.CreateUserName" Align="ColumnAlign.Center">
+                    <Popover ContentTemplate="@baseRender.GetDetails(context)" Title="时间相关">
+                        <Button Icon="@IconType.Outline.OrderedList" Shape="@ButtonShape.Circle" />
+                    </Popover>
+                </PropertyColumn>
+                <ActionColumn Title="Action" Fixed="right">
                     <Space>
                         <SpaceItem>
-                            <Button Type="@ButtonType.Primary" Icon="@IconType.Outline.AppstoreAdd" OnClick="(e)=>AddDataAtt(rowData.Data.Id)">新增属性</Button>
+                            <Tooltip Title="@IconType.Outline.Edit">
+                                <Button OnClick="(e)=>EditData(context)" Shape="@ButtonShape.Circle" Icon="@IconType.Outline.Edit" />
+                            </Tooltip>
                         </SpaceItem>
-
                         <SpaceItem>
-                            <Button Type="@ButtonType.Primary" Icon="@IconType.Outline.Import" OnClick="(e)=>ImportDataAtt(rowData.Data)">快速导入</Button>
+                            <Popconfirm Title="确认删除?"
+                                        OnConfirm="(e) => DeleteData(context)"
+                                        OkText="Yes"
+                                        CancelText="No">
+                                <Button Icon="@IconType.Outline.Delete" Shape="@ButtonShape.Circle" Danger></Button>
+                            </Popconfirm>
                         </SpaceItem>
                     </Space>
-
-                </TitleTemplate>
-                <ColumnDefinitions>
-                    <Selection Key="@rowData.Data.Id.ToString()" Type="@selectionType"></Selection>
-                    <PropertyColumn Property="c=>c.Name" Title="属性名称" Sortable="true" Filterable />
-                    <PropertyColumn Property="c=>c.Type" Title="类型" Sortable="true" Align="ColumnAlign.Center" Filterable>
-                        <Text>@context.Type.GetDescription(true)</Text>
-                    </PropertyColumn>
-                    <PropertyColumn Property="c=>c.Status" Title="Status" Sortable="true" Align="ColumnAlign.Center" Filterable>
-                        <Switch @bind-Value="@context.Status" OnClick="()=>EditOnStatusSwitchAtt(context)" CheckedChildren="开" UnCheckedChildren="关"></Switch>
-                    </PropertyColumn>
-                    <PropertyColumn Property="c=>c.Description" Title="描述信息" Ellipsis />
-                    <PropertyColumn Property="c=>c.Id" Title="Id" Sortable="true" Filterable />
-                    <PropertyColumn Property="c=>c.MessageId" Title="MessageId"></PropertyColumn>
-                    <PropertyColumn Title="时间相关" Property="c=>c.CreateUserName" Align="ColumnAlign.Center">
-                        <Popover ContentTemplate="@baseRender.GetDetails(context)" Title="时间相关">
-                            <Button Icon="@IconType.Outline.OrderedList" Shape="@ButtonShape.Circle" />
-                        </Popover>
-                    </PropertyColumn>
-                    <ActionColumn Title="Action" Fixed="right">
+                </ActionColumn>
+            </ColumnDefinitions>
+            <ExpandTemplate Context="rowData">
+                <Table Class="childTable" TItem="SysSageKingMessageAttribute" DataSource="rowData.Data.Children" Loading="rowData.Data.Children==null" Size=@TableSize.Small EnableVirtualization PageSize="10" ScrollY="200px" PaginationPosition="bottomCenter"
+                       @bind-SelectedRows="@selectedRowsAttr" RowKey="a=>a.Id.ToString()" OnRowClick="OnRowAttrClick" Resizable Bordered>
+                    <TitleTemplate>
                         <Space>
                             <SpaceItem>
-                                <Tooltip Title="@IconType.Outline.Edit">
-                                    <Button OnClick="(e)=>EditDataAtt(context)" Shape="@ButtonShape.Circle" Icon="@IconType.Outline.Edit" />
-                                </Tooltip>
+                                <Button Type="@ButtonType.Primary" Icon="@IconType.Outline.AppstoreAdd" OnClick="(e)=>AddDataAtt(rowData.Data.Id)">新增属性</Button>
                             </SpaceItem>
-                            <SpaceItem>
-                                <Popconfirm Title="确认删除?"
-                                            OnConfirm="() => DeleteAtt(context,rowData.Data)"
-                                            OkText="Yes"
-                                            CancelText="No">
-                                    <Button Icon="@IconType.Outline.Delete" Shape="@ButtonShape.Circle" Danger></Button>
-                                </Popconfirm>
 
+                            <SpaceItem>
+                                <Button Type="@ButtonType.Primary" Icon="@IconType.Outline.Import" OnClick="(e)=>ImportDataAtt(rowData.Data)">快速导入</Button>
                             </SpaceItem>
                         </Space>
-                    </ActionColumn>
-                </ColumnDefinitions>
-                <PaginationTemplate>
-                    <Pagination Class="@(context.PaginationClass + " my-custom-pagination")"
-                                Total="context.Total"
-                                ShowTotal="showTotal"
-                                PageSize="context.PageSize"
-                                Current="context.PageIndex"
-                                ShowSizeChanger
-                                OnChange="context.HandlePageChange" />
-                </PaginationTemplate>
-            </Table>
-        </ExpandTemplate>
+
+                    </TitleTemplate>
+                    <ColumnDefinitions>
+                        <Selection Key="@rowData.Data.Id.ToString()" Type="@selectionType"></Selection>
+                        <PropertyColumn Property="c=>c.Name" Title="属性名称" Sortable="true" Filterable />
+                        <PropertyColumn Property="c=>c.Type" Title="类型" Sortable="true" Align="ColumnAlign.Center" Filterable>
+                            <Text>@context.Type.GetDescription(true)</Text>
+                        </PropertyColumn>
+                        <PropertyColumn Property="c=>c.Status" Title="Status" Sortable="true" Align="ColumnAlign.Center" Filterable>
+                            <Switch @bind-Value="@context.Status" OnClick="()=>EditOnStatusSwitchAtt(context)" CheckedChildren="开" UnCheckedChildren="关"></Switch>
+                        </PropertyColumn>
+                        <PropertyColumn Property="c=>c.Description" Title="描述信息" Ellipsis />
+                        <PropertyColumn Property="c=>c.Id" Title="Id" Sortable="true" Filterable />
+                        <PropertyColumn Property="c=>c.MessageId" Title="MessageId"></PropertyColumn>
+                        <PropertyColumn Title="时间相关" Property="c=>c.CreateUserName" Align="ColumnAlign.Center">
+                            <Popover ContentTemplate="@baseRender.GetDetails(context)" Title="时间相关">
+                                <Button Icon="@IconType.Outline.OrderedList" Shape="@ButtonShape.Circle" />
+                            </Popover>
+                        </PropertyColumn>
+                        <ActionColumn Title="Action" Fixed="right">
+                            <Space>
+                                <SpaceItem>
+                                    <Tooltip Title="@IconType.Outline.Edit">
+                                        <Button OnClick="(e)=>EditDataAtt(context)" Shape="@ButtonShape.Circle" Icon="@IconType.Outline.Edit" />
+                                    </Tooltip>
+                                </SpaceItem>
+                                <SpaceItem>
+                                    <Popconfirm Title="确认删除?"
+                                                OnConfirm="() => DeleteAtt(context,rowData.Data)"
+                                                OkText="Yes"
+                                                CancelText="No">
+                                        <Button Icon="@IconType.Outline.Delete" Shape="@ButtonShape.Circle" Danger></Button>
+                                    </Popconfirm>
+
+                                </SpaceItem>
+                            </Space>
+                        </ActionColumn>
+                    </ColumnDefinitions>
+                    <PaginationTemplate>
+                        <Pagination Class="@(context.PaginationClass + " my-custom-pagination")"
+                                    Total="context.Total"
+                                    ShowTotal="showTotal"
+                                    PageSize="context.PageSize"
+                                    Current="context.PageIndex"
+                                    ShowSizeChanger
+                                    OnChange="context.HandlePageChange" />
+                    </PaginationTemplate>
+                </Table>
+            </ExpandTemplate>
 
 
-        <PaginationTemplate>
-            <Pagination ShowTotal="showTotal" Class="@(context.PaginationClass + " my-custom-pagination")"
-                        Total="pageData.Total"
-                        PageSize="pageData.PageSize"
-                        Current="pageData.Page"
-                        ShowSizeChanger
-                        ShowQuickJumper
-                        OnChange="OnSearch" />
-        </PaginationTemplate>
-    </Table>
+            <PaginationTemplate>
+                <Pagination ShowTotal="showTotal" Class="@(context.PaginationClass + " my-custom-pagination")"
+                            Total="pageData.Total"
+                            PageSize="pageData.PageSize"
+                            Current="pageData.Page"
+                            ShowSizeChanger
+                            ShowQuickJumper
+                            OnChange="OnSearch" />
+            </PaginationTemplate>
+        </Table>
 
-    <Modal Title="@modelTitle"
-           @bind-Visible="@_visible" Draggable="@(true)" Centered Closable="false"
-           OnOk="HandleOk" ConfirmLoading="addloading" OkText="modelOkTitle" CancelText="modelCancelText">
+        <Modal Title="@modelTitle"
+               @bind-Visible="@_visible" Draggable="@(true)" Centered Closable="false"
+               OnOk="HandleOk" ConfirmLoading="addloading" OkText="modelOkTitle" CancelText="modelCancelText">
 
         @FormParentTemplate()
-    </Modal>
+        </Modal>
 
-    <Modal Title="@modelTitle" Class="modelDefault"
-           @bind-Visible="@_visibleChild" Draggable="@(true)" Centered Closable="false"
-           OnOk="HandleChilcOk" ConfirmLoading="addchildloading" OkText="modelOkTitle" CancelText="modelCancelText">
+        <Modal Title="@modelTitle" Class="modelDefault"
+               @bind-Visible="@_visibleChild" Draggable="@(true)" Centered Closable="false"
+               OnOk="HandleChilcOk" ConfirmLoading="addchildloading" OkText="modelOkTitle" CancelText="modelCancelText">
 
         @FormChildTemplate()
-    </Modal>
+        </Modal>
 
-    <Modal Title="@modelTitle" Class="modelDefault"
-           @bind-Visible="@_visibleImport" Draggable="@(true)" Centered Closable="false"
-           OnOk="HandleOkImportDataAtt" ConfirmLoading="loadingImport" OkText="modelOkTitle" CancelText="modelCancelText">
+        <Modal Title="@modelTitle" Class="modelDefault"
+               @bind-Visible="@_visibleImport" Draggable="@(true)" Centered Closable="false"
+               OnOk="HandleOkImportDataAtt" ConfirmLoading="loadingImport" OkText="modelOkTitle" CancelText="modelCancelText">
 
         @FormImportDataAttPageTemplate()
-    </Modal>
+        </Modal>
 }
 
 <style>
@@ -406,8 +413,8 @@ else
 
     public RenderFragment GetPageTitle() =>
     @<div>
-        <Icon Type="@TabIcon" /> @TabTitle
-    </div>
+            <Icon Type="@TabIcon" /> @TabTitle
+        </div>
     ;
     #endregion
 
