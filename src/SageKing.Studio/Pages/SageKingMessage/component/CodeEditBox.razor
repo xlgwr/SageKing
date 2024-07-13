@@ -1,0 +1,57 @@
+﻿@namespace SageKing.Studio.Pages.SysSageKingMessage.component
+
+
+<MarkdownEditor @bind-Value="@markdownValue" CSSClass="MarkdownEditorCus"
+                    ValueHTMLChanged="@OnMarkdownValueHTMLChanged"
+                    SpellChecker="false" @ref="Markdown1"
+                    CustomButtonClicked="@OnCustomButtonClicked">
+    </MarkdownEditor> 
+
+
+<style>
+    .MarkdownEditorCus {
+        margin: 0px;
+        padding: 0px;
+    }
+</style>
+
+@code {
+    [Parameter]
+    public bool isShow { get; set; }
+
+    [Parameter]
+    public string markdownValue { get; set; }
+
+    MarkdownEditor Markdown1;
+
+    string markdownHtml;
+    string buttonText;
+
+    public async Task ChangeText(string Value)
+    {
+        markdownValue = Value;
+        if (Markdown1 != null)
+        {
+            await Markdown1.SetValueAsync(markdownValue); 
+        }
+    }
+
+    Task OnMarkdownValueChanged(string value)
+    {
+        return Task.CompletedTask;
+    }
+
+    Task OnMarkdownValueHTMLChanged(string value)
+    {
+        markdownHtml = value;
+        return Task.CompletedTask;
+    }
+
+    Task OnCustomButtonClicked(MarkdownButtonEventArgs eventArgs)
+    {
+        Console.WriteLine("OnCustomButtonClicked -> " + eventArgs.Value);
+        buttonText += "OnCustomButtonClicked -> " + eventArgs.Value + "<br />";
+
+        return Task.CompletedTask;
+    }
+}

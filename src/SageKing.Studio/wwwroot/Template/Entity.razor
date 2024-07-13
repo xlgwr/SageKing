@@ -1,0 +1,31 @@
+﻿@* @namespace SageKing.Studio.Pages.SysSageKingMessage.component *@
+
+namespace @Model.NameSpace;
+
+/// @("<summary> ")
+/// @Model.Description
+/// @("<summary> ")
+public class @(@Model.ClassName) @Model.BaseClassName
+@("{\n")
+@foreach (var column in Model.ColumnList)
+{
+@:/// @("<summary> ")
+@:/// @(column.Value)
+@:/// @("<summary>")
+@if (!column.Value.GetDescription().IsNullOrEmpty())
+{
+@:public @column.Value.GetDescription() @column.Key { get; set; }
+@:
+}
+else
+{
+@:public string @column.Key { get; set; }
+@:
+}
+}
+@("\n}\n") 
+
+@* @code {
+    [Parameter]
+    public DefaultViewEngine Model { get; set; }
+} *@

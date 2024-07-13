@@ -21,7 +21,7 @@ public class DefaultViewEngine : ViewEngineModel
 
     public string Description { get; set; }
 
-    public List<KeyValuePair<string, DataStreamTypeEnum>> ColumnList { get; set; }
+    public List<KeyValue<string, DataStreamTypeEnum>> ColumnList { get; set; }
 
     public string LowerClassName
     {

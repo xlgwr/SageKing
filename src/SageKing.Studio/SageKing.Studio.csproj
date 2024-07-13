@@ -12,6 +12,16 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Content Remove="wwwroot\Template\Entity.razor" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Include="wwwroot\Template\Entity.razor">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="PSC.Blazor.Components.MarkdownEditor" />
 		<PackageReference Include="PSC.Blazor.Components.CodeSnippet" />
 	</ItemGroup>

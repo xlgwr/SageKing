@@ -191,7 +191,7 @@ public class ViewEngineTemplate<T> : IViewEngineTemplate<T>
     internal ViewEngineTemplate(MemoryStream assemblyByteCode)
     {
         this.assemblyByteCode = assemblyByteCode;
-        templateType = Reflect.GetType(assemblyByteCode, "SageKing.CodeGen.SageKingViewEngine.ViewEngine.Template");
+        templateType = Reflect.GetType(assemblyByteCode, "SageKing.CodeGen.SageKingViewEngine.Template");
     }
 
     /// <summary>

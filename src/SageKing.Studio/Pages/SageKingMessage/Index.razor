@@ -9,6 +9,8 @@
 @inject IMessageService _message
 @inject IConfirmService _confirmService
 @inject SysDictTypeService selectService
+@inject IViewEngine _viewEngine
+@inject IWebHostEnvironment WebHostEnvironment
 
 @inject SysMenuService _sysMenuService
 @inject SysSageKingMessageService dataService
@@ -111,6 +113,14 @@ else
                                     OkText="Yes"
                                     CancelText="No">
                             <Button Icon="@IconType.Outline.Delete" Shape="@ButtonShape.Circle" Danger></Button>
+                        </Popconfirm>
+                    </SpaceItem>
+                    <SpaceItem>
+                        <Popconfirm Title="确认清理当前记录本地缓存?"
+                                    OnConfirm="(e) => ClearCacheCodeData(context)"
+                                    OkText="Yes"
+                                    CancelText="No">
+                            <Button Icon="@IconType.Outline.Clear" Shape="@ButtonShape.Circle" Danger></Button>
                         </Popconfirm>
                     </SpaceItem>
                 </Space>
@@ -216,8 +226,8 @@ else
     <Modal Title="@modelTitle" Class="modelDefault" MaxBodyHeight="@("60vh")"
            @bind-Visible="@_visibleEntity" Draggable="@(true)" Centered Closable="false"
            ConfirmLoading="loadingEntity" OkText="modelOkTitle" CancelText="modelCancelText">
-  
-            @FormEntityTemplate() 
+
+        @FormCodeEditBoxTemplate()
     </Modal>
 }
 
@@ -727,24 +737,42 @@ else
     bool loadingEntity = false;
     DefaultViewEngine _defaultViewEngine;
 
-    RenderFragment FormEntityTemplate()
+    CodeEditBox codeEditBox;
+
+    string markdownValue;
+    RenderFragment FormCodeEditBoxTemplate()
     {
-        return@<Entity Model="_defaultViewEngine"></Entity>;
+        return@<CodeEditBox markdownValue="@markdownValue" isShow="true" @ref="@codeEditBox"></CodeEditBox>;
     }
 
-    async void ShowEntity(SysSageKingMessage row)
+    async Task ShowEntity(SysSageKingMessage row)
     {
-        var result = await GenCodeData(row);
-        if (!result)
+        try
         {
-            return;
-        }
+            loadingEntity = true;
+            markdownValue = string.Empty;
+            var result = await GenCodeData(row);
+            if (!result)
+            {
+                return;
+            }
+            modelTitle = $"{TabTitle}->${row.Name}-:>C#实体代码";
+            modelOkTitle = "确认";
+            _visibleEntity = true;
+            if (codeEditBox != null)
+            {
+                await codeEditBox.ChangeText(markdownValue);
+            }
 
-        modelTitle = $"{TabTitle}->${row.Name}-:>C#实体代码";
-        modelOkTitle = "确认";
-        _visibleEntity = true;
-        loadingEntity = true;
-        loadingEntity = false;
+        }
+        catch (Exception ex)
+        {
+            Error?.ProcessError(ex);
+        }
+        finally
+        {
+            loadingEntity = false;
+        }
 
     }
     async Task<bool> GenCodeData(SysSageKingMessage row)
@@ -756,25 +784,48 @@ else
             _ = _message.Warning($"当前消息结构【{row.Name}：{GetTypeDesc(row.Type)}】无可用属性，请确认后再试。");
             return false;
         }
-        if (_defaultViewEngine != null)
-        {
-            _defaultViewEngine.ClassName = row.Name;
-            _defaultViewEngine.NameSpace = "SageKing.Contracts.Entity";
-            _defaultViewEngine.Description = row.Description;
-            _defaultViewEngine.ColumnList = getAttData.Select(a => new KeyValuePair<string, DataStreamTypeEnum>(a.Name, a.Type)).ToList();
+        //生输入界面
+        _defaultViewEngine = new DefaultViewEngine()
+            {
+                ClassName = row.Name,
+                NameSpace = "SageKing.Contracts.Entity",
+                Description = row.Description,
+                ColumnList = getAttData.Select(a => new KeyValue<string, DataStreamTypeEnum>(a.Name, a.Type)).ToList()
+            };
 
-        }
-        else
+        var getCacheFile = row.Key.GetTemplateFileName(".cs");
+        if (File.Exists(getCacheFile))
         {
-            //生输入界面
-            _defaultViewEngine = new DefaultViewEngine()
-                {
-                    ClassName = row.Name,
-                    NameSpace = "SageKing.Contracts.Entity",
-                    Description = row.Description,
-                    ColumnList = getAttData.Select(a => new KeyValuePair<string, DataStreamTypeEnum>(a.Name, a.Type)).ToList()
-                };
+            markdownValue = await File.ReadAllTextAsync(getCacheFile);
+            return true;
         }
+
+        var templatePath = Path.Combine(WebHostEnvironment.WebRootPath, "Template", "Entity.razor");
+
+        if (!File.Exists(templatePath)) return false;
+        var tContent = File.ReadAllText(templatePath);
+        markdownValue = await _viewEngine.RunCompileFromCachedAsync(tContent, _defaultViewEngine, row.Key, builderAction: builder =>
+        {
+            builder.AddAssemblyReferenceByName("System.Linq");
+            builder.AddAssemblyReferenceByName("System.Collections");
+            builder.AddAssemblyReferenceByName("SageKing.Core");
+            builder.AddUsing("System.Collections.Generic");
+            builder.AddUsing("System.Linq");
+            builder.AddUsing("SageKing.Core.Contracts");
+            builder.AddUsing("SageKing.Core.Extensions");
+        });
+        await File.WriteAllTextAsync(getCacheFile, markdownValue);
         return true;
+    }
+
+    /// <summary>
+    /// 清理本地缓存
+    /// </summary>
+    /// <returns></returns>
+    bool ClearCacheCodeData(SysSageKingMessage row)
+    {
+        var reusult = row.Key.ClearTemplateFileName();
+        _ = _message.Warning($"清理代码缓存:{row.Key}" + (reusult ? "成功" : "失败"));
+        return reusult;
     }
 }

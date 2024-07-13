@@ -1,8 +1,10 @@
 ﻿
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace SageKing.Application.AspNetCore.SqlSugar.Contracts.Entity;
@@ -48,4 +50,15 @@ public partial class SysSageKingMessage : EntityTenantBaseData
     /// </summary>
     [Navigate(NavigateType.OneToMany, nameof(SysSageKingMessageAttribute.MessageId))]
     public List<SysSageKingMessageAttribute> Children { get; set; }
+
+    [SugarColumn(IsIgnore = true)]
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public string Key
+    {
+        get
+        {
+            return $"{Name}_{Version}";
+        }
+    }
 }
