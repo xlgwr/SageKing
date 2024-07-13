@@ -203,21 +203,21 @@ else
     </Table>
 
     <Modal Title="@modelTitle"
-           @bind-Visible="@_visible" Draggable="@(true)" Centered Closable="false"
+           @bind-Visible="@_visible" Draggable="@(true)" Centered 
            OnOk="HandleOk" ConfirmLoading="addloading" OkText="modelOkTitle" CancelText="modelCancelText">
 
         @FormParentTemplate()
     </Modal>
 
     <Modal Title="@modelTitle" Class="modelDefault"
-           @bind-Visible="@_visibleChild" Draggable="@(true)" Centered Closable="false"
+           @bind-Visible="@_visibleChild" Draggable="@(true)" Centered 
            OnOk="HandleChilcOk" ConfirmLoading="addchildloading" OkText="modelOkTitle" CancelText="modelCancelText">
 
         @FormChildTemplate()
     </Modal>
 
     <Modal Title="@modelTitle" Class="modelDefault"
-           @bind-Visible="@_visibleImport" Draggable="@(true)" Centered Closable="false"
+           @bind-Visible="@_visibleImport" Draggable="@(true)" Centered 
            OnOk="HandleOkImportDataAtt" ConfirmLoading="loadingImport" OkText="modelOkTitle" CancelText="modelCancelText">
 
         @FormImportDataAttPageTemplate()
@@ -225,7 +225,7 @@ else
 
 
     <Modal Title="@modelTitle" Class="modelDefault" MaxBodyHeight="@("60vh")"
-           @bind-Visible="@_visibleEntity" Draggable="@(true)" Centered Closable="false"
+           @bind-Visible="@_visibleEntity" Draggable="@(true)" Centered 
            ConfirmLoading="loadingEntity" OkText="modelOkTitle" CancelText="modelCancelText">
 
         @FormCodeEditBoxTemplate()

@@ -1,19 +1,11 @@
 ﻿@namespace SageKing.Studio.Pages.Base
 
 
-<MarkdownEditor @bind-Value="@markdownValue" CSSClass="MarkdownEditorCus"
-                    ValueHTMLChanged="@OnMarkdownValueHTMLChanged"
-                    SpellChecker="false" @ref="Markdown1"
-                    CustomButtonClicked="@OnCustomButtonClicked">
-    </MarkdownEditor> 
+<MarkdownEditor @bind-Value="@markdownValue"
+                ValueHTMLChanged="@OnMarkdownValueHTMLChanged"
+                SpellChecker="false" AutoDownloadFontAwesome="true" @ref="Markdown1" AutoSaveEnabled="true" CustomButtonClicked="@OnCustomButtonClicked">
+</MarkdownEditor>
 
-
-<style>
-    .MarkdownEditorCus {
-        margin: 0px;
-        padding: 0px;
-    }
-</style>
 
 @code {
     [Parameter]
@@ -27,12 +19,26 @@
     string markdownHtml;
     string buttonText;
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+        await base.OnAfterRenderAsync(firstRender);
+
+        if (firstRender)
+        {
+            if (Markdown1 != null)
+            {
+                await Markdown1.SetValueAsync(markdownValue);
+            }
+        }
+
+    } 
     public async Task ChangeText(string Value)
     {
         markdownValue = Value;
         if (Markdown1 != null)
         {
-            await Markdown1.SetValueAsync(markdownValue); 
+            await Markdown1.SetValueAsync(markdownValue);
         }
     }
 
