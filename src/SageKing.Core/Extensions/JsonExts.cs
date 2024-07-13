@@ -13,7 +13,17 @@ public static class JsonExts
     {
         return JsonConvert.SerializeObject(obj);
 
-    } 
+    }
+
+    public static T? JsonTo<T>(this string obj, object settings = null)
+    {
+        if (obj.IsNullOrEmpty())
+        {
+            return default(T);
+        }
+        return JsonConvert.DeserializeObject<T>(obj, settings as JsonSerializerSettings);
+    }
+
 
     public static bool HasItem<TSource>(this IEnumerable<TSource> source)
     {

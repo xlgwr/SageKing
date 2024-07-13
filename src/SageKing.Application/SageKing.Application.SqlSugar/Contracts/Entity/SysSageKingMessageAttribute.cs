@@ -35,7 +35,19 @@ public partial class SysSageKingMessageAttribute : EntityBase
     /// 状态
     /// </summary>
     [SugarColumn(ColumnDescription = "状态")]
-    public bool Status { get; set; }
+    public virtual bool Status { get; set; }
+
+    /// <summary>
+    /// 是否必填
+    /// </summary>
+    [SugarColumn(ColumnDescription = "是否必填")]
+    public virtual bool Required { get; set; } = false;
+
+    /// <summary>
+    /// 显示名称
+    /// </summary> 
+    [SugarColumn(ColumnDescription = "显示名称", Length = 64)]
+    public virtual string? DisplayName { get; set; }
 
 
     [SugarColumn(ColumnDescription = "描述")]

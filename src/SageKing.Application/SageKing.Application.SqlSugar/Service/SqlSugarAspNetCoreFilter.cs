@@ -1,6 +1,7 @@
 ﻿using NewLife.Caching;
 using SageKing.Application.AspNetCore.SqlSugar.Features;
 using SageKing.Cache.Service;
+using SageKing.Core.Extensions;
 using SageKing.Database.SqlSugar.AspNetCore;
 using System;
 using System.Collections;

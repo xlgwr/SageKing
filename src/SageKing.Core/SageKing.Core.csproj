@@ -9,6 +9,7 @@
 			提供SageKing核心功能
 		</Description>
 		<PackageTags>SageKing module Core</PackageTags>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 
 	<ItemGroup>

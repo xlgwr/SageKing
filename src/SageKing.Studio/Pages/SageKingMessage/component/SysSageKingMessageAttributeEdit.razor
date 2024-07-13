@@ -32,6 +32,12 @@
     <FormItem Label="是否启用">
         <Switch @bind-Value="@context.Status" CheckedChildren="开" UnCheckedChildren="关"></Switch>
     </FormItem>
+    <FormItem Label="是否必填">
+        <Switch @bind-Value="@context.Required" CheckedChildren="是" UnCheckedChildren="否"></Switch>
+    </FormItem>
+    <FormItem Label="显示名称">
+        <Input ShowCount MaxLength="64" @bind-Value="@model.DisplayName" />
+    </FormItem>
     <FormItem Label="描述信息">
         <TextArea ShowCount MaxLength="200" Width="100%" Placeholder="描述信息" @bind-Value="@context.Description"></TextArea>
     </FormItem>

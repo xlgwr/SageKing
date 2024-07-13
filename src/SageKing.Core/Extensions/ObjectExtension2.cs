@@ -67,7 +67,7 @@ public static partial class ObjectExtensions2
     /// </summary>
     /// <param name="timestamp"></param>
     /// <returns></returns>
-    internal static DateTime ConvertToDateTime(this long timestamp)
+    public static DateTime ConvertToDateTime(this long timestamp)
     {
         var timeStampDateTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         var digitCount = (int)Math.Floor(Math.Log10(timestamp) + 1);
@@ -150,7 +150,7 @@ public static partial class ObjectExtensions2
     /// </summary>
     /// <param name="type">类型</param>
     /// <returns></returns>
-    internal static bool IsRichPrimitive(this Type type)
+    public static bool IsRichPrimitive(this Type type)
     {
         // 处理元组类型
         if (type.IsValueTuple()) return false;
@@ -173,7 +173,7 @@ public static partial class ObjectExtensions2
     /// <param name="dic">字典</param>
     /// <param name="newDic">新字典</param>
     /// <returns></returns>
-    internal static Dictionary<string, T> AddOrUpdate<T>(this Dictionary<string, T> dic, IDictionary<string, T> newDic)
+    public static Dictionary<string, T> AddOrUpdate<T>(this Dictionary<string, T> dic, IDictionary<string, T> newDic)
     {
         foreach (var key in newDic.Keys)
         {
@@ -196,7 +196,7 @@ public static partial class ObjectExtensions2
     /// <typeparam name="T"></typeparam>
     /// <param name="dic">字典</param>
     /// <param name="newDic">新字典</param>
-    internal static void AddOrUpdate<T>(this ConcurrentDictionary<string, T> dic, Dictionary<string, T> newDic)
+    public static void AddOrUpdate<T>(this ConcurrentDictionary<string, T> dic, Dictionary<string, T> newDic)
     {
         foreach (var (key, value) in newDic)
         {
@@ -209,7 +209,7 @@ public static partial class ObjectExtensions2
     /// </summary>
     /// <param name="type">类型</param>
     /// <returns></returns>
-    internal static bool IsValueTuple(this Type type)
+    public static bool IsValueTuple(this Type type)
     {
         return type.Namespace == "System" && type.Name.Contains("ValueTuple`");
     }
@@ -219,7 +219,7 @@ public static partial class ObjectExtensions2
     /// </summary>
     /// <param name="method">方法</param>
     /// <returns></returns>
-    internal static bool IsAsync(this MethodInfo method)
+    public static bool IsAsync(this MethodInfo method)
     {
         return method.GetCustomAttribute<AsyncMethodBuilderAttribute>() != null
             || method.ReturnType.ToString().StartsWith(typeof(Task).FullName);
@@ -231,7 +231,7 @@ public static partial class ObjectExtensions2
     /// <param name="type">类型</param>
     /// <param name="generic">泛型类型</param>
     /// <returns>bool</returns>
-    internal static bool HasImplementedRawGeneric(this Type type, Type generic)
+    public static bool HasImplementedRawGeneric(this Type type, Type generic)
     {
         // 检查接口类型
         var isTheRawGenericType = type.GetInterfaces().Any(IsTheRawGenericType);
@@ -256,7 +256,7 @@ public static partial class ObjectExtensions2
     /// </summary>
     /// <param name="obj">对象</param>
     /// <returns></returns>
-    internal static bool IsAnonymous(this object obj)
+    public static bool IsAnonymous(this object obj)
     {
         var type = obj is Type t ? t : obj.GetType();
 
@@ -271,7 +271,7 @@ public static partial class ObjectExtensions2
     /// </summary>
     /// <param name="type"></param>
     /// <returns></returns>
-    internal static IEnumerable<Type> GetAncestorTypes(this Type type)
+    public static IEnumerable<Type> GetAncestorTypes(this Type type)
     {
         var ancestorTypes = new List<Type>();
         while (type != null && type != typeof(object))
@@ -295,7 +295,7 @@ public static partial class ObjectExtensions2
     /// </summary>
     /// <param name="method"></param>
     /// <returns></returns>
-    internal static Type GetRealReturnType(this MethodInfo method)
+    public static Type GetRealReturnType(this MethodInfo method)
     {
         // 判断是否是异步方法
         var isAsyncMethod = method.IsAsync();
@@ -409,7 +409,7 @@ public static partial class ObjectExtensions2
     /// <param name="method"></param>
     /// <param name="inherit"></param>
     /// <returns></returns>
-    internal static TAttribute GetFoundAttribute<TAttribute>(this MethodInfo method, bool inherit)
+    public static TAttribute GetFoundAttribute<TAttribute>(this MethodInfo method, bool inherit)
         where TAttribute : Attribute
     {
         // 获取方法所在类型
@@ -435,7 +435,7 @@ public static partial class ObjectExtensions2
     /// <param name="str"></param>
     /// <param name="args"></param>
     /// <returns></returns>
-    internal static string Format(this string str, params object[] args)
+    public static string Format(this string str, params object[] args)
     {
         return args == null || args.Length == 0 ? str : string.Format(str, args);
     }
@@ -445,7 +445,7 @@ public static partial class ObjectExtensions2
     /// </summary>
     /// <param name="str"></param>
     /// <returns></returns>
-    internal static string[] SplitCamelCase(this string str)
+    public static string[] SplitCamelCase(this string str)
     {
         if (str == null) return Array.Empty<string>();
 
@@ -462,7 +462,7 @@ public static partial class ObjectExtensions2
     /// </summary>
     /// <param name="jsonElement"></param>
     /// <returns></returns>
-    internal static object ToObject(this JsonElement jsonElement)
+    public static object ToObject(this JsonElement jsonElement)
     {
         switch (jsonElement.ValueKind)
         {
@@ -510,7 +510,7 @@ public static partial class ObjectExtensions2
     /// <param name="pos">0：前后缀，1：后缀，-1：前缀</param>
     /// <param name="affixes">前后缀集合</param>
     /// <returns></returns>
-    internal static string ClearStringAffixes(this string str, int pos = 0, params string[] affixes)
+    public static string ClearStringAffixes(this string str, int pos = 0, params string[] affixes)
     {
         // 空字符串直接返回
         if (string.IsNullOrWhiteSpace(str)) return str;
@@ -554,7 +554,7 @@ public static partial class ObjectExtensions2
     /// </summary>
     /// <param name="str"></param>
     /// <returns></returns>
-    internal static string ToLowerCamelCase(this string str)
+    public static string ToLowerCamelCase(this string str)
     {
         if (string.IsNullOrWhiteSpace(str)) return str;
 
@@ -566,7 +566,7 @@ public static partial class ObjectExtensions2
     /// </summary>
     /// <param name="str"></param>
     /// <returns></returns>
-    internal static string ToUpperCamelCase(this string str)
+    public static string ToUpperCamelCase(this string str)
     {
         if (string.IsNullOrWhiteSpace(str)) return str;
 
@@ -579,7 +579,7 @@ public static partial class ObjectExtensions2
     /// <typeparam name="T">元素类型</typeparam>
     /// <param name="collection">集合对象</param>
     /// <returns><see cref="bool"/> 实例，true 表示空集合，false 表示非空集合</returns>
-    internal static bool IsEmpty<T>(this IEnumerable<T> collection)
+    public static bool IsEmpty<T>(this IEnumerable<T> collection)
     {
         return collection == null || !collection.Any();
     }
@@ -591,7 +591,7 @@ public static partial class ObjectExtensions2
     /// <param name="type">类类型</param>
     /// <param name="inherit">是否继承查找</param>
     /// <returns>特性对象</returns>
-    internal static TAttribute GetTypeAttribute<TAttribute>(this Type type, bool inherit = false)
+    public static TAttribute GetTypeAttribute<TAttribute>(this Type type, bool inherit = false)
         where TAttribute : Attribute
     {
         // 空检查
@@ -604,5 +604,5 @@ public static partial class ObjectExtensions2
         return type.IsDefined(typeof(TAttribute), inherit)
             ? type.GetCustomAttribute<TAttribute>(inherit)
             : default;
-    }
+    } 
 }
