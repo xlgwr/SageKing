@@ -32,4 +32,4 @@ global using SageKing.UI.Blazor.SageKingAntDesign.Services;
 
 global using SageKing.Application.AspNetCore.SqlSugar.Contracts;
 global using SageKing.Application.AspNetCore.SqlSugar.Contracts.Entity;
-global using SageKing.Application.AspNetCore.SqlSugar.Service;
+global using SageKing.Application.AspNetCore.SqlSugar.Service; 

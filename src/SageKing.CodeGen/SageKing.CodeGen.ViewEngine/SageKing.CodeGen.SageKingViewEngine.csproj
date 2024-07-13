@@ -13,9 +13,9 @@
 	</PropertyGroup> 
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.Razor.Language"  />
-		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces"  />
-		<PackageReference Include="System.Text.RegularExpressions"  />
+		<PackageReference Include="Microsoft.AspNetCore.Razor.Language" />
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
+		<PackageReference Include="System.Text.RegularExpressions" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -1,6 +1,4 @@
-using SageKing.Core.Contracts;
-
-namespace SageKing.CodeGen.SageKingViewEngine;
+ namespace SageKing.CodeGen.SageKingViewEngine;
 
 
 public class DefaultViewEngine : ViewEngineModel
@@ -21,7 +19,7 @@ public class DefaultViewEngine : ViewEngineModel
 
     public string Description { get; set; }
 
-    public List<KeyValue<string, DataStreamTypeEnum>> ColumnList { get; set; }
+    public List<ColumnOuput> ColumnList { get; set; }
 
     public string LowerClassName
     {

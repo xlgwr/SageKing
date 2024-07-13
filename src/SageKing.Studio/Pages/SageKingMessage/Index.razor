@@ -16,6 +16,7 @@
 @inject SysSageKingMessageService dataService
 @inject SysSageKingMessageAttributeService dataDetailService
 
+@using SageKing.Studio.Pages.Base
 @using SageKing.Studio.Pages.SysSageKingMessage.component
 
 <PageTitle>@TabTitle</PageTitle>
@@ -790,7 +791,12 @@ else
                 ClassName = row.Name,
                 NameSpace = "SageKing.Contracts.Entity",
                 Description = row.Description,
-                ColumnList = getAttData.Select(a => new KeyValue<string, DataStreamTypeEnum>(a.Name, a.Type)).ToList()
+                ColumnList = getAttData.Select(a => new ColumnOuput()
+                {
+                    PropertyName = a.Name,
+                    ColumnComment = a.Description,
+                    NetType = a.Type,
+                }).ToList()
             };
 
         var getCacheFile = row.Key.GetTemplateFileName(".cs");

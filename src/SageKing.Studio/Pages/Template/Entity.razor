@@ -10,16 +10,16 @@ public class @(@Model.ClassName) @Model.BaseClassName
 @foreach (var column in Model.ColumnList)
 {
 @:/// @("<summary> ")
-@:/// @(column.Value)
+@:/// @(column.ColumnComment)
 @:/// @("<summary> \n")
-@if (!column.Value.GetDescription().IsNullOrEmpty())
+@if (!column.NetType.GetDescription().IsNullOrEmpty())
 {
-@:public @column.Value.GetDescription() @column.Key { get; set; }
+@:public @column.NetType.GetDescription() @column.PropertyName { get; set; }
 @:
 }
 else
 {
-@:public string @column.Key { get; set; }
+@:public string @column.PropertyName { get; set; }
 @:
 }
 }

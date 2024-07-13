@@ -16,3 +16,5 @@ global using SageKing.Features.Abstractions;
 
 global using SageKing.Core.Attributes;
 global using SageKing.Core.Extensions;
+
+global using SageKing.Core.Contracts;
