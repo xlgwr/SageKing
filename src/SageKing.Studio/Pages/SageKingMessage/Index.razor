@@ -789,7 +789,7 @@ else
         _defaultViewEngine = new DefaultViewEngine()
             {
                 ClassName = row.Name,
-                NameSpace = "SageKing.Contracts.Entity",
+                NameSpace = "SageKing.Contracts.Entity.Template",
                 Description = row.Description,
                 ColumnList = getAttData.Select(a => new ColumnOuput()
                 {
@@ -810,7 +810,7 @@ else
 
         if (!File.Exists(templatePath)) return false;
         var tContent = File.ReadAllText(templatePath);
-        markdownValue = await _viewEngine.RunCompileFromCachedAsync(tContent, _defaultViewEngine, row.Key, builderAction: builder =>
+        markdownValue = await _viewEngine.RunCompileFromCachedAsync(tContent, _defaultViewEngine, builderAction: builder =>
         {
             builder.AddAssemblyReferenceByName("System.Linq");
             builder.AddAssemblyReferenceByName("System.Collections");
