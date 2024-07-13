@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
-	
+
 	<PropertyGroup>
 		<RootNamespace>SageKing.Studio</RootNamespace>
 	</PropertyGroup>
@@ -9,14 +9,20 @@
 			提供SageKingUI客户端
 		</Description>
 		<PackageTags>SageKing module</PackageTags>
-	</PropertyGroup> 
+	</PropertyGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\SageKing.Application\SageKing.Application.IceRPC\SageKing.Application.IceRPC.csproj" />
-	  <ProjectReference Include="..\SageKing.Application\SageKing.Application.SqlSugar\SageKing.Application.AspNetCore.SqlSugar.csproj" />
-	  <ProjectReference Include="..\SageKing.IceRPC.Client\SageKing.IceRPC.Client.csproj" />
-	  <ProjectReference Include="..\SageKing.IceRPC.Server\SageKing.IceRPC.Server.csproj" />
-	  <ProjectReference Include="..\SageKing.UI\SageKing.UI.Blazor.AntDesign\SageKing.UI.Blazor.SageKingAntDesign.csproj" />
-	</ItemGroup> 
+		<PackageReference Include="PSC.Blazor.Components.MarkdownEditor" />
+		<PackageReference Include="PSC.Blazor.Components.CodeSnippet" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\SageKing.IceRPC.Client\SageKing.IceRPC.Client.csproj" />
+		<ProjectReference Include="..\SageKing.IceRPC.Server\SageKing.IceRPC.Server.csproj" />
+		<ProjectReference Include="..\SageKing.Application\SageKing.Application.IceRPC\SageKing.Application.IceRPC.csproj" />
+		<ProjectReference Include="..\SageKing.UI\SageKing.UI.Blazor.AntDesign\SageKing.UI.Blazor.SageKingAntDesign.csproj" />
+		<ProjectReference Include="..\SageKing.CodeGen\SageKing.CodeGen.ViewEngine\SageKing.CodeGen.SageKingViewEngine.csproj" />
+		<ProjectReference Include="..\SageKing.Application\SageKing.Application.SqlSugar\SageKing.Application.AspNetCore.SqlSugar.csproj" />
+	</ItemGroup>
 
 </Project>

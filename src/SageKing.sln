@@ -69,7 +69,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SageKing.UI.Blazor.SageKing
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CodeGen", "CodeGen", "{773FCC85-7690-4FFC-A3FA-1B6BA275872D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SageKing.CodeGen.SageKingViewEngine", "SageKing.CodeGen\SageKing.CodeGen.ViewEngine\SageKing.CodeGen.SageKingViewEngine.csproj", "{FE45E780-1B11-4737-B9A2-63C1B42432B3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SageKing.CodeGen.SageKingViewEngine", "SageKing.CodeGen\SageKing.CodeGen.ViewEngine\SageKing.CodeGen.SageKingViewEngine.csproj", "{FE45E780-1B11-4737-B9A2-63C1B42432B3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

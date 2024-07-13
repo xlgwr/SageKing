@@ -45,6 +45,9 @@ builder.Services.AddSageKing(sk =>
 
     //add ui Blazor.AntDesign
     sk.UseSageKingAntDesign();
+
+    //add codegen ViewEngine
+    sk.UseSageKingViewEngine();
 });
 
 //other services

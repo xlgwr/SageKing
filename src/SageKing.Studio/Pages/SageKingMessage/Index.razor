@@ -18,136 +18,6 @@
 
 <PageTitle>@TabTitle</PageTitle>
 
-@{
-
-    RenderFragment FormParentTemplate()
-    {
-        return@<SysSageKingMessageEdit @ref=@edit Title="@modelTitle" model="@addModel"></SysSageKingMessageEdit>;
-    }
-
-    async Task HandleOk(MouseEventArgs e)
-    {
-        try
-        {
-            IAddEdit<SysSageKingMessage> addEdit = null;
-            addloading = true;
-            if (edit != null)
-            {
-                addEdit = ((IAddEdit<SysSageKingMessage>)edit);
-                var result = await addEdit.Save();
-                if (!result)
-                {
-                    _visible = true;
-                    addloading = false;
-                    return;
-                }
-            }
-            await Refresh(false);
-            _ = _message.Success($"{modelTitle}【{addModel.Name}】成功！");
-            _visible = false;
-            addloading = false;
-        }
-        catch (Exception ex)
-        {
-            Error?.ProcessError(ex, $"{modelTitle}【{addModel.Name}】失败！");
-        }
-    }
-
-}
-
-@{
-
-    RenderFragment FormChildTemplate()
-    {
-        return@<SysSageKingMessageAttributeEdit @ref=@editchild Title="@modelTitle" model="@addchildModel"></SysSageKingMessageAttributeEdit>;
-    }
-
-    async Task HandleChilcOk(MouseEventArgs e)
-    {
-        try
-        {
-            IAddEdit<SysSageKingMessageAttribute> addEdit = null;
-
-            addchildloading = true;
-            if (editchild != null)
-            {
-
-                addEdit = ((IAddEdit<SysSageKingMessageAttribute>)editchild);
-
-                var result = await addEdit.Save();
-                if (!result)
-                {
-                    _visibleChild = true;
-                    addchildloading = false;
-                    return;
-                }
-
-            }
-            var getParent = pageData.Items.Where(a => a.Id == addchildModel.MessageId).FirstOrDefault();
-            if (getParent != null)
-            {
-                getParent.Children = await QueryChildList(addchildModel.MessageId);
-            }
-            _ = _message.Success($"{modelTitle}【{addchildModel.Name}】成功！");
-            _visibleChild = false;
-            addchildloading = false;
-        }
-        catch (Exception ex)
-        {
-            Error?.ProcessError(ex, $"{modelTitle}【{addchildModel.Name}】失败！");
-            // throw ex;
-        }
-    }
-
-}
-
-@{
-
-    RenderFragment FormImportDataAttPageTemplate()
-    {
-        return@<ImportDataAttPage @ref=@editImportDataAtt ParentId="@messageId" AttrNames="@attrNames"></ImportDataAttPage>;
-    }
-
-    async Task HandleOkImportDataAtt(MouseEventArgs e)
-    {
-        try
-        {
-            loadingImport = true;
-            if (editImportDataAtt != null)
-            {
-                var result = await editImportDataAtt.Save();
-
-                if (result != 0)
-                {
-                    _visibleImport = true;
-                    loadingImport = false;
-
-                    if (result == 2)
-                    {
-                        _ = _message.Warning("当前消息结构,已有对应属性，无需再次导入！");
-                    }
-                    return;
-                }
-                editImportDataAtt.Reset();
-
-            }
-            var getParent = pageData.Items.Where(a => a.Id == messageId).FirstOrDefault();
-            if (getParent != null)
-            {
-                getParent.Children = await QueryChildList(messageId);
-            }
-            _ = _message.Success($"【{getParent?.Name}】{modelTitle}成功！");
-            _visibleImport = false;
-            loadingImport = false;
-        }
-        catch (Exception ex)
-        {
-            Error?.ProcessError(ex, $"【{messageId}】{modelTitle}失败");
-        }
-    }
-
-}
-
 @if (pageData == null)
 {
     <Spin size="large" Tip="Loading..." />
@@ -219,6 +89,11 @@ else
                     <SpaceItem>
                         <Tooltip Title="推送，服务端向客户端推送消息。">
                             <Button OnClick="(e)=>SendData(context)" Shape="@ButtonShape.Circle" Icon="@IconType.Outline.Notification" />
+                        </Tooltip>
+                    </SpaceItem>
+                    <SpaceItem>
+                        <Tooltip Title="生成C# Entity代码">
+                            <Button OnClick="(e)=>ShowEntity(context)" Shape="@ButtonShape.Circle" Icon="@IconType.Outline.Code" />
                         </Tooltip>
                     </SpaceItem>
                 </Space>
@@ -336,6 +211,14 @@ else
 
         @FormImportDataAttPageTemplate()
     </Modal>
+
+
+    <Modal Title="@modelTitle" Class="modelDefault" MaxBodyHeight="@("60vh")"
+           @bind-Visible="@_visibleEntity" Draggable="@(true)" Centered Closable="false"
+           ConfirmLoading="loadingEntity" OkText="modelOkTitle" CancelText="modelCancelText">
+  
+            @FormEntityTemplate() 
+    </Modal>
 }
 
 <style>
@@ -343,6 +226,8 @@ else
         height: @ScrollY;
     }
 </style>
+
+
 @code {
 
     bool loading;
@@ -386,30 +271,6 @@ else
 
     //select data
     SysDictType SelectDataType;
-
-    //model base btn title
-    string modelTitle = "新增";
-    string modelOkTitle = "保存";
-    string modelCancelText = "取消";
-
-    //add
-    bool _visible = false;
-    bool addloading = false;
-    SysSageKingMessage addModel;
-    SysSageKingMessageEdit edit;
-
-    //add child
-    bool _visibleChild = false;
-    bool addchildloading = false;
-    SysSageKingMessageAttribute addchildModel;
-    SysSageKingMessageAttributeEdit editchild;
-
-    //ImportDataAttPage
-    bool _visibleImport = false;
-    bool loadingImport = false;
-    long messageId;
-    List<string> attrNames;
-    ImportDataAttPage editImportDataAtt;
 
     #region init
     #region menu
@@ -556,6 +417,69 @@ else
     }
 
 
+    #region message send or push
+    async void SendData(SysSageKingMessage row)
+    {
+
+        var getAttData = await QueryChildList(row.Id);
+        if (!getAttData.Any())
+        {
+            _ = _message.Warning($"当前消息结构【{row.Name}：{GetTypeDesc(row.Type)}】无可用属性，请确认后再试。");
+            return;
+        }
+        //生输入界面
+
+    }
+
+    #endregion
+}
+
+@code {
+    //model base btn title
+    string modelTitle = "新增";
+    string modelOkTitle = "保存";
+    string modelCancelText = "取消";
+
+    //add
+    //SysSageKingMessageEdit
+    bool _visible = false;
+    bool addloading = false;
+    SysSageKingMessage addModel;
+    SysSageKingMessageEdit edit;
+
+    RenderFragment FormParentTemplate()
+    {
+        return@<SysSageKingMessageEdit @ref=@edit Title="@modelTitle" model="@addModel"></SysSageKingMessageEdit>;
+    }
+
+    async Task HandleOk(MouseEventArgs e)
+    {
+        try
+        {
+            IAddEdit<SysSageKingMessage> addEdit = null;
+            addloading = true;
+            if (edit != null)
+            {
+                addEdit = ((IAddEdit<SysSageKingMessage>)edit);
+                var result = await addEdit.Save();
+                if (!result)
+                {
+                    _visible = true;
+                    addloading = false;
+                    return;
+                }
+            }
+            await Refresh(false);
+            _ = _message.Success($"{modelTitle}【{addModel.Name}】成功！");
+            _visible = false;
+            addloading = false;
+        }
+        catch (Exception ex)
+        {
+            Error?.ProcessError(ex, $"{modelTitle}【{addModel.Name}】失败！");
+        }
+    }
+
     #region crud
 
     void AddData()
@@ -576,15 +500,6 @@ else
         addloading = false;
     }
 
-    void ImportDataAtt(SysSageKingMessage row)
-    {
-        messageId = row.Id;
-        attrNames = row.Children.Select(a => a.Name).ToList();
-        modelTitle = "消息属性-快速导入";
-        modelOkTitle = "导入";
-        _visibleImport = true;
-        loadingImport = false;
-    }
 
     async void EditOnStatusSwitch(SysSageKingMessage entity)
     {
@@ -624,6 +539,59 @@ else
         _ = _message.Success($"删除【{row.Name}】成功", 2);
     }
     #endregion
+
+}
+
+@code {
+    //add child
+    //SysSageKingMessageAttributeEdit
+
+    bool _visibleChild = false;
+    bool addchildloading = false;
+    SysSageKingMessageAttribute addchildModel;
+    SysSageKingMessageAttributeEdit editchild;
+
+    RenderFragment FormChildTemplate()
+    {
+        return@<SysSageKingMessageAttributeEdit @ref=@editchild Title="@modelTitle" model="@addchildModel"></SysSageKingMessageAttributeEdit>;
+    }
+
+    async Task HandleChilcOk(MouseEventArgs e)
+    {
+        try
+        {
+            IAddEdit<SysSageKingMessageAttribute> addEdit = null;
+
+            addchildloading = true;
+            if (editchild != null)
+            {
+
+                addEdit = ((IAddEdit<SysSageKingMessageAttribute>)editchild);
+
+                var result = await addEdit.Save();
+                if (!result)
+                {
+                    _visibleChild = true;
+                    addchildloading = false;
+                    return;
+                }
+
+            }
+            var getParent = pageData.Items.Where(a => a.Id == addchildModel.MessageId).FirstOrDefault();
+            if (getParent != null)
+            {
+                getParent.Children = await QueryChildList(addchildModel.MessageId);
+            }
+            _ = _message.Success($"{modelTitle}【{addchildModel.Name}】成功！");
+            _visibleChild = false;
+            addchildloading = false;
+        }
+        catch (Exception ex)
+        {
+            Error?.ProcessError(ex, $"{modelTitle}【{addchildModel.Name}】失败！");
+            // throw ex;
+        }
+    }
 
     #region crud attr
     void AddDataAtt(long parentid)
@@ -687,18 +655,126 @@ else
     }
     #endregion
 
-    #region message send or push
-    async void SendData(SysSageKingMessage row)
+}
+
+@code {
+
+    //ImportDataAttPage
+    bool _visibleImport = false;
+    bool loadingImport = false;
+    long messageId;
+    List<string> attrNames;
+    ImportDataAttPage editImportDataAtt;
+
+    RenderFragment FormImportDataAttPageTemplate()
+    {
+        return@<ImportDataAttPage @ref=@editImportDataAtt ParentId="@messageId" AttrNames="@attrNames"></ImportDataAttPage>;
+    }
+
+    async Task HandleOkImportDataAtt(MouseEventArgs e)
+    {
+        try
+        {
+            loadingImport = true;
+            if (editImportDataAtt != null)
+            {
+                var result = await editImportDataAtt.Save();
+
+                if (result != 0)
+                {
+                    _visibleImport = true;
+                    loadingImport = false;
+
+                    if (result == 2)
+                    {
+                        _ = _message.Warning("当前消息结构,已有对应属性，无需再次导入！");
+                    }
+                    return;
+                }
+                editImportDataAtt.Reset();
+
+            }
+            var getParent = pageData.Items.Where(a => a.Id == messageId).FirstOrDefault();
+            if (getParent != null)
+            {
+                getParent.Children = await QueryChildList(messageId);
+            }
+            _ = _message.Success($"【{getParent?.Name}】{modelTitle}成功！");
+            _visibleImport = false;
+            loadingImport = false;
+        }
+        catch (Exception ex)
+        {
+            Error?.ProcessError(ex, $"【{messageId}】{modelTitle}失败");
+        }
+    }
+
+
+    void ImportDataAtt(SysSageKingMessage row)
+    {
+        messageId = row.Id;
+        attrNames = row.Children.Select(a => a.Name).ToList();
+        modelTitle = "消息属性-快速导入";
+        modelOkTitle = "导入";
+        _visibleImport = true;
+        loadingImport = false;
+    }
+}
+
+@code {
+    //Entity
+    bool _visibleEntity = false;
+    bool loadingEntity = false;
+    DefaultViewEngine _defaultViewEngine;
+
+    RenderFragment FormEntityTemplate()
+    {
+        return@<Entity Model="_defaultViewEngine"></Entity>;
+    }
+
+    async void ShowEntity(SysSageKingMessage row)
+    {
+        var result = await GenCodeData(row);
+        if (!result)
+        {
+            return;
+        }
+
+        modelTitle = $"{TabTitle}->${row.Name}-:>C#实体代码";
+        modelOkTitle = "确认";
+        _visibleEntity = true;
+        loadingEntity = true;
+        loadingEntity = false;
+
+    }
+    async Task<bool> GenCodeData(SysSageKingMessage row)
     {
 
-        var getAttData=await QueryChildList(row.Id);
+        var getAttData = await QueryChildList(row.Id);
         if (!getAttData.Any())
         {
             _ = _message.Warning($"当前消息结构【{row.Name}：{GetTypeDesc(row.Type)}】无可用属性，请确认后再试。");
-            return;
+            return false;
         }
-        //生输入界面
+        if (_defaultViewEngine != null)
+        {
+            _defaultViewEngine.ClassName = row.Name;
+            _defaultViewEngine.NameSpace = "SageKing.Contracts.Entity";
+            _defaultViewEngine.Description = row.Description;
+            _defaultViewEngine.ColumnList = getAttData.Select(a => new KeyValuePair<string, DataStreamTypeEnum>(a.Name, a.Type)).ToList();
 
+        }
+        else
+        {
+            //生输入界面
+            _defaultViewEngine = new DefaultViewEngine()
+                {
+                    ClassName = row.Name,
+                    NameSpace = "SageKing.Contracts.Entity",
+                    Description = row.Description,
+                    ColumnList = getAttData.Select(a => new KeyValuePair<string, DataStreamTypeEnum>(a.Name, a.Type)).ToList()
+                };
+        }
+        return true;
     }
-    #endregion
 }

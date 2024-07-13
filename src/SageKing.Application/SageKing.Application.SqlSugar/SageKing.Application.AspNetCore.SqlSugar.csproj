@@ -12,6 +12,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\..\SageKing.CodeGen\SageKing.CodeGen.ViewEngine\SageKing.CodeGen.SageKingViewEngine.csproj" />
 	  <ProjectReference Include="..\..\SageKing.Database\SageKing.Database.Cache\SageKing.Cache.csproj" />
 	  <ProjectReference Include="..\..\SageKing.Database\SageKing.Database.SqlSugar.ASPNETCore\SageKing.Database.SqlSugar.AspNetCore.csproj" />
 	</ItemGroup>
