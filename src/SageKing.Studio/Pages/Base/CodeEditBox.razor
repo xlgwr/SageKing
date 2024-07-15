@@ -1,6 +1,5 @@
 ﻿@namespace SageKing.Studio.Pages.Base
 
-
 <MarkdownEditor @bind-Value="@markdownValue"
                 SpellChecker="false" AutoDownloadFontAwesome="true" @ref="Markdown1" AutoSaveEnabled="true">
 </MarkdownEditor>
@@ -11,6 +10,7 @@
         margin: 0px 10px 0 10px;
     }
 </style>
+
 @code {
     [Parameter]
     public bool isShow { get; set; }
