@@ -2,11 +2,15 @@
 
 
 <MarkdownEditor @bind-Value="@markdownValue"
-                ValueHTMLChanged="@OnMarkdownValueHTMLChanged"
-                SpellChecker="false" AutoDownloadFontAwesome="true" @ref="Markdown1" AutoSaveEnabled="true" CustomButtonClicked="@OnCustomButtonClicked">
+                SpellChecker="false" AutoDownloadFontAwesome="true" @ref="Markdown1" AutoSaveEnabled="true">
 </MarkdownEditor>
 
-
+<style>
+    .ant-modal-body {
+        padding: 0px;
+        margin: 0px 10px 0 10px;
+    }
+</style>
 @code {
     [Parameter]
     public bool isShow { get; set; }
@@ -14,50 +18,26 @@
     [Parameter]
     public string markdownValue { get; set; }
 
-    MarkdownEditor Markdown1;
-
-    string markdownHtml;
-    string buttonText; 
+    MarkdownEditor Markdown1; 
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-
-        await base.OnAfterRenderAsync(firstRender);
-
         if (firstRender)
         {
             if (Markdown1 != null)
             {
                 await Markdown1.SetValueAsync(markdownValue);
             }
-        }
-
+        } 
     }
+
     public async Task ChangeText(string Value)
     {
         markdownValue = Value;
         if (Markdown1 != null)
         {
             await Markdown1.SetValueAsync(markdownValue);
+            StateHasChanged();
         }
-    }
-
-    Task OnMarkdownValueChanged(string value)
-    {
-        return Task.CompletedTask;
-    }
-
-    Task OnMarkdownValueHTMLChanged(string value)
-    {
-        markdownHtml = value;
-        return Task.CompletedTask;
-    }
-
-    Task OnCustomButtonClicked(MarkdownButtonEventArgs eventArgs)
-    {
-        Console.WriteLine("OnCustomButtonClicked -> " + eventArgs.Value);
-        buttonText += "OnCustomButtonClicked -> " + eventArgs.Value + "<br />";
-
-        return Task.CompletedTask;
-    }
+    } 
 }
