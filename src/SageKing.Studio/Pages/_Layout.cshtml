@@ -14,13 +14,12 @@
     <link href="lib/font-awesome/css/all.css" rel="stylesheet" />
     <link href="SageKing.Studio.styles.css" rel="stylesheet" />
     <!-- include highlight.js CSS -->
-    @* <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css"> *@
-    <link href="lib/highlight.js/styles/default.min.css" rel="stylesheet" />
+    @* <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css"> *@ 
 
     <!-- include the CSS for the EasyMDE -->
     <link href="/_content/PSC.Blazor.Components.MarkdownEditor/css/markdowneditor.css" rel="stylesheet" />
     <link href="/_content/PSC.Blazor.Components.MarkdownEditor/css/easymde.min.css" rel="stylesheet" />
-    <link href="/_content/PSC.Blazor.Components.MarkdownEditor/css/alert.css" rel="stylesheet" />
+    <link href="/_content/PSC.Blazor.Components.MarkdownEditor/css/alert.css" rel="stylesheet" /> 
 
     <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
 </head>
@@ -38,14 +37,10 @@
         <a class="dismiss">🗙</a>
     </div>
 
-    <script src="_framework/blazor.server.js"></script>
-
     <script src="lib/query/jquery.js"></script>
 
     <!-- include highlight.js script -->
-    @* <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script> *@
-    <script src="lib/highlight.js/highlight.min.js"></script>
-    <script src="lib/highlight.js/languages/csharp.min.js"></script>
+    @* <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script> *@ 
 
     <!-- add PSC.Blazor.Components.CodeSnippet (https://www.puresourcecode.com/dotnet/blazor/add-code-snippet-in-razor-pages/) -->
     <script src="/_content/PSC.Blazor.Components.CodeSnippet/codesnippet.js"></script>
@@ -58,6 +53,7 @@
     <script src="/_content/PSC.Blazor.Components.MarkdownEditor/js/markdownEditor.js"></script>
     <script src="/_content/PSC.Blazor.Components.MarkdownEditor/js/easymde.min.js"></script>
     <script src="/_content/PSC.Blazor.Components.MarkdownEditor/js/textarearesize.min.js"></script>
-    <script>hljs.highlightAll();</script>
+
+    <script src="_framework/blazor.server.js"></script>
 </body>
 </html>
