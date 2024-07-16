@@ -6,7 +6,7 @@ namespace SageKing.Extensions;
 /// <summary>
 /// 内部反射静态类
 /// </summary>
-internal static class Reflect
+public static class ReflecExts
 {
     /// <summary>
     /// 获取入口程序集
@@ -117,7 +117,7 @@ internal static class Reflect
     /// </summary>
     /// <param name="str"></param>
     /// <returns></returns>
-    internal static Type GetStringType(string str)
+    public static Type GetStringType(this string str)
     {
         var typeDefinitions = str.Split(';');
 

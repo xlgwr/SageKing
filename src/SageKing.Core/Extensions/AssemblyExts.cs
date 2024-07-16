@@ -31,4 +31,47 @@ public static class AssemblyExts
 
         return types.Where(u => u.IsPublic && !u.IsDefined(suppressSnifferType, false));
     }
+
+    /// <summary>
+    ///  MemoryStream 写入文件
+    /// </summary>
+    /// <param name="ms"></param>
+    /// <param name="fileName"></param>
+    /// <returns></returns>
+    public static async Task SaveToFileAsync(this MemoryStream ms, string fileName)
+    {
+        using var fileStream = new FileStream(
+            path: fileName,
+            mode: FileMode.OpenOrCreate,
+            access: FileAccess.Write,
+            share: FileShare.None,
+            bufferSize: 8192,
+            useAsync: true);
+
+        await ms.CopyToAsync(fileStream);
+    }
+
+    /// <summary>
+    ///  MemoryStream 从文件中读取
+    /// </summary>
+    /// <param name="ms"></param>
+    /// <param name="fileName"></param>
+    /// <returns></returns>
+    public static async Task<MemoryStream> LoadFromFileAsync(this string fileName)
+    {
+        using var memoryStream = new MemoryStream();
+
+        using (var fileStream = new FileStream(
+            path: fileName,
+            mode: FileMode.Open,
+            access: FileAccess.Read,
+            share: FileShare.None,
+            bufferSize: 8192,
+            useAsync: true))
+        {
+            await fileStream.CopyToAsync(memoryStream);
+        }
+        return memoryStream;
+    }
+
 }

@@ -2,6 +2,10 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using SageKing.DataEncryption;
+using SageKing.Extensions;
+using SageKing.Features.Implementations;
+using System.IO;
+using System.Reflection;
 using System.Reflection.Metadata;
 using System.Text;
 
@@ -383,6 +387,112 @@ public class ViewEngine : IViewEngine
 
         return memoryStream;
     }
+
+
+    /// <summary>
+    /// 运行编译代码，返回类型
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="content"></param>
+    /// <param name="builderAction"></param>
+    /// <returns></returns>
+    public async Task<Type> RunCodeCompileFromCachedAsync(string content, string typeName, Action<IViewEngineOptionsBuilder> builderAction = null)
+    {
+
+        var fileName = MD5Encryption.Encrypt(content);
+        var filePath = Penetrates.GetTemplateFileName(fileName);
+
+        MemoryStream memoryStream;
+        try
+        {
+            if (File.Exists(filePath))
+            { 
+                memoryStream = await filePath.LoadFromFileAsync();
+            }
+            else
+            {
+                IViewEngineOptionsBuilder compilationOptionsBuilder = new ViewEngineOptionsBuilder();
+                builderAction?.Invoke(compilationOptionsBuilder);
+
+                memoryStream = CompileCsharpCodeToStream(content, compilationOptionsBuilder.Options);
+                await memoryStream.SaveToFileAsync(filePath);
+            }
+            Assembly compiledAssembly;
+            compiledAssembly = Assembly.Load(memoryStream.GetBuffer());
+            var getType = compiledAssembly.GetTypes().FirstOrDefault(c => c.Name == typeName); ;
+            return getType;
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// 将C#代码编译并输出内存流
+    /// </summary>
+    /// <param name="templateSource"></param>
+    /// <param name="options"></param>
+    /// <returns></returns>
+    protected virtual MemoryStream CompileCsharpCodeToStream(string csharpCode, SageKingViewEngineOptions options)
+    {
+
+        var syntaxTree = CSharpSyntaxTree.ParseText(csharpCode); // 第二个参数可以指定 C# 版本
+
+        var assemblyName = Path.GetRandomFileName();
+        var compilation = CSharpCompilation.Create(
+            assemblyName,
+            new[]
+            {
+                    syntaxTree
+            },
+            options.ReferencedAssemblies.Where(ass =>
+            {
+                unsafe
+                {
+                    return ass.TryGetRawMetadata(out var blob, out var length);
+                }
+            })
+            .Select(ass =>
+            {
+                // MetadataReference.CreateFromFile(ass.Location)
+
+                unsafe
+                {
+                    ass.TryGetRawMetadata(out var blob, out var length);
+                    var moduleMetadata = ModuleMetadata.CreateFromMetadata((IntPtr)blob, length);
+                    var assemblyMetadata = AssemblyMetadata.Create(moduleMetadata);
+                    var metadataReference = assemblyMetadata.GetReference();
+                    return metadataReference;
+                }
+            })
+            .Concat(options.MetadataReferences)
+            .ToList(),
+            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
+                    .WithOptimizationLevel(OptimizationLevel.Release)
+                    .WithOverflowChecks(true));
+
+
+        var memoryStream = new MemoryStream();
+
+        var emitResult = compilation.Emit(memoryStream);
+
+        if (!emitResult.Success)
+        {
+            var exception = new ViewEngineTemplateException()
+            {
+                Errors = emitResult.Diagnostics.ToList(),
+                GeneratedCode = csharpCode
+            };
+
+            throw exception;
+        }
+
+        memoryStream.Position = 0;
+
+        return memoryStream;
+    }
+
 
     /// <summary>
     /// 写入Razor 命令

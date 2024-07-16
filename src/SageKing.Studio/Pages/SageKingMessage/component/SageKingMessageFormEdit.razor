@@ -1,0 +1,271 @@
+﻿@namespace SageKing.Studio.Pages.SysSageKingMessage.component
+
+@inject SysDictTypeService selectService
+ 
+<Form @ref="form"
+      Model="@model" ValidateMode="FormValidateMode.Complex"
+      ValidateOnChange="true"
+      LabelColSpan="8" WrapperColSpan="16">
+
+    @if (model.AttStrLst != null)
+    {
+        var currLst = model.AttStrLst;
+        @for (int i = 0; i < currLst.Count; i++)
+        {
+            var item = currLst[i];
+            var iNext = i + 1;
+
+            <Space>
+                @GetSpaceItem(item)
+
+                @if (iNext < currLst.Count)
+                {
+                    var item2 = currLst[iNext];
+                    @(GetSpaceItem(item2))
+                }
+            </Space>
+        }
+    }
+
+    @if (model.AttsbyteLst.HasItem())
+    {
+        var currLst = model.AttsbyteLst;
+        @for (int i = 0; i < currLst.Count; i++)
+        {
+            var item = currLst[i];
+            var iNext = i + 1;
+
+            <Space>
+                @GetSpaceItem(item)
+
+                @if (iNext < currLst.Count)
+                {
+                    var item2 = currLst[iNext];
+                    @(GetSpaceItem(item2))
+                }
+            </Space>
+        }
+    }
+
+    @if (model.AttbyteLst.HasItem())
+    {
+        var currLst = model.AttbyteLst;
+        @for (int i = 0; i < currLst.Count; i++)
+        {
+            var item = currLst[i];
+            var iNext = i + 1;
+
+            <Space>
+                @GetSpaceItem(item)
+
+                @if (iNext < currLst.Count)
+                {
+                    var item2 = currLst[iNext];
+                    @(GetSpaceItem(item2))
+                }
+            </Space>
+        }
+    }
+
+    @if (model.AttshortLst.HasItem())
+    {
+        var currLst = model.AttshortLst;
+        @for (int i = 0; i < currLst.Count; i++)
+        {
+            var item = currLst[i];
+            var iNext = i + 1;
+
+            <Space>
+                @GetSpaceItem(item)
+
+                @if (iNext < currLst.Count)
+                {
+                    var item2 = currLst[iNext];
+                    @(GetSpaceItem(item2))
+                }
+            </Space>
+        }
+    }
+
+    @if (model.AttushortLst.HasItem())
+    {
+        var currLst = model.AttushortLst;
+        @for (int i = 0; i < currLst.Count; i++)
+        {
+            var item = currLst[i];
+            var iNext = i + 1;
+
+            <Space>
+                @GetSpaceItem(item)
+
+                @if (iNext < currLst.Count)
+                {
+                    var item2 = currLst[iNext];
+                    @(GetSpaceItem(item2))
+                }
+            </Space>
+        }
+    }
+
+    @if (model.AttintLst.HasItem())
+    {
+        var currLst = model.AttintLst;
+        @for (int i = 0; i < currLst.Count; i++)
+        {
+            var item = currLst[i];
+            var iNext = i + 1;
+
+            <Space>
+                @GetSpaceItem(item)
+
+                @if (iNext < currLst.Count)
+                {
+                    var item2 = currLst[iNext];
+                    @(GetSpaceItem(item2))
+                }
+            </Space>
+        }
+    }
+
+    @if (model.AttuintLst.HasItem())
+    {
+        var currLst = model.AttuintLst;
+        @for (int i = 0; i < currLst.Count; i++)
+        {
+            var item = currLst[i];
+            var iNext = i + 1;
+
+            <Space>
+                @GetSpaceItem(item)
+
+                @if (iNext < currLst.Count)
+                {
+                    var item2 = currLst[iNext];
+                    @(GetSpaceItem(item2))
+                }
+            </Space>
+        }
+    }
+
+    @if (model.AttlongLst.HasItem())
+    {
+        var currLst = model.AttlongLst;
+        @for (int i = 0; i < currLst.Count; i++)
+        {
+            var item = currLst[i];
+            var iNext = i + 1;
+
+            <Space>
+                @GetSpaceItem(item)
+
+                @if (iNext < currLst.Count)
+                {
+                    var item2 = currLst[iNext];
+                    @(GetSpaceItem(item2))
+                }
+            </Space>
+        }
+    }
+
+    @if (model.AttulongLst.HasItem())
+    {
+        var currLst = model.AttulongLst;
+        @for (int i = 0; i < currLst.Count; i++)
+        {
+            var item = currLst[i];
+            var iNext = i + 1;
+
+            <Space>
+                @GetSpaceItem(item)
+
+                @if (iNext < currLst.Count)
+                {
+                    var item2 = currLst[iNext];
+                    @(GetSpaceItem(item2))
+                }
+            </Space>
+        }
+    }
+
+    @if (model.AttfloatLst.HasItem())
+    {
+        var currLst = model.AttfloatLst;
+        @for (int i = 0; i < currLst.Count; i++)
+        {
+            var item = currLst[i];
+            var iNext = i + 1;
+
+            <Space>
+                @GetSpaceItem(item)
+
+                @if (iNext < currLst.Count)
+                {
+                    var item2 = currLst[iNext];
+                    @(GetSpaceItem(item2))
+                }
+            </Space>
+        }
+    }
+
+    @if (model.AttdoubleLst.HasItem())
+    {
+        var currLst = model.AttdoubleLst;
+        @for (int i = 0; i < currLst.Count; i++)
+        {
+            var item = currLst[i];
+            var iNext = i + 1;
+
+            <Space>
+                @GetSpaceItem(item)
+
+                @if (iNext < currLst.Count)
+                {
+                    var item2 = currLst[iNext];
+                    @(GetSpaceItem(item2))
+                }
+            </Space>
+        }
+    }
+
+</Form>
+
+@code
+{
+    public RenderFragment GetSpaceItem(KeyValueClass<string, string> item) =>
+    @<SpaceItem>
+        <FormItem Label="@item.Key">
+            <Input ShowCount MaxLength="64" @bind-Value="item.Value" />
+        </FormItem>
+    </SpaceItem>
+        ;
+    public RenderFragment GetSpaceItem<T>(KeyValueClass<string, T> item)
+        where T : struct =>
+    @<SpaceItem>
+        <FormItem Label="@item.Key">
+            <Input @bind-Value="item.Value" />
+        </FormItem>
+    </SpaceItem>;
+}
+
+@code {
+
+    #region IAddEdit
+    [Parameter]
+    public string Title { get; set; }
+
+    [Parameter]
+    public MessageModelForm model { get; set; }
+
+    public AntDesign.Form<MessageModelForm> form { get; set; }
+    #endregion
+
+    //select data
+    SysDictType SelectType;
+
+    protected override async Task OnInitializedAsync()
+    {
+        SelectType = await selectService.GetDetailCache(SysDictTypeConst.code_message_type);
+        await base.OnInitializedAsync();
+    }
+
+}

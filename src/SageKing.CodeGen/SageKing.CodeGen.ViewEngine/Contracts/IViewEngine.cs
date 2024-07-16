@@ -89,6 +89,16 @@ public interface IViewEngine
         where T : class, new();
 
     /// <summary>
+    /// 通过缓存解析代码
+    /// </summary>
+    /// <param name="content"></param>
+    /// <param name="model"></param>
+    /// <param name="cacheFileName"></param>
+    /// <param name="builderAction"></param>
+    /// <returns></returns>
+    Task<Type> RunCodeCompileFromCachedAsync(string csharpcode, string typeName, Action<IViewEngineOptionsBuilder> builderAction = null);
+
+    /// <summary>
     /// 编译模板
     /// </summary>
     /// <param name="content"></param>

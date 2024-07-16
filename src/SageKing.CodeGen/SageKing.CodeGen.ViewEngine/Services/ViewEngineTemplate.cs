@@ -23,7 +23,7 @@ public class ViewEngineTemplate : IViewEngineTemplate
     internal ViewEngineTemplate(MemoryStream assemblyByteCode)
     {
         this.assemblyByteCode = assemblyByteCode;
-        templateType = Reflect.GetType(assemblyByteCode, "SageKing.CodeGen.SageKingViewEngine.Template");
+        templateType = ReflecExts.GetType(assemblyByteCode, "SageKing.CodeGen.SageKingViewEngine.Template");
     }
 
     /// <summary>
@@ -191,7 +191,7 @@ public class ViewEngineTemplate<T> : IViewEngineTemplate<T>
     internal ViewEngineTemplate(MemoryStream assemblyByteCode)
     {
         this.assemblyByteCode = assemblyByteCode;
-        templateType = Reflect.GetType(assemblyByteCode, "SageKing.CodeGen.SageKingViewEngine.Template");
+        templateType = ReflecExts.GetType(assemblyByteCode, "SageKing.CodeGen.SageKingViewEngine.Template");
     }
 
     /// <summary>

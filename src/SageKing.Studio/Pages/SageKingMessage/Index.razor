@@ -18,6 +18,7 @@
 
 @using SageKing.Studio.Pages.Base
 @using SageKing.Studio.Pages.SysSageKingMessage.component
+@using System.Reflection
 
 <PageTitle>@TabTitle</PageTitle>
 
@@ -86,12 +87,12 @@ else
                 <Space>
                     <SpaceItem>
                         <Tooltip Title="发送，客户端向服务端发送消息。">
-                            <Button OnClick="(e)=>SendData(context)" Shape="@ButtonShape.Circle" Icon="@IconType.Outline.Send" />
+                            <Button OnClick="(e)=>ShowSendData(context)" Shape="@ButtonShape.Circle" Icon="@IconType.Outline.Send" />
                         </Tooltip>
                     </SpaceItem>
                     <SpaceItem>
                         <Tooltip Title="推送，服务端向客户端推送消息。">
-                            <Button OnClick="(e)=>SendData(context)" Shape="@ButtonShape.Circle" Icon="@IconType.Outline.Notification" />
+                            <Button OnClick="(e)=>ShowSendData(context)" Shape="@ButtonShape.Circle" Icon="@IconType.Outline.Notification" />
                         </Tooltip>
                     </SpaceItem>
                     <SpaceItem>
@@ -230,6 +231,14 @@ else
 
         @FormCodeEditBoxTemplate()
     </Modal>
+
+
+    <Modal Title="@modelTitle" Class="modelDefault" MaxBodyHeight="@("65vh")"
+           @bind-Visible="@_visibleSend" Draggable="@(true)" Centered Closable="false"
+           ConfirmLoading="loadingSend" OkText="modelOkTitle" CancelText="modelCancelText">
+
+        @FormMessageFormTemplate()
+    </Modal>
 }
 
 <style>
@@ -331,6 +340,7 @@ else
     {
         searchModel = new SysSageKingMessage();
         SelectSearchModelType = await selectService.GetDetailCache(SysDictTypeConst.code_message_type);
+
     }
 
     async Task InitSelectData()
@@ -426,25 +436,7 @@ else
     {
         var dd = query;
     }
-
-
-    #region message send or push
-    async void SendData(SysSageKingMessage row)
-    {
-
-        var getAttData = await QueryChildList(row.Id);
-        if (!getAttData.Any())
-        {
-            _ = _message.Warning($"当前消息结构【{row.Name}：{GetTypeDesc(row.Type)}】无可用属性，请确认后再试。");
-            return;
-        }
-        //生输入界面
-
-    }
-
-    #endregion
 }
-
 @code {
     //model base btn title
     string modelTitle = "新增";
@@ -834,4 +826,124 @@ else
         _ = _message.Warning($"清理代码缓存:{row.Key}" + (reusult ? "成功" : "失败"));
         return reusult;
     }
+}
+
+
+@code {
+
+    bool _visibleSend = false;
+    bool loadingSend = false;
+
+    private MessageModelForm messageModelFrom;
+
+    RenderFragment FormMessageFormTemplate()
+    {
+        return@<SageKingMessageFormEdit model="@messageModelFrom"></SageKingMessageFormEdit>;
+    }
+
+    #region message send or push
+    async Task ShowSendData(SysSageKingMessage row)
+    {
+        try
+        {
+            loadingSend = true;
+            var result = await SendData(row);
+            if (!result)
+            {
+                return;
+            }
+            modelTitle = $"{TabTitle}->${row.Name}-:>发送";
+            modelOkTitle = "确认";
+            _visibleSend = true;
+
+        }
+        catch (Exception ex)
+        {
+            Error?.ProcessError(ex);
+        }
+        finally
+        {
+            loadingSend = false;
+        }
+
+    }
+    async Task<bool> SendData(SysSageKingMessage row)
+    {
+
+        var getAttData = await QueryChildList(row.Id);
+        if (!getAttData.Any())
+        {
+            _ = _message.Warning($"当前消息结构【{row.Name}：{GetTypeDesc(row.Type)}】无可用属性，请确认后再试。");
+            return false;
+        }
+        //生输入界面
+        messageModelFrom = new MessageModelForm();
+        foreach (var item in getAttData)
+        {
+            switch (item.Type)
+            {
+                case DataStreamTypeEnum.String:
+                    if (!messageModelFrom.AttStrLst.HasItem())
+                    {
+                        messageModelFrom.AttStrLst = new List<KeyValueClass<string, string>>() {
+                            new KeyValueClass<string, string>() { Key = item.Name }
+                        };
+                    }
+                    else
+                    {
+                        messageModelFrom.AttStrLst.Add(new KeyValueClass<string, string>() { Key = item.Name });
+                    }
+                    break;
+                case DataStreamTypeEnum.Int8:
+                    AddOrInitLst(messageModelFrom.AttsbyteLst, item.Name);
+                    break;
+                case DataStreamTypeEnum.Uint8:
+                    AddOrInitLst(messageModelFrom.AttbyteLst, item.Name);
+                    break;
+                case DataStreamTypeEnum.Int16:
+                    AddOrInitLst(messageModelFrom.AttshortLst, item.Name);
+                    break;
+                case DataStreamTypeEnum.Uint16:
+                    AddOrInitLst(messageModelFrom.AttushortLst, item.Name);
+                    break;
+                case DataStreamTypeEnum.Int32:
+                    AddOrInitLst(messageModelFrom.AttintLst, item.Name);
+                    break;
+                case DataStreamTypeEnum.Uint32:
+                    AddOrInitLst(messageModelFrom.AttuintLst, item.Name);
+                    break;
+                case DataStreamTypeEnum.Int64:
+                    AddOrInitLst(messageModelFrom.AttlongLst, item.Name);
+                    break;
+                case DataStreamTypeEnum.Uint64:
+                    AddOrInitLst(messageModelFrom.AttulongLst, item.Name);
+                    break;
+                case DataStreamTypeEnum.Float32:
+                    AddOrInitLst(messageModelFrom.AttfloatLst, item.Name);
+                    break;
+                case DataStreamTypeEnum.Float64:
+                    AddOrInitLst(messageModelFrom.AttdoubleLst, item.Name);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        return true;
+    }
+    void AddOrInitLst<T>(List<KeyValueClass<string, T>> attLst, string name)
+    {
+        if (!attLst.HasItem())
+        {
+            attLst = new List<KeyValueClass<string, T>>() {
+                            new KeyValueClass<string, T>() { Key = name }
+                        };
+        }
+        else
+        {
+            attLst.Add(new KeyValueClass<string, T>() { Key = name });
+        }
+
+    }
+    #endregion
 }

@@ -24,11 +24,11 @@ public sealed class SageKingViewEngineOptions : IOptionsBase
             typeof(ViewEngineModel).Assembly,
             typeof(System.Collections.IList).Assembly,
             typeof(IEnumerable<>).Assembly,
-            Reflect.GetAssembly("Microsoft.CSharp"),
-            Reflect.GetAssembly("System.Runtime"),
-            Reflect.GetAssembly("System.Linq"),
-            Reflect.GetAssembly("System.Linq.Expressions"),
-            Reflect.GetAssembly("System.Collections")
+            ReflecExts.GetAssembly("Microsoft.CSharp"),
+            ReflecExts.GetAssembly("System.Runtime"),
+            ReflecExts.GetAssembly("System.Linq"),
+            ReflecExts.GetAssembly("System.Linq.Expressions"),
+            ReflecExts.GetAssembly("System.Collections")
         };
     }
 

@@ -29,7 +29,7 @@ public class ViewEngineOptionsBuilder : IViewEngineOptionsBuilder
     /// <param name="assemblyName"></param>
     public void AddAssemblyReferenceByName(string assemblyName)
     {
-        var assembly = Reflect.GetAssembly(assemblyName);
+        var assembly = ReflecExts.GetAssembly(assemblyName);
         AddAssemblyReference(assembly);
     }
 
