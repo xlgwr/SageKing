@@ -235,7 +235,7 @@ else
 
     <Modal Title="@modelTitle" Class="modelDefault" MaxBodyHeight="@("65vh")"
            @bind-Visible="@_visibleSend" Draggable="@(true)" Centered Closable="false"
-           ConfirmLoading="loadingSend" OkText="modelOkTitle" CancelText="modelCancelText">
+           OnOk="HandleOkMessageModelForm" ConfirmLoading="loadingSend" OkText="modelOkTitle" CancelText="modelCancelText">
 
         @FormMessageFormTemplate()
     </Modal>
@@ -835,11 +835,34 @@ else
     bool loadingSend = false;
 
     private MessageModelForm messageModelFrom;
+    private SageKingMessageFormEdit sageKingMessageFormEditRef;
 
     RenderFragment FormMessageFormTemplate()
     {
-        return@<SageKingMessageFormEdit model="@messageModelFrom"></SageKingMessageFormEdit>;
+        return@<SageKingMessageFormEdit @ref="@sageKingMessageFormEditRef" model="@messageModelFrom"></SageKingMessageFormEdit>;
     }
+
+    async Task HandleOkMessageModelForm(MouseEventArgs e)
+    {
+        try
+        {
+            loadingSend = true;
+            if (sageKingMessageFormEditRef != null)
+            {
+                //init model
+                var msgStr = messageModelFrom.AttStrLst;
+            }
+            _ = _message.Success($"{modelTitle}成功！");
+            _visibleSend = false;
+            loadingSend = false;
+            await Task.CompletedTask;
+        }
+        catch (Exception ex)
+        {
+            Error?.ProcessError(ex, $"{modelTitle}失败");
+        }
+    }
+
 
     #region message send or push
     async Task ShowSendData(SysSageKingMessage row)
@@ -928,7 +951,6 @@ else
                     break;
             }
         }
-
         return true;
     }
     void AddOrInitLst<T>(List<KeyValueClass<string, T>> attLst, string name)

@@ -1,7 +1,7 @@
 ﻿@namespace SageKing.Studio.Pages.SysSageKingMessage.component
 
 @inject SysDictTypeService selectService
- 
+
 <Form @ref="form"
       Model="@model" ValidateMode="FormValidateMode.Complex"
       ValidateOnChange="true"
@@ -9,8 +9,8 @@
 
     @if (model.AttStrLst != null)
     {
-        var currLst = model.AttStrLst;
-        @for (int i = 0; i < currLst.Count; i++)
+        var currLst = model.AttStrLst.OrderBy(a => a.Key).ToList();
+        @for (int i = 0; i < currLst.Count; i += 2)
         {
             var item = currLst[i];
             var iNext = i + 1;
@@ -29,8 +29,8 @@
 
     @if (model.AttsbyteLst.HasItem())
     {
-        var currLst = model.AttsbyteLst;
-        @for (int i = 0; i < currLst.Count; i++)
+        var currLst = model.AttsbyteLst.OrderBy(a => a.Key).ToList();
+        @for (int i = 0; i < currLst.Count; i += 2)
         {
             var item = currLst[i];
             var iNext = i + 1;
@@ -49,8 +49,8 @@
 
     @if (model.AttbyteLst.HasItem())
     {
-        var currLst = model.AttbyteLst;
-        @for (int i = 0; i < currLst.Count; i++)
+        var currLst = model.AttbyteLst.OrderBy(a => a.Key).ToList();
+        @for (int i = 0; i < currLst.Count; i += 2)
         {
             var item = currLst[i];
             var iNext = i + 1;
@@ -69,8 +69,8 @@
 
     @if (model.AttshortLst.HasItem())
     {
-        var currLst = model.AttshortLst;
-        @for (int i = 0; i < currLst.Count; i++)
+        var currLst = model.AttshortLst.OrderBy(a => a.Key).ToList();
+        @for (int i = 0; i < currLst.Count; i += 2)
         {
             var item = currLst[i];
             var iNext = i + 1;
@@ -89,8 +89,8 @@
 
     @if (model.AttushortLst.HasItem())
     {
-        var currLst = model.AttushortLst;
-        @for (int i = 0; i < currLst.Count; i++)
+        var currLst = model.AttushortLst.OrderBy(a => a.Key).ToList();
+        @for (int i = 0; i < currLst.Count; i += 2)
         {
             var item = currLst[i];
             var iNext = i + 1;
@@ -109,8 +109,8 @@
 
     @if (model.AttintLst.HasItem())
     {
-        var currLst = model.AttintLst;
-        @for (int i = 0; i < currLst.Count; i++)
+        var currLst = model.AttintLst.OrderBy(a => a.Key).ToList();
+        @for (int i = 0; i < currLst.Count; i += 2)
         {
             var item = currLst[i];
             var iNext = i + 1;
@@ -129,8 +129,8 @@
 
     @if (model.AttuintLst.HasItem())
     {
-        var currLst = model.AttuintLst;
-        @for (int i = 0; i < currLst.Count; i++)
+        var currLst = model.AttuintLst.OrderBy(a => a.Key).ToList();
+        @for (int i = 0; i < currLst.Count; i += 2)
         {
             var item = currLst[i];
             var iNext = i + 1;
@@ -149,8 +149,8 @@
 
     @if (model.AttlongLst.HasItem())
     {
-        var currLst = model.AttlongLst;
-        @for (int i = 0; i < currLst.Count; i++)
+        var currLst = model.AttlongLst.OrderBy(a => a.Key).ToList();
+        @for (int i = 0; i < currLst.Count; i += 2)
         {
             var item = currLst[i];
             var iNext = i + 1;
@@ -169,8 +169,8 @@
 
     @if (model.AttulongLst.HasItem())
     {
-        var currLst = model.AttulongLst;
-        @for (int i = 0; i < currLst.Count; i++)
+        var currLst = model.AttulongLst.OrderBy(a => a.Key).ToList();
+        @for (int i = 0; i < currLst.Count; i += 2)
         {
             var item = currLst[i];
             var iNext = i + 1;
@@ -189,8 +189,8 @@
 
     @if (model.AttfloatLst.HasItem())
     {
-        var currLst = model.AttfloatLst;
-        @for (int i = 0; i < currLst.Count; i++)
+        var currLst = model.AttfloatLst.OrderBy(a => a.Key).ToList();
+        @for (int i = 0; i < currLst.Count; i += 2)
         {
             var item = currLst[i];
             var iNext = i + 1;
@@ -209,8 +209,8 @@
 
     @if (model.AttdoubleLst.HasItem())
     {
-        var currLst = model.AttdoubleLst;
-        @for (int i = 0; i < currLst.Count; i++)
+        var currLst = model.AttdoubleLst.OrderBy(a => a.Key).ToList();
+        @for (int i = 0; i < currLst.Count; i += 2)
         {
             var item = currLst[i];
             var iNext = i + 1;
@@ -237,9 +237,9 @@
             <Input ShowCount MaxLength="64" @bind-Value="item.Value" />
         </FormItem>
     </SpaceItem>
-        ;
+    ;
     public RenderFragment GetSpaceItem<T>(KeyValueClass<string, T> item)
-        where T : struct =>
+    where T : struct =>
     @<SpaceItem>
         <FormItem Label="@item.Key">
             <Input @bind-Value="item.Value" />
