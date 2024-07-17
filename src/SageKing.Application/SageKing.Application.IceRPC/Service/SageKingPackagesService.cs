@@ -1,4 +1,5 @@
 using MediatR;
+using SageKing.Core.Extensions;
 
 namespace SageKing.Application.IceRPC.Service;
 
@@ -49,10 +50,10 @@ public class SageKingPackagesService : ISageKingPackagesService
     public List<string> GetServerNames => ClientConnectionProvider.GetServerNames().ToList();
 
     public ConcurrentDictionary<string, ClientConnectionInfo<IConnectionContext>> GetClientConnectionDic => _clientConnectionDic;
-
-    public async Task<int> PushMsgAsync(string msg, string connectionid)
+     
+    public async Task<int> PushMsgAsync(string connectionid, StreamPackage[] streams, string msgType = "Push")
     {
-        if (string.IsNullOrEmpty(msg))
+        if (!streams.HasItem())
         {
             return await Task.FromResult(0);
         }
@@ -60,22 +61,21 @@ public class SageKingPackagesService : ISageKingPackagesService
         {
             var connection = client.GetClientReceiverProxy();
             var getdesc = ClientTypeDic.GetDesc(client.ClientType);
-            var result = await connection.PushStreamPackageListAsync(msg.GetDataStreamBody(), $"Test:Push->{client.ClientId}[{getdesc}]");
+            var result = await connection.PushStreamPackageListAsync(streams, msgType);
         }
         return await Task.FromResult(1);
     }
 
-    public async Task<int> SendMsgAsync(string msg, string serverName)
-    {
-        if (string.IsNullOrEmpty(msg))
+    public async Task<int> SendMsgAsync(string serverName, StreamPackage[] streams, string msgType = "Send")
+    { 
+        if (!streams.HasItem())
         {
             return await Task.FromResult(0);
         }
         var connection = this.ClientConnectionProvider.GetClientConnection(serverName);
         var getdesc = ClientTypeDic.GetDesc(connection.ServerType);
-        var result = await connection.SendStreamPackageListAsync(msg.GetDataStreamBody(), $"Test:Send->{serverName}[{getdesc}]");
+        var result = await connection.SendStreamPackageListAsync(streams, msgType);
         return await Task.FromResult(1);
-
     }
 
     public async Task<int> ReceiverMsgAsync(string msgType, StreamPackage[] streams)

@@ -229,7 +229,7 @@ else
 
         foreach (var item in selectedRows)
         {
-            var result = await dataService.PushMsgAsync(model.Message, item.ConnectionId);
+            var result = await dataService.PushMsgAsync(item.ConnectionId, model.Message.GetDataStreamBody().ToArray(), $"Test:Push");
         }
 
         loading = false;

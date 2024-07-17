@@ -92,7 +92,7 @@ else
                     </SpaceItem>
                     <SpaceItem>
                         <Tooltip Title="推送，服务端向客户端推送消息。">
-                            <Button OnClick="(e)=>ShowSendData(context)" Shape="@ButtonShape.Circle" Icon="@IconType.Outline.Notification" />
+                            <Button OnClick="(e)=>ShowPushData(context)" Shape="@ButtonShape.Circle" Icon="@IconType.Outline.Notification" />
                         </Tooltip>
                     </SpaceItem>
                     <SpaceItem>
@@ -833,6 +833,13 @@ else
 
     bool _visibleSend = false;
     bool loadingSend = false;
+    IceOperEnum _iceOperEnum = IceOperEnum.None;
+
+    [Inject]
+    ISageKingMessage sageKingMessage { get; set; }
+
+    [Inject]
+    ISageKingPackagesService IceService { get; set; }
 
     private MessageModelForm messageModelFrom;
     private SageKingMessageFormEdit sageKingMessageFormEditRef;
@@ -849,8 +856,106 @@ else
             loadingSend = true;
             if (sageKingMessageFormEditRef != null)
             {
-                //init model
-                var msgStr = messageModelFrom.AttStrLst;
+                sageKingMessage.ClearAll();
+                #region init model
+
+                if (messageModelFrom.AttStrLst.HasItem())
+                {
+                    foreach (var item in messageModelFrom.AttStrLst)
+                    {
+                        sageKingMessage.AddOrUpdate(item.Key, new DataStreamTypValue<string>(item.Value));
+                    }
+                }
+                if (messageModelFrom.AttsbyteLst.HasItem())
+                {
+                    foreach (var item in messageModelFrom.AttsbyteLst)
+                    {
+                        sageKingMessage.AddOrUpdate(item.Key, new DataStreamTypValue<sbyte>(item.Value));
+                    }
+                }
+                if (messageModelFrom.AttbyteLst.HasItem())
+                {
+                    foreach (var item in messageModelFrom.AttbyteLst)
+                    {
+                        sageKingMessage.AddOrUpdate(item.Key, new DataStreamTypValue<byte>(item.Value));
+                    }
+                }
+                if (messageModelFrom.AttintLst.HasItem())
+                {
+                    foreach (var item in messageModelFrom.AttintLst)
+                    {
+                        sageKingMessage.AddOrUpdate(item.Key, new DataStreamTypValue<int>(item.Value));
+                    }
+                }
+                if (messageModelFrom.AttuintLst.HasItem())
+                {
+                    foreach (var item in messageModelFrom.AttuintLst)
+                    {
+                        sageKingMessage.AddOrUpdate(item.Key, new DataStreamTypValue<uint>(item.Value));
+                    }
+                }
+                if (messageModelFrom.AttushortLst.HasItem())
+                {
+                    foreach (var item in messageModelFrom.AttushortLst)
+                    {
+                        sageKingMessage.AddOrUpdate(item.Key, new DataStreamTypValue<ushort>(item.Value));
+                    }
+                }
+                if (messageModelFrom.AttshortLst.HasItem())
+                {
+                    foreach (var item in messageModelFrom.AttshortLst)
+                    {
+                        sageKingMessage.AddOrUpdate(item.Key, new DataStreamTypValue<short>(item.Value));
+                    }
+                }
+                if (messageModelFrom.AttlongLst.HasItem())
+                {
+                    foreach (var item in messageModelFrom.AttlongLst)
+                    {
+                        sageKingMessage.AddOrUpdate(item.Key, new DataStreamTypValue<long>(item.Value));
+                    }
+                }
+                if (messageModelFrom.AttulongLst.HasItem())
+                {
+                    foreach (var item in messageModelFrom.AttulongLst)
+                    {
+                        sageKingMessage.AddOrUpdate(item.Key, new DataStreamTypValue<ulong>(item.Value));
+                    }
+                }
+                if (messageModelFrom.AttfloatLst.HasItem())
+                {
+                    foreach (var item in messageModelFrom.AttfloatLst)
+                    {
+                        sageKingMessage.AddOrUpdate(item.Key, new DataStreamTypValue<float>(item.Value));
+                    }
+                }
+                if (messageModelFrom.AttdoubleLst.HasItem())
+                {
+                    foreach (var item in messageModelFrom.AttdoubleLst)
+                    {
+                        sageKingMessage.AddOrUpdate(item.Key, new DataStreamTypValue<double>(item.Value));
+                    }
+                }
+                #endregion
+
+                //test todata
+                var result = sageKingMessage.ToData();
+
+                switch (_iceOperEnum)
+                {
+                    case IceOperEnum.Send:
+                        await IceService.SendMsgAsync(IceService.GetServerNames.First(), new StreamPackage[] { result.GetStreamPackage(10000) }, "test-Send-att");
+                        break;
+
+                    case IceOperEnum.Push:
+                        await IceService.PushMsgAsync(IceService.GetClientConnectionDic.Keys.First(), new StreamPackage[] { result.GetStreamPackage(10001) }, "test-Push-att");
+                        break;
+                    default:
+
+                        _ = _message.Error($"{modelTitle},操作类型不正确！");
+                        break;
+                }
+
             }
             _ = _message.Success($"{modelTitle}成功！");
             _visibleSend = false;
@@ -869,14 +974,16 @@ else
     {
         try
         {
+            _iceOperEnum = IceOperEnum.Send;
+
             loadingSend = true;
-            var result = await SendData(row);
+            var result = await GetFormData(row);
             if (!result)
             {
                 return;
             }
-            modelTitle = $"{TabTitle}->${row.Name}-:>发送";
-            modelOkTitle = "确认";
+            modelTitle = $"{TabTitle}->${row.Name}-:>{_iceOperEnum.GetDescription()}";
+            modelOkTitle = _iceOperEnum.GetDescription();
             _visibleSend = true;
 
         }
@@ -890,7 +997,7 @@ else
         }
 
     }
-    async Task<bool> SendData(SysSageKingMessage row)
+    async Task<bool> GetFormData(SysSageKingMessage row)
     {
 
         var getAttData = await QueryChildList(row.Id);
@@ -966,6 +1073,35 @@ else
             attLst.Add(new KeyValueClass<string, T>() { Key = name });
         }
         return attLst;
+
+    }
+
+
+    async Task ShowPushData(SysSageKingMessage row)
+    {
+        try
+        {
+            _iceOperEnum = IceOperEnum.Push;
+
+            loadingSend = true;
+            var result = await GetFormData(row);
+            if (!result)
+            {
+                return;
+            }
+            modelTitle = $"{TabTitle}->${row.Name}-:>{_iceOperEnum.GetDescription()}";
+            modelOkTitle = _iceOperEnum.GetDescription();
+            _visibleSend = true;
+
+        }
+        catch (Exception ex)
+        {
+            Error?.ProcessError(ex);
+        }
+        finally
+        {
+            loadingSend = false;
+        }
 
     }
     #endregion

@@ -13,7 +13,7 @@ public interface ISageKingPackagesService
     /// <summary>
     /// 获取消息列表
     /// </summary>
-    public ConcurrentDictionary<string, List<StreamPackage[]>> GetMessagesDic {  get; }
+    public ConcurrentDictionary<string, List<StreamPackage[]>> GetMessagesDic { get; }
 
 
     public ConcurrentDictionary<string, ClientConnectionInfo<IConnectionContext>> GetClientConnectionDic { get; }
@@ -21,21 +21,12 @@ public interface ISageKingPackagesService
     /// <summary>
     /// 服务端名称列表
     /// </summary>
-    public List<string> GetServerNames {  get; }
+    public List<string> GetServerNames { get; }
 
     /// <summary>
     /// 消息回调
     /// </summary>
     public Action<string, string, int> NoticeAction { get; set; }
-
-    /// <summary>
-    /// 发送消息
-    /// 客户端 发送消息 到 服务端
-    /// </summary>
-    /// <param name="msg"></param>
-    /// <param name="serverName"></param>
-    /// <returns></returns>
-    public Task<int> SendMsgAsync(string msg, string serverName);
 
     /// <summary>
     /// 推送消息
@@ -44,7 +35,16 @@ public interface ISageKingPackagesService
     /// <param name="msg"></param>
     /// <param name="connectionid"></param>
     /// <returns></returns>
-    public Task<int> PushMsgAsync(string msg, string connectionid);
+    public Task<int> PushMsgAsync(string connectionid, StreamPackage[] streams, string msgType = "Push");
+
+    /// <summary>
+    /// 发送消息
+    /// 客户端 发送消息 到 服务端
+    /// </summary>
+    /// <param name="msg"></param>
+    /// <param name="serverName"></param>
+    /// <returns></returns>
+    public Task<int> SendMsgAsync(string serverName, StreamPackage[] streams, string msgType = "Send");
 
     /// <summary>
     /// 收到数据

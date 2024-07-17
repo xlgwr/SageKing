@@ -87,6 +87,14 @@ namespace SageKing.IceRPC.Contracts
             return _int16_short3.AddOrUpdatePost(attributeName, value, _attributePosition);
         }
 
+
+        public bool AddOrUpdate(string attributeName, DataStreamTypValue<ushort> value)
+        {
+            _uint16_ushort4 ??= new();
+            _isChange = true;
+            return _uint16_ushort4.AddOrUpdatePost(attributeName, value, _attributePosition);
+        }
+
         public bool AddOrUpdate(string attributeName, DataStreamTypValue<int> value)
         {
             _int32_int5 ??= new();
@@ -438,5 +446,10 @@ namespace SageKing.IceRPC.Contracts
             }
         }
 
+        public void ClearAll()
+        {
+            ClearData();
+            _attributePosition.Clear();
+        }
     }
 }

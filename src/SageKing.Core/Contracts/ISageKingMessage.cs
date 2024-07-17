@@ -33,6 +33,7 @@ public interface ISageKingMessage
     public bool AddOrUpdate(string attributeName, DataStreamTypValue<sbyte> value);
     public bool AddOrUpdate(string attributeName, DataStreamTypValue<byte> value);
     public bool AddOrUpdate(string attributeName, DataStreamTypValue<short> value);
+    public bool AddOrUpdate(string attributeName, DataStreamTypValue<ushort> value);
     public bool AddOrUpdate(string attributeName, DataStreamTypValue<int> value);
     public bool AddOrUpdate(string attributeName, DataStreamTypValue<uint> value);
     public bool AddOrUpdate(string attributeName, DataStreamTypValue<long> value);
@@ -100,4 +101,10 @@ public interface ISageKingMessage
     /// 清理数据,不清理位置信息
     /// </summary>
     public void ClearData();
+
+
+    /// <summary>
+    /// 清理数据所有
+    /// </summary>
+    public void ClearAll();
 }
