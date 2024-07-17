@@ -5,244 +5,162 @@
 <Form @ref="form"
       Model="@model" ValidateMode="FormValidateMode.Complex"
       ValidateOnChange="true"
-      LabelColSpan="8" WrapperColSpan="16">
-
-    @if (model.AttStrLst != null)
-    {
-        var currLst = model.AttStrLst.OrderBy(a => a.Key).ToList();
-        @for (int i = 0; i < currLst.Count; i += 2)
+      LabelColSpan="6" WrapperColSpan="18">
+    <Space Size=@("10") Wrap Align="center">
+        @if (model.AttStrLst != null)
         {
-            var item = currLst[i];
-            var iNext = i + 1;
-
-            <Space>
+            var currLst = model.AttStrLst.OrderBy(a => a.Key).ToList();
+            @for (int i = 0; i < currLst.Count; i++)
+            {
+                var item = currLst[i];
                 @GetSpaceItem(item)
-
-                @if (iNext < currLst.Count)
-                {
-                    var item2 = currLst[iNext];
-                    @(GetSpaceItem(item2))
-                }
-            </Space>
+            }
         }
-    }
-
-    @if (model.AttsbyteLst.HasItem())
-    {
-        var currLst = model.AttsbyteLst.OrderBy(a => a.Key).ToList();
-        @for (int i = 0; i < currLst.Count; i += 2)
+        @if (model.AttsbyteLst.HasItem())
         {
-            var item = currLst[i];
-            var iNext = i + 1;
-
-            <Space>
-                @GetSpaceItem(item)
-
-                @if (iNext < currLst.Count)
-                {
-                    var item2 = currLst[iNext];
-                    @(GetSpaceItem(item2))
-                }
-            </Space>
+            var currLst = model.AttsbyteLst.OrderBy(a => a.Key).ToList();
+            @for (int i = 0; i < currLst.Count; i++)
+            {
+                var item = currLst[i];
+                <Space>
+                    @GetSpaceItem(item)
+                </Space>
+            }
         }
-    }
 
-    @if (model.AttbyteLst.HasItem())
-    {
-        var currLst = model.AttbyteLst.OrderBy(a => a.Key).ToList();
-        @for (int i = 0; i < currLst.Count; i += 2)
+        @if (model.AttbyteLst.HasItem())
         {
-            var item = currLst[i];
-            var iNext = i + 1;
+            var currLst = model.AttbyteLst.OrderBy(a => a.Key).ToList();
+            @for (int i = 0; i < currLst.Count; i++)
+            {
+                var item = currLst[i];
 
-            <Space>
-                @GetSpaceItem(item)
-
-                @if (iNext < currLst.Count)
-                {
-                    var item2 = currLst[iNext];
-                    @(GetSpaceItem(item2))
-                }
-            </Space>
+                <Space>
+                    @GetSpaceItem(item)
+                </Space>
+            }
         }
-    }
 
-    @if (model.AttshortLst.HasItem())
-    {
-        var currLst = model.AttshortLst.OrderBy(a => a.Key).ToList();
-        @for (int i = 0; i < currLst.Count; i += 2)
+        @if (model.AttshortLst.HasItem())
         {
-            var item = currLst[i];
-            var iNext = i + 1;
+            var currLst = model.AttshortLst.OrderBy(a => a.Key).ToList();
+            @for (int i = 0; i < currLst.Count; i++)
+            {
+                var item = currLst[i];
 
-            <Space>
-                @GetSpaceItem(item)
-
-                @if (iNext < currLst.Count)
-                {
-                    var item2 = currLst[iNext];
-                    @(GetSpaceItem(item2))
-                }
-            </Space>
+                <Space>
+                    @GetSpaceItem(item)
+                </Space>
+            }
         }
-    }
 
-    @if (model.AttushortLst.HasItem())
-    {
-        var currLst = model.AttushortLst.OrderBy(a => a.Key).ToList();
-        @for (int i = 0; i < currLst.Count; i += 2)
+        @if (model.AttushortLst.HasItem())
         {
-            var item = currLst[i];
-            var iNext = i + 1;
+            var currLst = model.AttushortLst.OrderBy(a => a.Key).ToList();
+            @for (int i = 0; i < currLst.Count; i++)
+            {
+                var item = currLst[i];
 
-            <Space>
-                @GetSpaceItem(item)
-
-                @if (iNext < currLst.Count)
-                {
-                    var item2 = currLst[iNext];
-                    @(GetSpaceItem(item2))
-                }
-            </Space>
+                <Space>
+                    @GetSpaceItem(item)
+                </Space>
+            }
         }
-    }
 
-    @if (model.AttintLst.HasItem())
-    {
-        var currLst = model.AttintLst.OrderBy(a => a.Key).ToList();
-        @for (int i = 0; i < currLst.Count; i += 2)
+        @if (model.AttintLst.HasItem())
         {
-            var item = currLst[i];
-            var iNext = i + 1;
-
-            <Space>
-                @GetSpaceItem(item)
-
-                @if (iNext < currLst.Count)
-                {
-                    var item2 = currLst[iNext];
-                    @(GetSpaceItem(item2))
-                }
-            </Space>
+            var currLst = model.AttintLst.OrderBy(a => a.Key).ToList();
+            @for (int i = 0; i < currLst.Count; i++)
+            {
+                var item = currLst[i];
+                <Space>
+                    @GetSpaceItem(item)
+                </Space>
+            }
         }
-    }
 
-    @if (model.AttuintLst.HasItem())
-    {
-        var currLst = model.AttuintLst.OrderBy(a => a.Key).ToList();
-        @for (int i = 0; i < currLst.Count; i += 2)
+        @if (model.AttuintLst.HasItem())
         {
-            var item = currLst[i];
-            var iNext = i + 1;
+            var currLst = model.AttuintLst.OrderBy(a => a.Key).ToList();
+            @for (int i = 0; i < currLst.Count; i++)
+            {
+                var item = currLst[i];
 
-            <Space>
-                @GetSpaceItem(item)
-
-                @if (iNext < currLst.Count)
-                {
-                    var item2 = currLst[iNext];
-                    @(GetSpaceItem(item2))
-                }
-            </Space>
+                <Space>
+                    @GetSpaceItem(item)
+                </Space>
+            }
         }
-    }
 
-    @if (model.AttlongLst.HasItem())
-    {
-        var currLst = model.AttlongLst.OrderBy(a => a.Key).ToList();
-        @for (int i = 0; i < currLst.Count; i += 2)
+        @if (model.AttlongLst.HasItem())
         {
-            var item = currLst[i];
-            var iNext = i + 1;
+            var currLst = model.AttlongLst.OrderBy(a => a.Key).ToList();
+            @for (int i = 0; i < currLst.Count; i++)
+            {
+                var item = currLst[i];
 
-            <Space>
-                @GetSpaceItem(item)
-
-                @if (iNext < currLst.Count)
-                {
-                    var item2 = currLst[iNext];
-                    @(GetSpaceItem(item2))
-                }
-            </Space>
+                <Space>
+                    @GetSpaceItem(item)
+                </Space>
+            }
         }
-    }
 
-    @if (model.AttulongLst.HasItem())
-    {
-        var currLst = model.AttulongLst.OrderBy(a => a.Key).ToList();
-        @for (int i = 0; i < currLst.Count; i += 2)
+        @if (model.AttulongLst.HasItem())
         {
-            var item = currLst[i];
-            var iNext = i + 1;
+            var currLst = model.AttulongLst.OrderBy(a => a.Key).ToList();
+            @for (int i = 0; i < currLst.Count; i++)
+            {
+                var item = currLst[i];
 
-            <Space>
-                @GetSpaceItem(item)
-
-                @if (iNext < currLst.Count)
-                {
-                    var item2 = currLst[iNext];
-                    @(GetSpaceItem(item2))
-                }
-            </Space>
+                <Space>
+                    @GetSpaceItem(item)
+                </Space>
+            }
         }
-    }
 
-    @if (model.AttfloatLst.HasItem())
-    {
-        var currLst = model.AttfloatLst.OrderBy(a => a.Key).ToList();
-        @for (int i = 0; i < currLst.Count; i += 2)
+        @if (model.AttfloatLst.HasItem())
         {
-            var item = currLst[i];
-            var iNext = i + 1;
+            var currLst = model.AttfloatLst.OrderBy(a => a.Key).ToList();
+            @for (int i = 0; i < currLst.Count; i++)
+            {
+                var item = currLst[i];
 
-            <Space>
-                @GetSpaceItem(item)
-
-                @if (iNext < currLst.Count)
-                {
-                    var item2 = currLst[iNext];
-                    @(GetSpaceItem(item2))
-                }
-            </Space>
+                <Space>
+                    @GetSpaceItem(item)
+                </Space>
+            }
         }
-    }
 
-    @if (model.AttdoubleLst.HasItem())
-    {
-        var currLst = model.AttdoubleLst.OrderBy(a => a.Key).ToList();
-        @for (int i = 0; i < currLst.Count; i += 2)
+        @if (model.AttdoubleLst.HasItem())
         {
-            var item = currLst[i];
-            var iNext = i + 1;
+            var currLst = model.AttdoubleLst.OrderBy(a => a.Key).ToList();
+            @for (int i = 0; i < currLst.Count; i++)
+            {
+                var item = currLst[i];
 
-            <Space>
-                @GetSpaceItem(item)
-
-                @if (iNext < currLst.Count)
-                {
-                    var item2 = currLst[iNext];
-                    @(GetSpaceItem(item2))
-                }
-            </Space>
-        }
-    }
-
+                <Space Align="center">
+                    @GetSpaceItem(item)
+                </Space>
+            }
+        } 
+    </Space> 
 </Form>
 
 @code
 {
     public RenderFragment GetSpaceItem(KeyValueClass<string, string> item) =>
     @<SpaceItem>
-        <FormItem Label="@item.Key">
+        <FormItem Label="@item.Key" Style="width:268px;" LabelColSpan="6">
             <Input ShowCount MaxLength="64" @bind-Value="item.Value" />
         </FormItem>
     </SpaceItem>
     ;
+
     public RenderFragment GetSpaceItem<T>(KeyValueClass<string, T> item)
     where T : struct =>
     @<SpaceItem>
-        <FormItem Label="@item.Key">
-            <Input @bind-Value="item.Value" />
+        <FormItem Label="@item.Key" Style="width:268px;" LabelColSpan="7">
+            <AntDesign.InputNumber @bind-Value="item.Value" Width="100%" />
         </FormItem>
     </SpaceItem>;
 }

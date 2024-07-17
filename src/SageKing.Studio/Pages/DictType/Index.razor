@@ -375,7 +375,7 @@ else
         }
     }
 
-    async Task DeleteDataChild(SysDictData row , SysDictType parent)
+    async Task DeleteDataChild(SysDictData row, SysDictType parent)
     {
         if (row.Id <= 0)
         {
@@ -433,6 +433,7 @@ else
     bool tableLoading;
     string selectionType = "checkbox";
     bool isOnRowExpand = false;
+    RowData<SysDictType> OnRowExpanddata;
     RenderFragment<PaginationTotalContext> showTotal = ctx => @<div class="showTotal">Total: <b>@ctx.Total</b></div>;
 
     //search
@@ -517,6 +518,15 @@ else
     async Task Refresh(bool notice = true)
     {
         await OnSearch(pageargs);
+        if (OnRowExpanddata != null)
+        {
+            var getData = pageData.Items.FirstOrDefault(a => a.Id == OnRowExpanddata.Data.Id);
+            if (getData != null)
+            {
+                getData.Children = await QueryChildList(getData.Id);
+                OnRowExpanddata = null;
+            }
+        }
         if (notice)
         {
             _ = _message.Success("刷新成功!");
@@ -542,7 +552,7 @@ else
 
         tableLoading = false;
     }
-    
+
     private async void OnRowClick(RowData<SysDictType> data)
     {
         var row = data.Data;
@@ -552,6 +562,7 @@ else
     private async void OnRowExpand(RowData<SysDictType> data)
     {
         isOnRowExpand = true;
+        OnRowExpanddata = data;
         data.Data.Children = await QueryChildList(data.Data.Id);
     }
 

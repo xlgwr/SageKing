@@ -918,34 +918,34 @@ else
                     }
                     break;
                 case DataStreamTypeEnum.Int8:
-                    AddOrInitLst(messageModelFrom.AttsbyteLst, item.Name);
+                    messageModelFrom.AttsbyteLst = AddOrInitLst(messageModelFrom.AttsbyteLst, item.Name);
                     break;
                 case DataStreamTypeEnum.Uint8:
-                    AddOrInitLst(messageModelFrom.AttbyteLst, item.Name);
+                    messageModelFrom.AttbyteLst = AddOrInitLst(messageModelFrom.AttbyteLst, item.Name);
                     break;
                 case DataStreamTypeEnum.Int16:
-                    AddOrInitLst(messageModelFrom.AttshortLst, item.Name);
+                    messageModelFrom.AttshortLst = AddOrInitLst(messageModelFrom.AttshortLst, item.Name);
                     break;
                 case DataStreamTypeEnum.Uint16:
-                    AddOrInitLst(messageModelFrom.AttushortLst, item.Name);
+                    messageModelFrom.AttushortLst = AddOrInitLst(messageModelFrom.AttushortLst, item.Name);
                     break;
                 case DataStreamTypeEnum.Int32:
-                    AddOrInitLst(messageModelFrom.AttintLst, item.Name);
+                    messageModelFrom.AttintLst = AddOrInitLst(messageModelFrom.AttintLst, item.Name);
                     break;
                 case DataStreamTypeEnum.Uint32:
-                    AddOrInitLst(messageModelFrom.AttuintLst, item.Name);
+                    messageModelFrom.AttuintLst = AddOrInitLst(messageModelFrom.AttuintLst, item.Name);
                     break;
                 case DataStreamTypeEnum.Int64:
-                    AddOrInitLst(messageModelFrom.AttlongLst, item.Name);
+                    messageModelFrom.AttlongLst = AddOrInitLst(messageModelFrom.AttlongLst, item.Name);
                     break;
                 case DataStreamTypeEnum.Uint64:
-                    AddOrInitLst(messageModelFrom.AttulongLst, item.Name);
+                    messageModelFrom.AttulongLst = AddOrInitLst(messageModelFrom.AttulongLst, item.Name);
                     break;
                 case DataStreamTypeEnum.Float32:
-                    AddOrInitLst(messageModelFrom.AttfloatLst, item.Name);
+                    messageModelFrom.AttfloatLst = AddOrInitLst(messageModelFrom.AttfloatLst, item.Name);
                     break;
                 case DataStreamTypeEnum.Float64:
-                    AddOrInitLst(messageModelFrom.AttdoubleLst, item.Name);
+                    messageModelFrom.AttdoubleLst = AddOrInitLst(messageModelFrom.AttdoubleLst, item.Name);
                     break;
                 default:
                     break;
@@ -953,7 +953,7 @@ else
         }
         return true;
     }
-    void AddOrInitLst<T>(List<KeyValueClass<string, T>> attLst, string name)
+    List<KeyValueClass<string, T>> AddOrInitLst<T>(List<KeyValueClass<string, T>> attLst, string name)
     {
         if (!attLst.HasItem())
         {
@@ -965,6 +965,7 @@ else
         {
             attLst.Add(new KeyValueClass<string, T>() { Key = name });
         }
+        return attLst;
 
     }
     #endregion
